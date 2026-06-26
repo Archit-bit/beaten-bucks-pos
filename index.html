@@ -1,0 +1,2938 @@
+<!doctype html>
+<html lang="en" data-theme="corporate">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, interactive-widget=resizes-content">
+  <title>Tapri POS Prototype</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/daisyui@5.5.19/daisyui.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/daisyui@5.5.19/themes.css">
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4.2.4/dist/index.global.js"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    :root {
+      --surface: #f4ecdf;
+      --surface-strong: #eadcc8;
+      --panel: rgba(255, 251, 245, 0.92);
+      --panel-solid: #fffaf2;
+      --ink: #24180f;
+      --line: rgba(105, 74, 46, 0.18);
+      --brand: #7c3f10;
+      --brand-strong: #5c2600;
+      --accent: #1f7a5a;
+      --muted: #7a6857;
+      --tile-shadow: 0 18px 36px rgba(73, 45, 18, 0.11);
+      --hero-shadow: 0 26px 60px rgba(67, 38, 11, 0.16);
+    }
+    * { box-sizing: border-box; }
+    html, body {
+      min-height: 100%;
+      -webkit-text-size-adjust: 100%;
+      text-size-adjust: 100%;
+    }
+    body {
+      margin: 0;
+      background:
+        radial-gradient(circle at top left, rgba(255, 255, 255, 0.7), transparent 28%),
+        radial-gradient(circle at bottom right, rgba(124, 63, 16, 0.12), transparent 24%),
+        linear-gradient(180deg, #f7efe2 0%, #ecdcc7 100%);
+      color: var(--ink);
+      font-family: "Plus Jakarta Sans", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      letter-spacing: 0;
+      overscroll-behavior: none;
+      padding: 18px;
+    }
+    button, input, select {
+      font: inherit;
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .app-shell {
+      width: min(800px, 100%);
+      min-height: min(1340px, calc(100dvh - 36px));
+      margin: 0 auto;
+      display: grid;
+      grid-template-rows: auto 1fr;
+      background: rgba(255, 250, 242, 0.66);
+      border: 1px solid rgba(105, 74, 46, 0.12);
+      border-radius: 34px;
+      box-shadow: var(--hero-shadow);
+      backdrop-filter: blur(18px);
+      overflow: hidden;
+    }
+    .topbar {
+      min-width: 0;
+      background:
+        linear-gradient(135deg, rgba(124, 63, 16, 0.96), rgba(74, 34, 8, 0.96)),
+        #5c2600;
+      color: #fffaf4;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+      display: grid;
+      grid-template-columns: minmax(0, 1fr);
+      gap: 14px;
+      align-items: center;
+      padding: 22px 22px 18px;
+      z-index: 20;
+    }
+    .brand {
+      min-width: 0;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .brand-mark {
+      width: 52px;
+      height: 52px;
+      border-radius: 16px;
+      background: rgba(255, 248, 238, 0.14);
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      color: #ffffff;
+      display: grid;
+      place-items: center;
+      flex: 0 0 auto;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    }
+    .brand h1 {
+      margin: 0;
+      font-size: 28px;
+      line-height: 1.05;
+      font-weight: 800;
+    }
+    .brand p {
+      margin: 3px 0 0;
+      color: rgba(255, 245, 235, 0.72);
+      font-size: 14px;
+    }
+    .top-actions {
+      display: flex;
+      flex-wrap: nowrap;
+      gap: 8px;
+      overflow-x: auto;
+      padding-bottom: 2px;
+    }
+    .top-stats {
+      min-width: 0;
+      display: flex;
+      gap: 8px;
+      justify-content: flex-start;
+    }
+    .top-stat {
+      min-width: 114px;
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      border-radius: 16px;
+      background: rgba(255, 248, 240, 0.1);
+      padding: 9px 10px;
+      backdrop-filter: blur(6px);
+    }
+    .top-stat span {
+      display: block;
+      color: rgba(255, 241, 230, 0.66);
+      font-size: 10px;
+      line-height: 1.1;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+    .top-stat strong {
+      display: block;
+      margin-top: 3px;
+      font-size: 18px;
+      line-height: 1;
+      font-weight: 900;
+      color: #fff9f4;
+    }
+    .main-grid {
+      min-width: 0;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr);
+      grid-template-rows: minmax(0, 1fr) auto;
+      gap: 14px;
+      padding: 14px;
+      min-height: 0;
+    }
+    .app-shell > main {
+      min-height: 0;
+      overflow: hidden;
+    }
+    .work-panel {
+      min-width: 0;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 26px;
+      box-shadow: var(--tile-shadow);
+      overflow: hidden;
+      backdrop-filter: blur(10px);
+    }
+    .menu-panel {
+      min-height: 0;
+      display: grid;
+      grid-template-rows: auto minmax(0, 1fr);
+    }
+    .panel-head {
+      min-width: 0;
+      padding: 16px 16px 14px;
+      border-bottom: 1px solid var(--line);
+      display: grid;
+      gap: 10px;
+      background: linear-gradient(180deg, rgba(255, 250, 243, 0.96), rgba(255, 247, 239, 0.86));
+    }
+    .panel-title-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      min-width: 0;
+    }
+    .panel-title {
+      margin: 0;
+      font-size: 18px;
+      line-height: 1.2;
+      font-weight: 800;
+    }
+    .search-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 10px;
+      align-items: center;
+    }
+    .search-box {
+      min-width: 0;
+      position: relative;
+    }
+    .search-box svg {
+      position: absolute;
+      left: 13px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--muted);
+      width: 19px;
+      height: 19px;
+    }
+    .search-box input {
+      width: 100%;
+      min-height: 48px;
+      border: 1px solid rgba(105, 74, 46, 0.14);
+      border-radius: 16px;
+      padding: 0 12px 0 42px;
+      background: #fffdf8;
+      color: var(--ink);
+      outline: none;
+    }
+    .search-box input:focus {
+      border-color: var(--brand);
+      box-shadow: 0 0 0 4px rgba(124, 63, 16, 0.12);
+    }
+    .category-scroll {
+      min-width: 0;
+      display: flex;
+      gap: 10px;
+      overflow-x: auto;
+      padding-bottom: 2px;
+      scrollbar-width: thin;
+    }
+    .category-btn {
+      min-height: 46px;
+      white-space: nowrap;
+      border-radius: 999px;
+      border: 1px solid rgba(105, 74, 46, 0.14);
+      background: #fffdf9;
+      color: #634c3a;
+      padding: 0 16px;
+      font-weight: 700;
+    }
+    .category-btn.active {
+      background: linear-gradient(135deg, #8f4b19, #6a3007);
+      border-color: transparent;
+      color: #ffffff;
+      box-shadow: 0 10px 20px rgba(124, 63, 16, 0.2);
+    }
+    .item-grid {
+      min-width: 0;
+      min-height: 0;
+      padding: 14px;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      align-content: start;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      background:
+        radial-gradient(circle at top right, rgba(124, 63, 16, 0.06), transparent 22%),
+        linear-gradient(180deg, rgba(255, 249, 241, 0.7), rgba(250, 241, 231, 0.86));
+    }
+    .item-tile {
+      min-width: 0;
+      min-height: 158px;
+      display: grid;
+      align-content: space-between;
+      gap: 12px;
+      text-align: left;
+      border: 1px solid rgba(105, 74, 46, 0.12);
+      border-radius: 20px;
+      background: rgba(255, 253, 249, 0.92);
+      padding: 14px;
+      box-shadow: var(--tile-shadow);
+      transition: transform 120ms ease, border-color 120ms ease;
+    }
+    .item-tile:active { transform: scale(0.98); }
+    .item-tile:hover { border-color: var(--brand); }
+    .item-name {
+      min-width: 0;
+      font-size: 18px;
+      line-height: 1.2;
+      font-weight: 800;
+      overflow-wrap: anywhere;
+    }
+    .item-size-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .size-btn {
+      min-height: 34px;
+      border-radius: 999px;
+      border: 1px solid rgba(105, 74, 46, 0.12);
+      background: #fff7ed;
+      padding: 0 10px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      font-weight: 900;
+      color: #523f31;
+    }
+    .size-btn span {
+      color: var(--brand-strong);
+    }
+    .item-meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      min-width: 0;
+    }
+    .item-price {
+      font-size: 24px;
+      line-height: 1;
+      font-weight: 900;
+      color: var(--brand-strong);
+      white-space: nowrap;
+    }
+    .item-code {
+      font-size: 11px;
+      font-weight: 800;
+      color: #6f5847;
+      background: #f0e3d0;
+      border-radius: 10px;
+      padding: 4px 6px;
+      white-space: nowrap;
+    }
+    .order-panel {
+      min-width: 0;
+      position: static;
+      max-height: none;
+      display: grid;
+      grid-template-rows: auto minmax(180px, 1fr) auto;
+      background:
+        linear-gradient(180deg, rgba(255, 252, 246, 0.96), rgba(246, 237, 226, 0.92)),
+        var(--panel-solid);
+    }
+    .cart-list {
+      min-width: 0;
+      overflow-y: auto;
+      padding: 10px 12px;
+      display: grid;
+      align-content: start;
+      gap: 10px;
+      background: transparent;
+    }
+    .empty-cart {
+      min-height: 190px;
+      display: grid;
+      place-items: center;
+      text-align: center;
+      color: var(--muted);
+      border: 1px dashed rgba(105, 74, 46, 0.24);
+      border-radius: 20px;
+      padding: 20px;
+      background: rgba(255, 253, 249, 0.84);
+    }
+    .cart-row {
+      min-width: 0;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 10px;
+      align-items: center;
+      background: rgba(255, 252, 247, 0.92);
+      border: 1px solid rgba(105, 74, 46, 0.12);
+      border-radius: 18px;
+      padding: 12px;
+    }
+    .cart-name {
+      min-width: 0;
+      font-weight: 800;
+      line-height: 1.18;
+      overflow-wrap: anywhere;
+    }
+    .cart-sub {
+      margin-top: 3px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+    .qty-controls {
+      display: grid;
+      grid-template-columns: 38px 38px 38px;
+      align-items: center;
+      gap: 4px;
+    }
+    .qty {
+      text-align: center;
+      font-size: 18px;
+      font-weight: 900;
+    }
+    .icon-btn {
+      width: 38px;
+      height: 38px;
+      border-radius: 14px;
+      border: 1px solid rgba(105, 74, 46, 0.12);
+      background: #fffaf4;
+      display: grid;
+      place-items: center;
+      color: #3b2616;
+    }
+    .icon-btn.danger { color: #b91c1c; }
+    .totals {
+      min-width: 0;
+      border-top: 1px solid var(--line);
+      padding: 14px;
+      display: grid;
+      gap: 11px;
+      background: rgba(255, 250, 243, 0.96);
+    }
+    .total-line {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      color: #5a4636;
+      font-weight: 700;
+    }
+    .grand {
+      padding-top: 8px;
+      border-top: 1px solid var(--line);
+      align-items: baseline;
+    }
+    .grand strong {
+      font-size: 38px;
+      line-height: 1;
+      color: var(--brand-strong);
+      white-space: nowrap;
+    }
+    .checkout-actions {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr);
+      gap: 10px;
+    }
+    .primary-pay {
+      min-height: 64px;
+      border-radius: 18px;
+      border: 0;
+      background: linear-gradient(135deg, #22895b, #176a46);
+      color: #ffffff;
+      font-size: 18px;
+      font-weight: 900;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 18px 28px rgba(31, 122, 90, 0.24);
+    }
+    .insights-row {
+      min-width: 0;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+      padding: 0 14px 14px;
+    }
+    .metric {
+      min-width: 0;
+      background: rgba(255, 252, 247, 0.8);
+      border: 1px solid rgba(105, 74, 46, 0.12);
+      border-radius: 18px;
+      padding: 14px;
+    }
+    .metric span {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+    .metric strong {
+      display: block;
+      margin-top: 6px;
+      font-size: 24px;
+      line-height: 1;
+      font-weight: 900;
+      overflow-wrap: anywhere;
+    }
+    .drawer-side-panel {
+      position: fixed;
+      inset: 0 0 0 auto;
+      width: min(430px, 100%);
+      transform: translateX(102%);
+      transition: transform 180ms ease;
+      z-index: 40;
+      background: #fffaf2;
+      box-shadow: -20px 0 45px rgba(15, 23, 42, 0.18);
+      display: grid;
+      grid-template-rows: auto 1fr;
+    }
+    .drawer-side-panel.open { transform: translateX(0); }
+    .drawer-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 35;
+      background: rgba(36, 24, 15, 0.28);
+      display: none;
+    }
+    .drawer-backdrop.open { display: block; }
+    .drawer-head {
+      min-width: 0;
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
+      border-bottom: 1px solid var(--line);
+      padding: 16px;
+    }
+    .held-list, .sales-list {
+      min-width: 0;
+      overflow-y: auto;
+      padding: 14px;
+      display: grid;
+      align-content: start;
+      gap: 10px;
+      background: #f7f0e5;
+    }
+    .held-card, .sale-card {
+      min-width: 0;
+      background: #fffdf8;
+      border: 1px solid rgba(105, 74, 46, 0.12);
+      border-radius: 18px;
+      padding: 12px;
+      display: grid;
+      gap: 9px;
+    }
+    .toast-wrap {
+      position: fixed;
+      right: 22px;
+      bottom: 22px;
+      z-index: 60;
+      display: grid;
+      gap: 8px;
+      max-width: min(360px, calc(100vw - 32px));
+    }
+    .toast-msg {
+      background: #2f2117;
+      color: #ffffff;
+      border-radius: 14px;
+      padding: 12px 14px;
+      font-weight: 800;
+      box-shadow: 0 18px 38px rgba(48, 29, 13, 0.24);
+    }
+    .kbd-hint {
+      border: 1px solid rgba(105, 74, 46, 0.14);
+      border-radius: 999px;
+      padding: 3px 6px;
+      background: #fff8ef;
+      font-size: 11px;
+      color: #7b614b;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+    .quick-note {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 12px 14px;
+      margin-top: 2px;
+      border-radius: 18px;
+      background: rgba(255, 248, 240, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+    }
+    .quick-note strong {
+      display: block;
+      font-size: 14px;
+      line-height: 1.2;
+    }
+    .quick-note span {
+      display: block;
+      color: rgba(255, 240, 228, 0.74);
+      font-size: 12px;
+      margin-top: 2px;
+    }
+    .service-pills {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .service-pill {
+      min-height: 34px;
+      padding: 0 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      background: rgba(255, 248, 240, 0.1);
+      color: #fff8f0;
+      font-size: 12px;
+      font-weight: 800;
+    }
+    .bill-meta {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 8px;
+    }
+    .bill-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      min-height: 34px;
+      padding: 0 12px;
+      border-radius: 999px;
+      background: #f3e6d4;
+      color: #5a432f;
+      font-size: 12px;
+      font-weight: 800;
+    }
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+    @media (max-width: 920px) {
+      body {
+        padding: 0;
+      }
+      .app-shell {
+        min-height: 100dvh;
+        border-radius: 0;
+        border: 0;
+      }
+    }
+    @media (max-width: 620px) {
+      .topbar { padding: 16px 14px; }
+      .brand h1 { font-size: 22px; }
+      .main-grid { padding: 10px; gap: 10px; }
+      .item-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); padding: 10px; }
+      .item-tile { min-height: 136px; padding: 12px; }
+      .search-row { grid-template-columns: minmax(0, 1fr); }
+      .checkout-actions { grid-template-columns: minmax(0, 1fr); }
+      .grand strong { font-size: 29px; }
+      .top-stats { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .top-actions { flex-wrap: wrap; }
+      .top-actions .btn { flex: 1 1 calc(50% - 8px); }
+      .quick-note { display: grid; }
+      .service-pills { margin-top: 8px; }
+      .insights-row { grid-template-columns: minmax(0, 1fr); }
+    }
+    /* Exact production canvas for the 800 x 1340 portrait tablet. */
+    @media (width: 800px) and (height: 1340px) and (orientation: portrait) {
+      body {
+        overflow: hidden;
+      }
+      .app-shell {
+        width: 800px;
+        height: 1340px;
+        min-height: 1340px;
+      }
+      .app-shell .main-grid {
+        height: 100%;
+        grid-template-rows: minmax(0, 1fr) 368px;
+      }
+      .menu-panel,
+      .order-panel {
+        min-height: 0;
+      }
+      .order-panel {
+        grid-template-rows: auto minmax(0, 1fr) auto;
+      }
+      .order-panel .panel-head {
+        padding: 10px 14px;
+      }
+      .order-panel .bill-meta {
+        display: none;
+      }
+      .order-panel .cart-list {
+        padding: 8px 12px;
+      }
+      .order-panel .empty-cart {
+        min-height: 100%;
+        padding: 12px;
+      }
+      .order-panel .totals {
+        padding: 9px 14px;
+        gap: 6px;
+      }
+      .order-panel .total-line {
+        font-size: 13px;
+      }
+      .order-panel .grand {
+        padding-top: 5px;
+      }
+      .order-panel .grand strong {
+        font-size: 30px;
+      }
+      .order-panel .primary-pay {
+        min-height: 48px;
+        border-radius: 14px;
+        font-size: 14px;
+      }
+      .insights-row {
+        display: none;
+      }
+      .item-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+    }
+    @media (min-width: 700px) and (orientation: portrait) {
+      .main-grid {
+        grid-template-rows: minmax(0, 1fr) minmax(360px, auto);
+      }
+      .item-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+    }
+    @media (max-width: 720px) and (orientation: portrait) {
+      .item-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    /* The prototype is always laid out as the target tablet, then scaled as one unit for review. */
+    html, body {
+      width: 100%;
+      min-height: 100%;
+    }
+    body {
+      min-height: 100dvh;
+      padding: 0;
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+    }
+    .design-frame {
+      --frame-scale: 1;
+      position: relative;
+      width: 800px;
+      height: 1340px;
+    }
+    .design-frame .app-shell {
+      width: 800px;
+      max-width: none;
+      height: 1340px;
+      min-height: 1340px;
+      margin: 0;
+      border: 1px solid rgba(105, 74, 46, 0.12);
+      border-radius: 34px;
+      transform: scale(var(--frame-scale));
+      transform-origin: top left;
+    }
+    .design-frame .topbar { padding: 22px 22px 18px; }
+    .design-frame .brand h1 { font-size: 28px; }
+    .design-frame .top-stats { display: flex; }
+    .design-frame .top-actions { flex-wrap: nowrap; }
+    .design-frame .top-actions .btn { flex: 0 1 auto; }
+    .design-frame .quick-note { display: flex; }
+    .design-frame .service-pills { margin-top: 0; }
+    .design-frame .app-shell .main-grid {
+      height: 100%;
+      padding: 14px;
+      gap: 14px;
+      grid-template-rows: minmax(0, 1fr) 368px;
+    }
+    .design-frame .menu-panel,
+    .design-frame .order-panel { min-height: 0; }
+    .design-frame .item-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      padding: 14px;
+    }
+    .design-frame .item-tile {
+      min-height: 158px;
+      padding: 14px;
+    }
+    .design-frame .search-row { grid-template-columns: minmax(0, 1fr) auto; }
+    .design-frame .order-panel { grid-template-rows: auto minmax(0, 1fr) auto; }
+    .design-frame .order-panel .panel-head { padding: 10px 14px; }
+    .design-frame .order-panel .bill-meta { display: none; }
+    .design-frame .order-panel .cart-list { padding: 8px 12px; }
+    .design-frame .order-panel .empty-cart {
+      min-height: 100%;
+      padding: 12px;
+    }
+    .design-frame .order-panel .totals {
+      padding: 9px 14px;
+      gap: 6px;
+    }
+    .design-frame .order-panel .total-line { font-size: 13px; }
+    .design-frame .order-panel .grand { padding-top: 5px; }
+    .design-frame .order-panel .grand strong { font-size: 30px; }
+    .design-frame .checkout-actions { grid-template-columns: minmax(0, 1fr); }
+    .design-frame .order-panel .primary-pay {
+      min-height: 48px;
+      border-radius: 14px;
+      font-size: 14px;
+    }
+    .design-frame .insights-row { display: none; }
+
+    /* Reference-inspired counter layout for the fixed 800 x 1340 tablet canvas. */
+    .design-frame .app-shell {
+      grid-template-rows: 86px minmax(0, 1fr) 352px;
+      background: #f8f8f5;
+      border-color: #d9d6cf;
+      border-radius: 0;
+      box-shadow: none;
+    }
+    .pos-topbar {
+      min-width: 0;
+      display: grid;
+      grid-template-columns: 164px 58px minmax(0, 1fr) auto;
+      gap: 12px;
+      align-items: center;
+      padding: 12px 16px;
+      background: #fcfcfa;
+      border-bottom: 1px solid #d9d6cf;
+    }
+    .order-slot {
+      min-width: 0;
+      height: 62px;
+      padding: 9px 12px;
+      border: 1px solid #a24a59;
+      border-radius: 11px;
+      background: #f9e4da;
+      color: #8c2739;
+      display: grid;
+      align-content: center;
+      gap: 1px;
+    }
+    .order-slot span,
+    .order-slot small {
+      color: #7f6a63;
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+    .order-slot strong { font-size: 20px; line-height: 1; }
+    .order-slot small { letter-spacing: 0; text-transform: none; }
+    .new-order-btn {
+      width: 58px;
+      height: 62px;
+      display: grid;
+      place-items: center;
+      border: 1px dashed #9a7680;
+      border-radius: 11px;
+      background: #fff;
+      color: #8c2739;
+    }
+    .new-order-btn svg { width: 26px; height: 26px; stroke-width: 2.6; }
+    .counter-brand {
+      min-width: 0;
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      color: #2b2926;
+    }
+    .counter-brand .brand-mark {
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      background: #8c2739;
+      border: 0;
+      color: #fff;
+      box-shadow: none;
+    }
+    .counter-brand strong,
+    .counter-brand span { display: block; }
+    .counter-brand strong { font-size: 15px; line-height: 1.1; }
+    .counter-brand span { margin-top: 2px; color: #7f7a74; font-size: 11px; }
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .header-action {
+      min-width: 54px;
+      min-height: 48px;
+      padding: 5px 7px;
+      display: grid;
+      place-items: center;
+      gap: 2px;
+      border: 1px solid #dedbd5;
+      border-radius: 9px;
+      background: #fff;
+      color: #67404a;
+      font-size: 10px;
+      font-weight: 800;
+    }
+    .header-action svg { width: 17px; height: 17px; }
+    .header-action span { white-space: nowrap; }
+    .header-action b {
+      display: inline-grid;
+      min-width: 15px;
+      place-items: center;
+      border-radius: 50%;
+      background: #f1e5df;
+      color: #8c2739;
+    }
+    .pos-layout {
+      min-width: 0;
+      min-height: 0;
+      display: grid;
+      grid-template-columns: 170px minmax(0, 1fr);
+      overflow: hidden;
+      background: #f8f8f5;
+    }
+    .category-rail {
+      min-width: 0;
+      min-height: 0;
+      display: grid;
+      grid-template-rows: auto minmax(0, 1fr);
+      border-right: 1px solid #d9d6cf;
+      background: #fdfdfb;
+    }
+    .category-rail-title {
+      padding: 16px 14px 12px;
+      color: #6f746f;
+      border-bottom: 1px solid #d9d6cf;
+      font-size: 13px;
+      font-weight: 900;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+    .category-rail .category-scroll {
+      min-width: 0;
+      min-height: 0;
+      display: grid;
+      grid-auto-rows: minmax(78px, 1fr);
+      align-content: stretch;
+      gap: 10px;
+      overflow-y: auto;
+      padding: 10px;
+    }
+    .category-rail .category-btn {
+      min-height: 0;
+      padding: 16px 12px;
+      display: grid;
+      align-content: center;
+      gap: 4px;
+      border: 0;
+      border-radius: 8px;
+      background: #f7f7f4;
+      color: #2b2d2a;
+      text-align: left;
+      font-size: 14px;
+      line-height: 1.1;
+      font-weight: 850;
+      white-space: normal;
+    }
+    .category-rail .category-btn small {
+      color: #81817d;
+      font-size: 11px;
+      font-weight: 700;
+    }
+    .category-rail .category-btn.active {
+      background: #91273b;
+      color: #fff;
+      box-shadow: none;
+    }
+    .category-rail .category-btn.active small { color: rgba(255, 255, 255, 0.78); }
+    .menu-workspace {
+      min-width: 0;
+      min-height: 0;
+      display: grid;
+      grid-template-rows: auto auto minmax(0, 1fr);
+      background: #fff;
+    }
+    .menu-workspace .search-row {
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 8px;
+      padding: 14px 16px;
+      border-bottom: 1px solid #e2dfda;
+    }
+    .menu-workspace .search-box input {
+      min-height: 50px;
+      border-color: #dad7d1;
+      border-radius: 9px;
+      background: #fafaf8;
+      color: #272926;
+      font-size: 16px;
+    }
+    .menu-workspace .search-box svg { width: 22px; height: 22px; color: #64706a; }
+    .clear-search {
+      width: 48px;
+      border: 1px solid #dedbd5;
+      border-radius: 9px;
+      background: #fff;
+      color: #80616a;
+    }
+    .clear-search svg { width: 20px; height: 20px; }
+    .menu-heading {
+      min-width: 0;
+      padding: 13px 16px;
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
+      border-bottom: 1px solid #dedbd5;
+      background: #fff;
+    }
+    .menu-heading h2 {
+      margin: 0;
+      color: #262825;
+      font-size: 19px;
+      line-height: 1.1;
+      font-weight: 900;
+    }
+    .menu-heading span { color: #777a75; font-size: 13px; font-weight: 700; white-space: nowrap; }
+    .menu-workspace .item-grid {
+      min-height: 0;
+      padding: 12px;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      grid-auto-rows: 142px;
+      gap: 10px;
+      overflow-y: auto;
+      background: #fafaf8;
+    }
+    .menu-workspace .item-grid.compact-milkshakes {
+      grid-auto-rows: 94px;
+      gap: 8px;
+      padding: 10px 12px;
+      overflow-y: hidden;
+    }
+    .compact-milkshakes .product-info {
+      padding: 8px 10px 6px;
+      gap: 2px;
+    }
+    .compact-milkshakes .product-name {
+      font-size: 15px;
+      line-height: 1.05;
+      letter-spacing: -0.015em;
+    }
+    .compact-milkshakes .customize-hint { font-size: 10px; }
+    .compact-milkshakes .variant-choice {
+      min-height: 34px;
+      padding: 0 7px;
+      font-size: 11px;
+    }
+    .compact-milkshakes .variant-choice strong { font-size: 11px; }
+    .product-card {
+      min-width: 0;
+      min-height: 0;
+      display: grid;
+      grid-template-rows: minmax(0, 1fr) auto;
+      overflow: hidden;
+      border: 1px solid #dedbd5;
+      border-radius: 9px;
+      background: #fff;
+    }
+    .product-card.in-cart { border-color: #9a5361; background: #fae6dd; }
+    .product-card.edit-added { border-color: #4a9a71; background: #e9f6ee; }
+    .product-card.edit-removed { border-color: #be6262; background: #fbeaea; }
+    .product-info {
+      width: 100%;
+      min-width: 0;
+      padding: 13px 12px 10px;
+      display: grid;
+      align-content: space-between;
+      gap: 8px;
+      border: 0;
+      background: transparent;
+      color: #20221f;
+      text-align: left;
+    }
+    .product-name {
+      min-width: 0;
+      overflow-wrap: anywhere;
+      font-size: 15px;
+      line-height: 1.12;
+      font-weight: 900;
+    }
+    .customize-hint {
+      color: #8c2739;
+      font-size: 11px;
+      font-weight: 850;
+    }
+    .family-heading {
+      display: flex;
+      align-items: start;
+      justify-content: space-between;
+      gap: 10px;
+    }
+    .family-count {
+      flex: none;
+      padding: 4px 7px;
+      border-radius: 999px;
+      background: #f5ece6;
+      color: #8c2739;
+      font-size: 10px;
+      font-weight: 900;
+      letter-spacing: 0.02em;
+      white-space: nowrap;
+    }
+    .family-preview {
+      color: #736d67;
+      font-size: 12px;
+      line-height: 1.24;
+    }
+    .variant-options {
+      min-width: 0;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
+      border-top: 1px solid #d8d5d0;
+      background: #fff;
+    }
+    .variant-choice {
+      min-width: 0;
+      min-height: 44px;
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr) auto;
+      align-items: center;
+      gap: 5px;
+      padding: 0 8px;
+      border: 0;
+      border-left: 1px solid #e0ddd8;
+      background: transparent;
+      color: #373734;
+      font-size: 12px;
+      font-weight: 900;
+      text-align: left;
+    }
+    .variant-choice:first-child { border-left: 0; }
+    .variant-choice strong { min-width: 0; color: #8c2739; font-size: 12px; white-space: nowrap; }
+    .variant-choice em {
+      min-width: 17px;
+      display: grid;
+      place-items: center;
+      border-radius: 99px;
+      background: #8c2739;
+      color: #fff;
+      font-size: 10px;
+      font-style: normal;
+    }
+    .variant-choice.selected { background: #f9e4da; }
+    .order-dock {
+      min-width: 0;
+      min-height: 0;
+      display: grid;
+      grid-template-rows: 78px minmax(0, 1fr);
+      border-top: 1px solid #d7d4cf;
+      background: #f7f7f4;
+    }
+    .order-summary {
+      min-width: 0;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto auto auto;
+      gap: 12px;
+      align-items: center;
+      padding: 12px 16px;
+      border-bottom: 1px solid #dedbd5;
+      background: #fff;
+    }
+    .order-summary-title { display: flex; align-items: center; gap: 9px; min-width: 0; }
+    .order-summary-title span {
+      color: #6f746f;
+      font-size: 12px;
+      font-weight: 900;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+    .order-summary-title strong {
+      padding: 6px 9px;
+      border-radius: 7px;
+      background: #f6e7e1;
+      color: #8c2739;
+      font-size: 13px;
+    }
+    .order-summary-total { display: flex; align-items: baseline; gap: 10px; white-space: nowrap; }
+    .order-summary-total span { color: #777a75; font-size: 13px; font-weight: 700; }
+    .order-summary-total strong { color: #8c2739; font-size: 25px; line-height: 1; font-weight: 900; }
+    .summary-total-value { display: grid; justify-items: end; gap: 2px; }
+    .original-total,
+    .order-delta { display: none; }
+    .order-dock.editing .original-total {
+      display: block;
+      color: #7a7772;
+      font-size: 10px;
+      font-weight: 800;
+    }
+    .order-dock.editing .order-delta {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px 7px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 900;
+    }
+    .order-delta.positive { background: #e2f3e9; color: #18704e; }
+    .order-delta.negative { background: #f9e4e4; color: #a34040; }
+    .order-delta.neutral { background: #eeeae4; color: #716b64; }
+    .clear-order {
+      min-height: 42px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      border: 0;
+      background: transparent;
+      color: #94606b;
+      font-size: 13px;
+      font-weight: 800;
+    }
+    .clear-order:disabled { color: #b8b5b0; }
+    .clear-order svg { width: 18px; height: 18px; }
+    .order-summary .primary-pay {
+      min-width: 148px;
+      min-height: 48px;
+      padding: 0 16px;
+      border-radius: 8px;
+      background: #8c2739;
+      box-shadow: none;
+      font-size: 14px;
+    }
+    .order-summary .primary-pay svg { width: 18px; height: 18px; }
+    .order-dock .cart-list {
+      min-height: 0;
+      padding: 12px 16px 16px;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      grid-auto-rows: 118px;
+      align-content: start;
+      gap: 10px;
+      overflow-y: auto;
+      background: #f7f7f4;
+    }
+    .order-dock .empty-cart {
+      grid-column: 1 / -1;
+      min-height: 100%;
+      border: 1px dashed #d4d0ca;
+      border-radius: 9px;
+      background: #fff;
+      font-size: 13px;
+    }
+    .order-dock .cart-row {
+      min-width: 0;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr);
+      grid-template-rows: minmax(0, 1fr) 37px;
+      gap: 0;
+      overflow: hidden;
+      border: 1px solid #dedbd5;
+      border-radius: 9px;
+      background: #fff;
+      padding: 0;
+    }
+    .order-dock .cart-row.change-added { border-color: #71ae8a; background: #f3fbf6; }
+    .order-dock .cart-row.change-reduced,
+    .order-dock .cart-row.change-removed { border-color: #cc7b7b; background: #fff7f7; }
+    .order-dock .cart-row.change-removed { opacity: .78; }
+    .cart-item-main { min-width: 0; padding: 10px 11px 7px; position: relative; }
+    .order-dock .cart-name { padding-right: 22px; color: #242623; font-size: 13px; line-height: 1.12; }
+    .cart-custom {
+      margin-top: 3px;
+      overflow: hidden;
+      color: #786c65;
+      font-size: 10px;
+      line-height: 1.1;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .cart-change {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      margin-top: 4px;
+      font-size: 10px;
+      font-weight: 900;
+    }
+    .cart-change svg { width: 12px; height: 12px; }
+    .cart-change.added { color: #18704e; }
+    .cart-change.removed { color: #a34040; }
+    .restore-item {
+      min-width: 0;
+      grid-column: span 3;
+      height: 100%;
+      padding: 0 6px;
+      border: 0;
+      border-left: 1px solid #e0ddd8;
+      border-radius: 0;
+      background: #fff;
+      color: #a34040;
+      font-size: 10px;
+      font-weight: 900;
+    }
+    .change-removed .cart-name {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .change-removed .cart-custom { display: none; }
+    .order-dock .cart-sub { margin-top: 3px; color: #8c2739; font-size: 15px; font-weight: 900; }
+    .remove-item {
+      position: absolute;
+      top: 7px;
+      right: 7px;
+      display: grid;
+      place-items: center;
+      border: 0;
+      background: transparent;
+      color: #8b8d89;
+    }
+    .remove-item svg { width: 16px; height: 16px; }
+    .order-dock .qty-controls {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 40px 40px 40px;
+      gap: 0;
+      border-top: 1px solid #e0ddd8;
+    }
+    .cart-line-price {
+      display: grid;
+      align-items: center;
+      padding: 0 10px;
+      color: #8c2739;
+      font-size: 12px;
+      font-weight: 900;
+    }
+    .order-dock .icon-btn,
+    .order-dock .qty {
+      width: auto;
+      height: auto;
+      border: 0;
+      border-left: 1px solid #e0ddd8;
+      border-radius: 0;
+      background: transparent;
+      color: #8c2739;
+      font-size: 16px;
+    }
+    .order-dock .qty { display: grid; place-items: center; color: #262825; font-size: 14px; }
+    .removed-qty-label {
+      display: grid;
+      grid-column: span 3;
+      place-items: center;
+      color: #a34040;
+      font-size: 11px;
+      font-weight: 900;
+      letter-spacing: .04em;
+      text-transform: uppercase;
+    }
+    .previous-orders-screen {
+      min-width: 0;
+      min-height: 0;
+      display: none;
+      grid-template-rows: auto auto minmax(0, 1fr);
+      background: #f7f7f4;
+    }
+    .app-shell.orders-view {
+      grid-template-rows: 86px minmax(0, 1fr);
+    }
+    .app-shell.orders-view .pos-layout,
+    .app-shell.orders-view .order-dock { display: none; }
+    .app-shell.orders-view .previous-orders-screen { display: grid; }
+    .orders-page-head {
+      min-width: 0;
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr);
+      gap: 12px;
+      align-items: center;
+      padding: 18px 16px 15px;
+      border-bottom: 1px solid #dedbd5;
+      background: #fff;
+    }
+    .orders-back-btn {
+      width: 46px;
+      height: 46px;
+      display: grid;
+      place-items: center;
+      border: 1px solid #dedbd5;
+      border-radius: 9px;
+      background: #fff;
+      color: #7d4a56;
+    }
+    .orders-back-btn svg { width: 21px; height: 21px; }
+    .orders-page-kicker {
+      display: block;
+      color: #8c2739;
+      font-size: 10px;
+      font-weight: 900;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+    .orders-page-title {
+      margin: 3px 0 0;
+      color: #272926;
+      font-size: 24px;
+      line-height: 1.1;
+      font-weight: 900;
+    }
+    .orders-page-subtitle {
+      margin: 4px 0 0;
+      color: #7a7a75;
+      font-size: 12px;
+      font-weight: 650;
+    }
+    .orders-tools {
+      min-width: 0;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+      padding: 13px 16px;
+      border-bottom: 1px solid #dedbd5;
+      background: #fbfbf9;
+    }
+    .orders-stat {
+      min-width: 0;
+      padding: 10px 11px;
+      border: 1px solid #dfdcd6;
+      border-radius: 9px;
+      background: #fff;
+    }
+    .orders-stat span {
+      display: block;
+      overflow: hidden;
+      color: #7b7b76;
+      font-size: 10px;
+      font-weight: 850;
+      letter-spacing: .04em;
+      text-overflow: ellipsis;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+    .orders-stat strong {
+      display: block;
+      margin-top: 4px;
+      overflow: hidden;
+      color: #292b28;
+      font-size: 18px;
+      font-weight: 900;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .orders-stat.accent {
+      border-color: #d9bcc1;
+      background: #fae7de;
+    }
+    .orders-stat.accent strong { color: #8c2739; }
+    .previous-orders-list {
+      min-height: 0;
+      display: grid;
+      align-content: start;
+      gap: 11px;
+      overflow-y: auto;
+      padding: 14px 16px 20px;
+      background: #f7f7f4;
+    }
+    .orders-search {
+      min-width: 0;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-height: 48px;
+      padding: 0 13px;
+      border: 1px solid #dad7d1;
+      border-radius: 9px;
+      background: #fff;
+      color: #69716c;
+    }
+    .orders-search svg { width: 20px; height: 20px; flex: none; }
+    .orders-search input {
+      width: 100%;
+      min-width: 0;
+      border: 0;
+      outline: 0;
+      background: transparent;
+      color: #292b28;
+      font-size: 14px;
+    }
+    .previous-order-card {
+      min-width: 0;
+      overflow: hidden;
+      border: 1px solid #dedbd5;
+      border-radius: 10px;
+      background: #fff;
+    }
+    .previous-order-card.open { border-color: #b76a78; }
+    .previous-order-summary {
+      width: 100%;
+      min-width: 0;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 12px;
+      align-items: center;
+      padding: 14px 14px 12px;
+      border: 0;
+      background: transparent;
+      color: #262825;
+      text-align: left;
+    }
+    .previous-order-summary > div { min-width: 0; }
+    .previous-order-number {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-width: 0;
+    }
+    .previous-order-number strong { font-size: 16px; font-weight: 900; }
+    .order-complete-tag {
+      padding: 4px 7px;
+      border-radius: 999px;
+      background: #e2f2e9;
+      color: #18704e;
+      font-size: 10px;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+    .previous-order-meta {
+      margin-top: 5px;
+      overflow: hidden;
+      color: #7a7a75;
+      font-size: 12px;
+      font-weight: 650;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .previous-order-total {
+      display: grid;
+      justify-items: end;
+      gap: 5px;
+      color: #8c2739;
+    }
+    .previous-order-total strong { font-size: 19px; line-height: 1; font-weight: 900; }
+    .previous-order-total span {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      color: #805965;
+      font-size: 11px;
+      font-weight: 850;
+    }
+    .previous-order-total svg { width: 14px; height: 14px; }
+    .previous-order-details {
+      display: none;
+      border-top: 1px solid #e4e1dc;
+      background: #fcfcfa;
+    }
+    .previous-order-card.open .previous-order-details { display: block; }
+    .previous-order-detail-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 10px 14px;
+      color: #716f6a;
+      font-size: 11px;
+      font-weight: 850;
+      text-transform: uppercase;
+      letter-spacing: .04em;
+    }
+    .previous-order-line {
+      min-width: 0;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 12px;
+      align-items: center;
+      padding: 10px 14px;
+      border-top: 1px solid #ece9e4;
+    }
+    .previous-order-line strong {
+      display: block;
+      overflow-wrap: anywhere;
+      color: #333431;
+      font-size: 13px;
+      line-height: 1.18;
+      font-weight: 850;
+    }
+    .previous-order-line span {
+      display: block;
+      margin-top: 3px;
+      color: #837e78;
+      font-size: 11px;
+      font-weight: 650;
+    }
+    .previous-order-line b { color: #8c2739; font-size: 14px; white-space: nowrap; }
+    .previous-order-edit-action {
+      display: flex;
+      justify-content: flex-end;
+      padding: 11px 14px;
+      border-top: 1px solid #ece9e4;
+    }
+    .previous-order-edit-action button {
+      min-height: 36px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 0 11px;
+      border: 0;
+      border-radius: 7px;
+      background: #8c2739;
+      color: #fff;
+      font-size: 12px;
+      font-weight: 900;
+    }
+    .previous-order-edit-action svg { width: 15px; height: 15px; }
+    .previous-orders-empty {
+      min-height: 260px;
+      display: grid;
+      place-items: center;
+      align-content: center;
+      gap: 9px;
+      padding: 28px;
+      border: 1px dashed #d3cfc9;
+      border-radius: 10px;
+      background: #fff;
+      color: #6e706c;
+      text-align: center;
+    }
+    .previous-orders-empty svg { width: 32px; height: 32px; color: #9a5361; }
+    .previous-orders-empty strong { color: #30312e; font-size: 16px; }
+    .previous-orders-empty span { font-size: 13px; }
+    .previous-orders-empty button {
+      min-height: 40px;
+      margin-top: 5px;
+      padding: 0 14px;
+      border: 0;
+      border-radius: 8px;
+      background: #8c2739;
+      color: #fff;
+      font-size: 13px;
+      font-weight: 850;
+    }
+    .customize-backdrop {
+      position: absolute;
+      inset: 0;
+      z-index: 100;
+      display: none;
+      align-items: end;
+      justify-content: center;
+      padding: 18px;
+      background: rgba(36, 29, 25, 0.46);
+    }
+    .customize-backdrop.open { display: flex; }
+    .customize-sheet {
+      width: min(100%, 520px);
+      max-height: min(740px, calc(100% - 36px));
+      overflow-y: auto;
+      border: 1px solid #d7d1cb;
+      border-radius: 16px;
+      background: #fffdf9;
+      box-shadow: 0 24px 70px rgba(40, 24, 21, 0.3);
+    }
+    .customize-head {
+      display: flex;
+      align-items: start;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 18px 18px 15px;
+      border-bottom: 1px solid #e4dfd9;
+    }
+    .customize-kicker {
+      display: block;
+      color: #8c2739;
+      font-size: 11px;
+      font-weight: 900;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    .customize-head h2 { margin: 4px 0 0; color: #2d2a27; font-size: 22px; line-height: 1.12; }
+    .customize-head p { margin: 5px 0 0; color: #77716b; font-size: 13px; }
+    .customize-close {
+      width: 36px;
+      height: 36px;
+      display: grid;
+      place-items: center;
+      border: 1px solid #ddd8d2;
+      border-radius: 9px;
+      background: #fff;
+      color: #7e5b64;
+    }
+    .customize-close svg { width: 20px; height: 20px; }
+    .customize-body { display: grid; gap: 17px; padding: 18px; }
+    .customize-group { display: grid; gap: 8px; }
+    .customize-group > span {
+      color: #57534e;
+      font-size: 13px;
+      font-weight: 900;
+    }
+    .customize-options { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+    .customize-options.two-options { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .custom-option {
+      min-height: 48px;
+      padding: 7px;
+      border: 1px solid #ded9d3;
+      border-radius: 9px;
+      background: #fff;
+      color: #48423e;
+      font-size: 13px;
+      font-weight: 850;
+    }
+    .custom-option.active {
+      border-color: #922b3e;
+      background: #fae7de;
+      color: #8c2739;
+      box-shadow: inset 0 0 0 1px #922b3e;
+    }
+    .customize-footer {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 12px;
+      align-items: center;
+      padding: 14px 18px 18px;
+      border-top: 1px solid #e4dfd9;
+      background: #fff;
+    }
+    .customize-summary { color: #76716b; font-size: 12px; font-weight: 700; }
+    .customize-summary strong { display: block; margin-top: 3px; color: #8c2739; font-size: 18px; }
+    .customize-add {
+      min-height: 48px;
+      padding: 0 16px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      border: 0;
+      border-radius: 9px;
+      background: #8c2739;
+      color: #fff;
+      font-size: 14px;
+      font-weight: 900;
+    }
+    #selectorBackdrop.open {
+      align-items: center;
+      padding: 26px 22px;
+    }
+    #selectorBackdrop .customize-sheet {
+      width: min(100%, 694px);
+      max-height: min(980px, calc(100% - 52px));
+      display: grid;
+      grid-template-rows: auto minmax(0, 1fr) auto;
+      overflow: hidden;
+    }
+    #selectorBackdrop .customize-head {
+      padding: 16px 18px 14px;
+    }
+    #selectorBackdrop .customize-body {
+      min-height: 0;
+      padding: 12px 14px 14px;
+      overflow: hidden;
+    }
+    #selectorBackdrop .customize-group {
+      gap: 7px;
+    }
+    #selectorBackdrop .customize-footer {
+      padding: 10px 14px 14px;
+    }
+    .selector-list {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
+      align-content: start;
+    }
+    .selector-card {
+      min-width: 0;
+      overflow: hidden;
+      border: 1px solid #ded9d3;
+      border-radius: 10px;
+      background: #fff;
+    }
+    .selector-card.active {
+      border-color: #922b3e;
+      background: #fae7de;
+      box-shadow: inset 0 0 0 1px #922b3e;
+    }
+    .selector-option {
+      width: 100%;
+      min-height: 58px;
+      padding: 8px 10px;
+      display: grid;
+      align-content: space-between;
+      gap: 4px;
+      border: 0;
+      border-radius: 0;
+      background: transparent;
+      color: #2f2c29;
+      text-align: left;
+    }
+    .selector-state {
+      color: #8c2739;
+      font-size: 9px;
+      font-weight: 900;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+    .selector-option strong {
+      display: block;
+      font-size: 13px;
+      line-height: 1.16;
+      font-weight: 900;
+    }
+    .selector-price {
+      color: #7b746e;
+      font-size: 10px;
+      font-weight: 750;
+    }
+    .selector-card.active .selector-price { color: #8c2739; }
+    .selector-size-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
+      border-top: 1px solid #e3d5d0;
+      background: #fff;
+    }
+    .selector-size-chip {
+      min-width: 0;
+      min-height: 34px;
+      border: 0;
+      border-left: 1px solid #e3d5d0;
+      background: transparent;
+      color: #7a605f;
+      font-size: 11px;
+      font-weight: 900;
+      text-align: center;
+    }
+    .selector-size-chip:first-child { border-left: 0; }
+    .selector-size-chip.active {
+      background: #8c2739;
+      color: #fff;
+    }
+  </style>
+</head>
+<body>
+  <div class="design-frame" aria-label="800 by 1340 portrait tablet design frame">
+    <div class="app-shell">
+    <header class="pos-topbar">
+      <div class="order-slot">
+        <span>Open order</span>
+        <strong id="orderLabel">Slot A</strong>
+        <small id="slotValue">Ready to add</small>
+      </div>
+      <button class="new-order-btn" id="newOrderBtn" aria-label="Start new order"><i data-lucide="plus"></i></button>
+      <div class="counter-brand">
+        <div class="brand-mark" aria-hidden="true"><i data-lucide="cup-soda"></i></div>
+        <div><strong>Beaten Bucks</strong><span>Counter POS</span></div>
+      </div>
+      <div class="header-actions">
+        <button class="header-action" id="holdBtn"><i data-lucide="pause-circle"></i><span>Hold</span></button>
+        <button class="header-action" id="heldBtn"><i data-lucide="clipboard-list"></i><span>Held <b id="heldCount">0</b></span></button>
+        <button class="header-action" id="ordersBtn"><i data-lucide="receipt-text"></i><span>Orders</span></button>
+        <button class="header-action" id="salesBtn"><i data-lucide="chart-no-axes-column-increasing"></i><span>Sales</span></button>
+      </div>
+    </header>
+
+    <main class="pos-layout">
+      <aside class="category-rail" aria-label="Menu categories">
+        <div class="category-rail-title">Categories</div>
+        <div class="category-scroll" id="categoryBar"></div>
+      </aside>
+
+      <section class="menu-workspace" aria-label="Menu items">
+        <div class="search-row">
+          <label class="search-box">
+            <span class="sr-only">Search menu</span>
+            <i data-lucide="search"></i>
+            <input id="searchInput" type="search" placeholder="Search any item">
+          </label>
+          <button class="clear-search" id="clearSearchBtn" aria-label="Clear search"><i data-lucide="x"></i></button>
+        </div>
+        <div class="menu-heading">
+          <h2 id="activeCategoryTitle">Cold Coffee</h2>
+          <span id="categoryCount">0 items</span>
+        </div>
+        <div class="item-grid" id="itemGrid"></div>
+      </section>
+    </main>
+
+    <section class="previous-orders-screen" id="previousOrdersScreen" aria-label="Previous orders">
+      <div class="orders-page-head">
+        <button class="orders-back-btn" id="closeOrdersBtn" aria-label="Back to point of sale"><i data-lucide="arrow-left"></i></button>
+        <div>
+          <span class="orders-page-kicker">Completed sales</span>
+          <h2 class="orders-page-title">Previous Orders</h2>
+          <p class="orders-page-subtitle">Review completed bills and their item details.</p>
+        </div>
+      </div>
+      <div class="orders-tools">
+        <div class="orders-stat"><span>Orders</span><strong id="previousOrderCount">0</strong></div>
+        <div class="orders-stat accent"><span>Collected</span><strong id="previousOrderTotal">Rs 0</strong></div>
+        <div class="orders-stat"><span>Items sold</span><strong id="previousItemsCount">0</strong></div>
+      </div>
+      <div class="previous-orders-list" id="previousOrdersList"></div>
+    </section>
+
+    <section class="order-dock" id="orderDock" aria-label="Current order">
+      <div class="order-summary">
+        <div class="order-summary-title"><span id="orderDockTitle">Current order</span><strong id="orderDockBadge">Slot A</strong></div>
+        <div class="order-summary-total"><span id="itemCount">0 items</span><div class="summary-total-value"><small class="original-total" id="originalTotal">Was Rs 0</small><strong id="grandTotal">Rs 0</strong></div><span class="order-delta neutral" id="orderDelta">No change</span></div>
+        <button class="clear-order" id="clearCartBtn"><i data-lucide="trash-2"></i>Clear</button>
+        <button class="primary-pay" id="payBtn"><i data-lucide="check-circle-2"></i>Complete Sale</button>
+      </div>
+      <div class="cart-list" id="cartList"></div>
+    </section>
+    </div>
+
+    <div class="customize-backdrop" id="customizeBackdrop" aria-hidden="true">
+      <section class="customize-sheet" role="dialog" aria-modal="true" aria-labelledby="customizeTitle">
+        <div class="customize-head">
+          <div>
+            <span class="customize-kicker" id="customizeKicker">Cold coffee customisation</span>
+            <h2 id="customizeTitle">Cold Coffee</h2>
+            <p id="customizeSize">Choose how you would like it prepared.</p>
+          </div>
+          <button class="customize-close" id="closeCustomizeBtn" aria-label="Close customisation"><i data-lucide="x"></i></button>
+        </div>
+        <div class="customize-body">
+          <div class="customize-group">
+            <span>Size</span>
+            <div class="customize-options two-options" id="customizeSizeChoices"></div>
+          </div>
+          <div class="customize-group">
+            <span id="customizeStrengthLabel">Coffee strength</span>
+            <div class="customize-options two-options" data-custom-group="strength">
+              <button class="custom-option" id="customizeStrengthLight" data-custom-value="Light">Light</button>
+              <button class="custom-option" id="customizeStrengthStrong" data-custom-value="Strong">Strong</button>
+            </div>
+          </div>
+          <div class="customize-group">
+            <span>Sugar</span>
+            <div class="customize-options" data-custom-group="sugar">
+              <button class="custom-option" data-custom-value="Sugar">Sugar</button>
+              <button class="custom-option" data-custom-value="Less sugar">Less sugar</button>
+              <button class="custom-option" data-custom-value="No sugar">No sugar</button>
+            </div>
+          </div>
+          <div class="customize-group">
+            <span>Ice</span>
+            <div class="customize-options two-options" data-custom-group="ice">
+              <button class="custom-option" data-custom-value="Ice">Ice</button>
+              <button class="custom-option" data-custom-value="No ice">No ice</button>
+            </div>
+          </div>
+        </div>
+        <div class="customize-footer">
+          <div class="customize-summary"><span id="customizeSummary">Light · Sugar · Ice</span><strong id="customizePrice">Rs 0</strong></div>
+          <button class="customize-add" id="addCustomizedBtn"><i data-lucide="plus-circle"></i>Add to order</button>
+        </div>
+      </section>
+    </div>
+
+    <div class="customize-backdrop" id="selectorBackdrop" aria-hidden="true">
+      <section class="customize-sheet" role="dialog" aria-modal="true" aria-labelledby="selectorTitle">
+        <div class="customize-head">
+          <div>
+            <span class="customize-kicker" id="selectorKicker">Drink selector</span>
+            <h2 id="selectorTitle">Choose a drink</h2>
+            <p id="selectorHint">Pick the exact drink, then choose the size if it is available.</p>
+          </div>
+          <button class="customize-close" id="closeSelectorBtn" aria-label="Close drink selector"><i data-lucide="x"></i></button>
+        </div>
+        <div class="customize-body">
+          <div class="customize-group">
+            <span>Drink</span>
+            <div class="selector-list" id="selectorItemChoices"></div>
+          </div>
+        </div>
+        <div class="customize-footer">
+          <div class="customize-summary"><span id="selectorSummary">Choose a drink</span><strong id="selectorPrice">Rs 0</strong></div>
+          <button class="customize-add" id="addSelectorBtn"><i data-lucide="plus-circle"></i>Add to order</button>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <div class="drawer-backdrop" id="drawerBackdrop"></div>
+  <aside class="drawer-side-panel" id="heldDrawer" aria-label="Held orders">
+    <div class="drawer-head">
+      <h2 class="panel-title">Held Orders</h2>
+      <button class="icon-btn" id="closeHeldBtn" aria-label="Close held orders"><i data-lucide="x"></i></button>
+    </div>
+    <div class="held-list" id="heldList"></div>
+  </aside>
+
+  <aside class="drawer-side-panel" id="salesDrawer" aria-label="Sales history">
+    <div class="drawer-head">
+      <h2 class="panel-title">Today's Sales</h2>
+      <button class="icon-btn" id="closeSalesBtn" aria-label="Close sales"><i data-lucide="x"></i></button>
+    </div>
+    <div class="sales-list" id="salesList"></div>
+  </aside>
+
+  <div class="toast-wrap" id="toastWrap" aria-live="polite"></div>
+
+  <script>
+    const rupee = new Intl.NumberFormat("en-IN", { maximumFractionDigits: 0 });
+    const menuItems = [
+      { id: "cold-1", name: "Handbeaten Cold Coffee", size: "M", price: 70, category: "Cold Coffee", code: "1" },
+      { id: "cold-2", name: "Handbeaten Cold Coffee", size: "L", price: 90, category: "Cold Coffee", code: "2" },
+      { id: "cold-3", name: "Davidoff Cold Coffee", size: "M", price: 120, category: "Cold Coffee", code: "3" },
+      { id: "cold-4", name: "Davidoff Cold Coffee", size: "L", price: 140, category: "Cold Coffee", code: "4" },
+      { id: "cold-5", name: "Caramel Coffee", size: "M", price: 80, category: "Cold Coffee", code: "5" },
+      { id: "cold-6", name: "Caramel Coffee", size: "L", price: 100, category: "Cold Coffee", code: "6" },
+      { id: "cold-7", name: "Hazelnut Coffee", size: "M", price: 90, category: "Cold Coffee", code: "7" },
+      { id: "cold-8", name: "Hazelnut Coffee", size: "L", price: 100, category: "Cold Coffee", code: "8" },
+      { id: "cold-9", name: "Chocolate Coffee", size: "M", price: 80, category: "Cold Coffee", code: "9" },
+      { id: "cold-10", name: "Chocolate Coffee", size: "L", price: 100, category: "Cold Coffee", code: "A" },
+      { id: "cold-11", name: "Popcorn Cold Coffee", size: "M", price: 80, category: "Cold Coffee", code: "B" },
+      { id: "cold-12", name: "Popcorn Cold Coffee", size: "L", price: 100, category: "Cold Coffee", code: "C" },
+      { id: "cold-13", name: "Oreo Cold Coffee", size: "M", price: 90, category: "Cold Coffee", code: "D" },
+      { id: "cold-14", name: "Oreo Cold Coffee", size: "L", price: 110, category: "Cold Coffee", code: "E" },
+      { id: "cold-15", name: "Irish Cold Coffee", size: "M", price: 90, category: "Cold Coffee", code: "F" },
+      { id: "cold-16", name: "Irish Cold Coffee", size: "L", price: 100, category: "Cold Coffee", code: "G" },
+      { id: "cold-17", name: "Black Cold Coffee", size: "M", price: 70, category: "Cold Coffee", code: "H" },
+      { id: "cold-18", name: "Black Cold Coffee", size: "L", price: 100, category: "Cold Coffee", code: "I" },
+      { id: "cold-19", name: "Vanilla Coffee", size: "M", price: 80, category: "Cold Coffee", code: "J" },
+      { id: "cold-20", name: "Vanilla Coffee", size: "L", price: 100, category: "Cold Coffee", code: "K" },
+      { id: "hot-1", name: "Handbeaten Hot Coffee", size: "M", price: 50, category: "Hot Coffee", code: "L" },
+      { id: "hot-2", name: "Handbeaten Hot Coffee", size: "L", price: 70, category: "Hot Coffee", code: "M" },
+      { id: "hot-3", name: "Davidoff Hot Coffee", size: "M", price: 80, category: "Hot Coffee", code: "N" },
+      { id: "hot-4", name: "Davidoff Hot Coffee", size: "L", price: 100, category: "Hot Coffee", code: "O" },
+      { id: "hot-5", name: "Cappuccino", size: "M", price: 80, category: "Hot Coffee", code: "P" },
+      { id: "hot-6", name: "Cappuccino", size: "L", price: 100, category: "Hot Coffee", code: "Q" },
+      { id: "hot-7", name: "Hot Chocolate", size: "Regular", price: 120, category: "Hot Coffee", code: "R" },
+      { id: "hot-8", name: "Hot Chocolate Marshmallow", size: "Regular", price: 150, category: "Hot Coffee", code: "S" },
+      { id: "hot-9", name: "Hot Chocolate Mocha", size: "Regular", price: 120, category: "Hot Coffee", code: "T" },
+      { id: "hot-10", name: "Hot Haldi Milk", size: "Regular", price: 80, category: "Hot Coffee", code: "U" },
+      { id: "hot-11", name: "Bournvita", size: "Regular", price: 90, category: "Hot Coffee", code: "V" },
+      { id: "hot-12", name: "Tomato Soup", size: "Regular", price: 70, category: "Hot Coffee", code: "W" },
+      { id: "hot-13", name: "Black Coffee", size: "Regular", price: 50, category: "Hot Coffee", code: "X" },
+      { id: "hot-14", name: "Hot Kesar Badam", size: "Regular", price: 80, category: "Hot Coffee", code: "Y" },
+      { id: "shake-1", name: "Lotus Biscoff", size: "Regular", price: 199, category: "Thick Milkshake", code: "Z" },
+      { id: "shake-2", name: "Nutella", size: "Regular", price: 120, category: "Thick Milkshake", code: "a" },
+      { id: "shake-3", name: "KitKat", size: "Regular", price: 120, category: "Thick Milkshake", code: "b" },
+      { id: "shake-4", name: "Brownie", size: "Regular", price: 120, category: "Thick Milkshake", code: "c" },
+      { id: "shake-5", name: "Chocolate", size: "Regular", price: 120, category: "Thick Milkshake", code: "d" },
+      { id: "shake-6", name: "Peanut Butter", size: "Regular", price: 120, category: "Thick Milkshake", code: "e" },
+      { id: "shake-7", name: "Bournvita", size: "Regular", price: 99, category: "Thick Milkshake", code: "f" },
+      { id: "shake-8", name: "Oreo", size: "Regular", price: 90, category: "Thick Milkshake", code: "g" },
+      { id: "shake-9", name: "Vanilla", size: "Regular", price: 90, category: "Thick Milkshake", code: "h" },
+      { id: "shake-10", name: "Caramel", size: "Regular", price: 90, category: "Thick Milkshake", code: "i" },
+      { id: "shake-11", name: "Banana", size: "M", price: 70, category: "Thick Milkshake", code: "j" },
+      { id: "shake-12", name: "Banana", size: "L", price: 100, category: "Thick Milkshake", code: "k" },
+      { id: "shake-13", name: "Kesar Badam", size: "Regular", price: 90, category: "Thick Milkshake", code: "l" },
+      { id: "shake-14", name: "Butter Scotch", size: "Regular", price: 90, category: "Thick Milkshake", code: "m" },
+      { id: "shake-15", name: "Pineapple", size: "Regular", price: 90, category: "Thick Milkshake", code: "n" },
+      { id: "shake-16", name: "Strawberry", size: "Regular", price: 90, category: "Thick Milkshake", code: "o" },
+      { id: "shake-17", name: "Black Current", size: "Regular", price: 90, category: "Thick Milkshake", code: "p" },
+      { id: "shake-18", name: "Blue Berry", size: "Regular", price: 90, category: "Thick Milkshake", code: "q" },
+      { id: "shake-19", name: "Mango", size: "Regular", price: 90, category: "Thick Milkshake", code: "r" },
+      { id: "shake-20", name: "Tutti-Frutti", size: "Regular", price: 90, category: "Thick Milkshake", code: "s" },
+      { id: "shake-21", name: "Thandai", size: "Regular", price: 80, category: "Thick Milkshake", code: "t" },
+      { id: "mojito-1", name: "Fresh Lime Soda", size: "Regular", price: 80, category: "Mojito / Soda / Ice Tea", code: "u" },
+      { id: "mojito-2", name: "Shikanji", size: "Regular", price: 70, category: "Mojito / Soda / Ice Tea", code: "v" },
+      { id: "mojito-3", name: "Lemon Water", size: "Regular", price: 70, category: "Mojito / Soda / Ice Tea", code: "w" },
+      { id: "mojito-4", name: "Lemon Ice Tea", size: "Regular", price: 70, category: "Mojito / Soda / Ice Tea", code: "x" },
+      { id: "mojito-5", name: "Peach Ice Tea", size: "Regular", price: 70, category: "Mojito / Soda / Ice Tea", code: "y" },
+      { id: "mojito-6", name: "Fruit Beer", size: "Regular", price: 70, category: "Mojito / Soda / Ice Tea", code: "z" },
+      { id: "mojito-7", name: "Sweet Lassi", size: "Regular", price: 70, category: "Mojito / Soda / Ice Tea", code: "10" },
+      { id: "mojito-8", name: "Jeera Treat", size: "Regular", price: 70, category: "Mojito / Soda / Ice Tea", code: "11" },
+      { id: "mojito-9", name: "Aam Panna", size: "Regular", price: 70, category: "Mojito / Soda / Ice Tea", code: "12" },
+      { id: "mojito-10", name: "Roohafza", size: "M", price: 70, category: "Mojito / Soda / Ice Tea", code: "13" },
+      { id: "mojito-11", name: "Roohafza", size: "L", price: 90, category: "Mojito / Soda / Ice Tea", code: "14" },
+      { id: "mojito-12", name: "Mint Mojito", size: "M", price: 80, category: "Mojito / Soda / Ice Tea", code: "m1" },
+      { id: "mojito-13", name: "Mint Mojito", size: "L", price: 100, category: "Mojito / Soda / Ice Tea", code: "m2" },
+      { id: "mojito-14", name: "Blueberry Mojito", size: "M", price: 80, category: "Mojito / Soda / Ice Tea", code: "m3" },
+      { id: "mojito-15", name: "Blueberry Mojito", size: "L", price: 100, category: "Mojito / Soda / Ice Tea", code: "m4" },
+      { id: "mojito-16", name: "Black Current Mojito", size: "M", price: 80, category: "Mojito / Soda / Ice Tea", code: "m5" },
+      { id: "mojito-17", name: "Black Current Mojito", size: "L", price: 100, category: "Mojito / Soda / Ice Tea", code: "m6" },
+      { id: "mojito-18", name: "Blue Lagoon Mojito", size: "M", price: 80, category: "Mojito / Soda / Ice Tea", code: "m7" },
+      { id: "mojito-19", name: "Blue Lagoon Mojito", size: "L", price: 100, category: "Mojito / Soda / Ice Tea", code: "m8" },
+      { id: "mojito-20", name: "Green Apple Mojito", size: "M", price: 80, category: "Mojito / Soda / Ice Tea", code: "m9" },
+      { id: "mojito-21", name: "Green Apple Mojito", size: "L", price: 100, category: "Mojito / Soda / Ice Tea", code: "m10" },
+      { id: "mojito-22", name: "Bubble Gum Mojito", size: "M", price: 80, category: "Mojito / Soda / Ice Tea", code: "m11" },
+      { id: "mojito-23", name: "Bubble Gum Mojito", size: "L", price: 100, category: "Mojito / Soda / Ice Tea", code: "m12" },
+      { id: "mojito-24", name: "Kala Khatta Mojito", size: "M", price: 80, category: "Mojito / Soda / Ice Tea", code: "m13" },
+      { id: "mojito-25", name: "Kala Khatta Mojito", size: "L", price: 100, category: "Mojito / Soda / Ice Tea", code: "m14" },
+      { id: "mojito-36", name: "Coca Cola Making", size: "Regular", price: 80, category: "Mojito / Soda / Ice Tea", code: "22" },
+      { id: "mojito-26", name: "Paan Mojito", size: "M", price: 80, category: "Mojito / Soda / Ice Tea", code: "m15" },
+      { id: "mojito-27", name: "Paan Mojito", size: "L", price: 100, category: "Mojito / Soda / Ice Tea", code: "m16" },
+      { id: "mojito-28", name: "Green Mint Mojito", size: "M", price: 80, category: "Mojito / Soda / Ice Tea", code: "m17" },
+      { id: "mojito-29", name: "Green Mint Mojito", size: "L", price: 100, category: "Mojito / Soda / Ice Tea", code: "m18" },
+      { id: "mojito-30", name: "Passion Fruit Mojito", size: "M", price: 80, category: "Mojito / Soda / Ice Tea", code: "m19" },
+      { id: "mojito-31", name: "Passion Fruit Mojito", size: "L", price: 100, category: "Mojito / Soda / Ice Tea", code: "m20" },
+      { id: "mojito-32", name: "Watermelon Mojito", size: "M", price: 80, category: "Mojito / Soda / Ice Tea", code: "m21" },
+      { id: "mojito-33", name: "Watermelon Mojito", size: "L", price: 100, category: "Mojito / Soda / Ice Tea", code: "m22" },
+      { id: "mojito-34", name: "Orange Mojito", size: "M", price: 80, category: "Mojito / Soda / Ice Tea", code: "m23" },
+      { id: "mojito-35", name: "Orange Mojito", size: "L", price: 100, category: "Mojito / Soda / Ice Tea", code: "m24" },
+      { id: "tea-1", name: "Kulhad Tea", size: "M", price: 20, category: "Tea", code: "28" },
+      { id: "tea-2", name: "Kulhad Tea", size: "L", price: 40, category: "Tea", code: "29" },
+      { id: "tea-3", name: "Masala Tea", size: "M", price: 30, category: "Tea", code: "30" },
+      { id: "tea-4", name: "Masala Tea", size: "L", price: 50, category: "Tea", code: "31" },
+      { id: "tea-5", name: "Bun Maska", size: "Regular", price: 60, category: "Tea", code: "32" },
+      { id: "snack-1", name: "Veg. Grilled Sandwich", size: "Regular", price: 90, category: "Snacks", code: "33" },
+      { id: "snack-2", name: "Veg. Grilled Paneer Sandwich", size: "Regular", price: 120, category: "Snacks", code: "34" },
+      { id: "snack-3", name: "Veg. Maggi", size: "Regular", price: 80, category: "Snacks", code: "35" },
+      { id: "snack-4", name: "Masala Maggi", size: "Regular", price: 70, category: "Snacks", code: "36" },
+      { id: "snack-5", name: "Bread Omelette", size: "Regular", price: 90, category: "Snacks", code: "37" },
+      { id: "snack-6", name: "Egg Maggi", size: "Regular", price: 99, category: "Snacks", code: "38" },
+      { id: "snack-7", name: "Bun Omelette", size: "Regular", price: 90, category: "Snacks", code: "39" },
+      { id: "snack-8", name: "Boiled Egg", size: "Regular", price: 20, category: "Snacks", code: "40" },
+      { id: "snack-9", name: "Spl. Bhaji Egg Poached", size: "Regular", price: 99, category: "Snacks", code: "41" },
+      { id: "snack-10", name: "Peanut Chaat", size: "Regular", price: 120, category: "Snacks", code: "42" },
+      { id: "snack-11", name: "Aloo Patties", size: "Regular", price: 30, category: "Snacks", code: "43" },
+      { id: "snack-12", name: "Paneer Patties", size: "Regular", price: 40, category: "Snacks", code: "44" },
+      { id: "snack-13", name: "Masala Patties", size: "Regular", price: 40, category: "Snacks", code: "45" }
+    ].flatMap(item => {
+      if (item.category !== "Thick Milkshake" || item.size !== "Regular") return [item];
+      return [
+        { ...item, id: `${item.id}-m`, size: "M" },
+        { ...item, id: `${item.id}-l`, size: "L", price: item.price + 20, code: `${item.code}-l` }
+      ];
+    });
+    const groupedMenuItems = Object.values(menuItems.reduce((groups, item) => {
+      const key = `${item.category}::${item.name}`;
+      if (!groups[key]) {
+        groups[key] = {
+          id: key,
+          name: item.name,
+          category: item.category,
+          variants: []
+        };
+      }
+      groups[key].variants.push({
+        id: item.id,
+        size: item.size,
+        price: item.price,
+        code: item.code
+      });
+      return groups;
+    }, {})).map(group => ({
+      ...group,
+      variants: group.variants.sort((a, b) => {
+        const order = { M: 1, L: 2, Regular: 3 };
+        return (order[a.size] || 9) - (order[b.size] || 9);
+      })
+    }));
+    const categories = Array.from(new Set(groupedMenuItems.map(item => item.category)));
+    let activeCategory = categories[0] || "";
+    let cart = [];
+    let heldOrders = [];
+    let sales = [];
+    let orderNo = 1001;
+    let pendingCustomizedGroup = null;
+    let pendingCustomizedVariantId = null;
+    let pendingCustomization = null;
+    let pendingSelectorFamily = null;
+    let pendingSelectorSelections = {};
+    let previousOrdersQuery = "";
+    let expandedPreviousOrderNo = null;
+    let editingOrder = null;
+
+    const $ = (id) => document.getElementById(id);
+    const money = (value) => `Rs ${rupee.format(value || 0)}`;
+    const coldCoffeeDefaults = { strength: "Light", sugar: "Sugar", ice: "Ice" };
+    const milkshakeDefaults = { strength: "Light", sugar: "Sugar", ice: "Ice" };
+    const isCustomizableDrink = (item) => ["Cold Coffee", "Thick Milkshake"].includes(item.category);
+    const customizationDefaultsFor = (item) => item.category === "Thick Milkshake" ? milkshakeDefaults : coldCoffeeDefaults;
+    const selectorFamilyConfigs = [
+      {
+        id: "family-mojito",
+        category: "Mojito / Soda / Ice Tea",
+        name: "Mojito",
+        kicker: "Mojito selector",
+        hint: "Pick one or more flavours and tap M or L on each one.",
+        matcher: (group) => group.name.toLowerCase().includes("mojito")
+      }
+    ];
+    const selectorFamilies = selectorFamilyConfigs
+      .map(config => ({
+        ...config,
+        groups: groupedMenuItems.filter(group => group.category === config.category && config.matcher(group))
+      }))
+      .filter(config => config.groups.length);
+    const selectorFamilyByGroupId = new Map(
+      selectorFamilies.flatMap(family => family.groups.map(group => [group.id, family]))
+    );
+
+    function cartKey(item, customization) {
+      if (!customization) return item.id;
+      return [item.id, customization.strength, customization.sugar, customization.ice].join("::");
+    }
+
+    function customizationLabel(customization) {
+      return customization ? [customization.strength, customization.sugar, customization.ice].join(" · ") : "";
+    }
+
+    function originalEditItem(key) {
+      return editingOrder?.items.find(item => item.cartKey === key) || null;
+    }
+
+    function editChange(key, currentQty) {
+      const original = originalEditItem(key);
+      const originalQty = original?.qty || 0;
+      const difference = currentQty - originalQty;
+      if (!editingOrder || difference === 0) return { type: "", difference, originalQty };
+      if (currentQty === 0) return { type: "removed", difference, originalQty };
+      return { type: difference > 0 ? "added" : "reduced", difference, originalQty };
+    }
+
+    function editDeltaForVariants(variants) {
+      if (!editingOrder) return 0;
+      return variants.reduce((sum, variant) => {
+        const originalQty = editingOrder.items
+          .filter(item => item.id === variant.id)
+          .reduce((qty, item) => qty + item.qty, 0);
+        return sum + cartQtyForVariant(variant.id) - originalQty;
+      }, 0);
+    }
+
+    function displayCartItems() {
+      const rows = cart.map(item => ({ item, currentQty: item.qty }));
+      if (!editingOrder) return rows;
+      const currentKeys = new Set(cart.map(item => item.cartKey));
+      editingOrder.items.forEach(item => {
+        if (!currentKeys.has(item.cartKey)) rows.push({ item, currentQty: 0 });
+      });
+      return rows;
+    }
+
+    function itemMatchesQuery(item, query) {
+      return !query
+        || item.name.toLowerCase().includes(query)
+        || item.category.toLowerCase().includes(query)
+        || item.variants.some(variant => (variant.size || "").toLowerCase().includes(query));
+    }
+
+    function cartQtyForVariant(id) {
+      return cart
+        .filter(entry => entry.id === id)
+        .reduce((sum, entry) => sum + entry.qty, 0);
+    }
+
+    function cartQtyForGroup(group) {
+      return group.variants.reduce((sum, variant) => sum + cartQtyForVariant(variant.id), 0);
+    }
+
+    function cartQtyForFamily(family) {
+      return family.groups.reduce((sum, group) => sum + cartQtyForGroup(group), 0);
+    }
+
+    function selectorPriceLabel(family) {
+      const prices = family.groups.flatMap(group => group.variants.map(variant => variant.price));
+      const min = Math.min(...prices);
+      const max = Math.max(...prices);
+      return min === max ? money(min) : `From ${money(min)}`;
+    }
+
+    function familyPreviewLabel(family) {
+      const names = family.groups.slice(0, 3).map(group => group.name.replace(/\s+Mojito$/i, ""));
+      const remainder = family.groups.length - names.length;
+      return `${names.join(" · ")}${remainder > 0 ? ` +${remainder}` : ""}`;
+    }
+
+    function selectorSelectionEntries() {
+      if (!pendingSelectorFamily) return [];
+      return pendingSelectorFamily.groups.flatMap(group => {
+        const selectedId = pendingSelectorSelections[group.id];
+        if (!selectedId) return [];
+        const variant = group.variants.find(entry => entry.id === selectedId) || group.variants[0];
+        return [{ group, variant }];
+      });
+    }
+
+    function selectorSummaryLabel(entries) {
+      const labels = entries.slice(0, 2).map(({ group, variant }) => (
+        variant.size === "Regular" ? group.name : `${group.name} (${variant.size})`
+      ));
+      const remainder = entries.length - labels.length;
+      return `${labels.join(" · ")}${remainder > 0 ? ` +${remainder} more` : ""}`;
+    }
+
+    function buildDisplayItems(category, query) {
+      const items = groupedMenuItems.filter(item => item.category === category);
+      const insertedFamilies = new Set();
+      const display = [];
+      items.forEach(item => {
+        const family = selectorFamilyByGroupId.get(item.id);
+        if (family) {
+          if (insertedFamilies.has(family.id)) return;
+          insertedFamilies.add(family.id);
+          if (!query || family.name.toLowerCase().includes(query) || family.groups.some(group => itemMatchesQuery(group, query))) {
+            display.push({ type: "family", family });
+          }
+          return;
+        }
+        if (itemMatchesQuery(item, query)) display.push({ type: "item", item });
+      });
+      return display;
+    }
+
+    function renderCustomizationSheet() {
+      if (!pendingCustomizedGroup || !pendingCustomization) return;
+      const selectedVariant = pendingCustomizedGroup.variants.find(variant => variant.id === pendingCustomizedVariantId);
+      const isMilkshake = pendingCustomizedGroup.category === "Thick Milkshake";
+      const [firstStrength, secondStrength] = isMilkshake ? ["Light", "Thick"] : ["Light", "Strong"];
+      $("customizeKicker").textContent = isMilkshake ? "Milkshake customisation" : "Cold coffee customisation";
+      $("customizeTitle").textContent = pendingCustomizedGroup.name;
+      $("customizeSize").textContent = isMilkshake ? "Choose a size, then adjust the blend." : "Choose a size and prepare to taste.";
+      $("customizeStrengthLabel").textContent = isMilkshake ? "Shake thickness" : "Coffee strength";
+      $("customizeStrengthLight").dataset.customValue = firstStrength;
+      $("customizeStrengthLight").textContent = firstStrength;
+      $("customizeStrengthStrong").dataset.customValue = secondStrength;
+      $("customizeStrengthStrong").textContent = secondStrength;
+      $("customizeSizeChoices").innerHTML = pendingCustomizedGroup.variants.map(variant => `
+        <button class="custom-option ${variant.id === pendingCustomizedVariantId ? "active" : ""}" data-custom-size="${variant.id}">
+          ${variant.size === "Regular" ? "Regular" : variant.size} · ${money(variant.price)}
+        </button>
+      `).join("");
+      $("customizeSummary").textContent = customizationLabel(pendingCustomization);
+      $("customizePrice").textContent = money(selectedVariant.price);
+      $("addCustomizedBtn").innerHTML = `<i data-lucide="plus-circle"></i>Add ${selectedVariant.size === "Regular" ? "to order" : `${selectedVariant.size} to order`}`;
+      document.querySelectorAll("[data-custom-group]").forEach(group => {
+        const selectedValue = pendingCustomization[group.dataset.customGroup];
+        group.querySelectorAll(".custom-option").forEach(button => {
+          button.classList.toggle("active", button.dataset.customValue === selectedValue);
+        });
+      });
+      $("customizeSizeChoices").querySelectorAll("[data-custom-size]").forEach(button => {
+        button.addEventListener("click", () => {
+          pendingCustomizedVariantId = button.dataset.customSize;
+          renderCustomizationSheet();
+          lucide.createIcons();
+        });
+      });
+      lucide.createIcons();
+    }
+
+    function openCustomization(groupId) {
+      pendingCustomizedGroup = groupedMenuItems.find(group => group.id === groupId);
+      pendingCustomizedVariantId = pendingCustomizedGroup.variants[0].id;
+      pendingCustomization = { ...customizationDefaultsFor(pendingCustomizedGroup) };
+      renderCustomizationSheet();
+      $("customizeBackdrop").classList.add("open");
+      $("customizeBackdrop").setAttribute("aria-hidden", "false");
+    }
+
+    function closeCustomization() {
+      pendingCustomizedGroup = null;
+      pendingCustomizedVariantId = null;
+      pendingCustomization = null;
+      $("customizeBackdrop").classList.remove("open");
+      $("customizeBackdrop").setAttribute("aria-hidden", "true");
+    }
+
+    function renderSelectorSheet() {
+      if (!pendingSelectorFamily) return;
+      const selectedEntries = selectorSelectionEntries();
+      $("selectorKicker").textContent = pendingSelectorFamily.kicker;
+      $("selectorTitle").textContent = pendingSelectorFamily.name;
+      $("selectorHint").textContent = pendingSelectorFamily.hint;
+      $("selectorItemChoices").innerHTML = pendingSelectorFamily.groups.map(group => {
+        const selectedVariantId = pendingSelectorSelections[group.id] || "";
+        const selectedVariant = group.variants.find(variant => variant.id === selectedVariantId) || null;
+        const priceLine = selectedVariant
+          ? money(selectedVariant.price)
+          : (group.variants.length === 1
+            ? money(group.variants[0].price)
+            : group.variants.map(variant => `${variant.size} ${money(variant.price)}`).join(" · "));
+        const stateLabel = selectedVariant
+          ? (selectedVariant.size === "Regular" ? "Selected" : `Selected ${selectedVariant.size}`)
+          : (group.variants.length === 1 ? "Tap to select" : "Choose M or L");
+        return `
+          <div class="selector-card ${selectedVariant ? "active" : ""}">
+            <button class="selector-option" data-selector-group="${group.id}">
+              <span class="selector-state">${stateLabel}</span>
+              <strong>${group.name}</strong>
+              <span class="selector-price">${priceLine}</span>
+            </button>
+            ${group.variants.length > 1 ? `
+              <div class="selector-size-row">
+                ${group.variants.map(variant => `
+                  <button class="selector-size-chip ${variant.id === selectedVariantId ? "active" : ""}" data-selector-group="${group.id}" data-selector-variant="${variant.id}">
+                    ${variant.size} · ${money(variant.price)}
+                  </button>
+                `).join("")}
+              </div>
+            ` : ""}
+          </div>
+        `;
+      }).join("");
+      const total = selectedEntries.reduce((sum, entry) => sum + entry.variant.price, 0);
+      $("selectorSummary").textContent = selectedEntries.length ? selectorSummaryLabel(selectedEntries) : "Choose one or more drinks";
+      $("selectorPrice").textContent = money(total);
+      $("addSelectorBtn").disabled = !selectedEntries.length;
+      $("addSelectorBtn").innerHTML = `<i data-lucide="plus-circle"></i>${selectedEntries.length ? `Add ${selectedEntries.length} to order` : "Add to order"}`;
+      $("selectorItemChoices").querySelectorAll("[data-selector-group]").forEach(button => {
+        button.addEventListener("click", () => {
+          const group = pendingSelectorFamily.groups.find(entry => entry.id === button.dataset.selectorGroup);
+          if (!group) return;
+          if (button.dataset.selectorVariant) {
+            pendingSelectorSelections[group.id] = button.dataset.selectorVariant;
+          } else if (pendingSelectorSelections[group.id]) {
+            delete pendingSelectorSelections[group.id];
+          } else {
+            pendingSelectorSelections[group.id] = group.variants[0].id;
+          }
+          renderSelectorSheet();
+        });
+      });
+      lucide.createIcons();
+    }
+
+    function openSelector(familyId) {
+      pendingSelectorFamily = selectorFamilies.find(family => family.id === familyId);
+      if (!pendingSelectorFamily) return;
+      pendingSelectorSelections = {};
+      renderSelectorSheet();
+      $("selectorBackdrop").classList.add("open");
+      $("selectorBackdrop").setAttribute("aria-hidden", "false");
+    }
+
+    function closeSelector() {
+      pendingSelectorFamily = null;
+      pendingSelectorSelections = {};
+      $("selectorBackdrop").classList.remove("open");
+      $("selectorBackdrop").setAttribute("aria-hidden", "true");
+    }
+
+    function renderCategories() {
+      $("categoryBar").innerHTML = categories.map(category => `
+        <button class="category-btn ${category === activeCategory ? "active" : ""}" data-category="${category}">
+          <span>${category}</span>
+          <small>${menuItems.filter(item => item.category === category).length} items</small>
+        </button>
+      `).join("");
+      document.querySelectorAll(".category-btn").forEach(button => {
+        button.addEventListener("click", () => {
+          activeCategory = button.dataset.category;
+          renderCategories();
+          renderItems();
+        });
+      });
+    }
+
+    function renderItems() {
+      const query = $("searchInput").value.trim().toLowerCase();
+      const filtered = buildDisplayItems(activeCategory, query);
+      $("activeCategoryTitle").textContent = activeCategory;
+      $("itemGrid").classList.toggle("compact-milkshakes", activeCategory === "Thick Milkshake" && !query);
+      const variantCount = filtered.reduce((count, entry) => count + (entry.type === "family"
+        ? entry.family.groups.reduce((sum, group) => sum + group.variants.length, 0)
+        : entry.item.variants.length), 0);
+      $("categoryCount").textContent = `${variantCount} item${variantCount === 1 ? "" : "s"}`;
+      $("itemGrid").innerHTML = filtered.map(entry => {
+        if (entry.type === "family") {
+          const { family } = entry;
+          const selectedQty = cartQtyForFamily(family);
+          const editDelta = editDeltaForVariants(family.groups.flatMap(group => group.variants));
+          return `
+            <div class="product-card ${selectedQty ? "in-cart" : ""} ${editDelta > 0 ? "edit-added" : editDelta < 0 ? "edit-removed" : ""}">
+              <button class="product-info" data-selector-family="${family.id}" aria-label="Choose a ${family.name}">
+                <div class="family-heading">
+                  <span class="product-name">${family.name}</span>
+                  <span class="family-count">${family.groups.length} options</span>
+                </div>
+                <span class="customize-hint">Tap to choose flavour</span>
+                <span class="family-preview">${familyPreviewLabel(family)}</span>
+              </button>
+              <div class="variant-options" aria-label="Open ${family.name} selector">
+                <button class="variant-choice ${selectedQty ? "selected" : ""}" data-selector-family="${family.id}">
+                  <span>Choose</span>
+                  <strong>${selectorPriceLabel(family)}</strong>
+                  ${selectedQty ? `<em>${selectedQty}</em>` : ""}
+                </button>
+              </div>
+            </div>
+          `;
+        }
+        const { item } = entry;
+        const selectedVariants = item.variants.filter(variant => cart.some(entry => entry.id === variant.id));
+        const editDelta = editDeltaForVariants(item.variants);
+        const customizable = isCustomizableDrink(item);
+        const customizeHint = item.category === "Thick Milkshake" ? "Customise shake" : "Customise drink";
+        const productInfo = customizable
+          ? `<button class="product-info" data-customize="${item.id}" aria-label="Customise ${item.name}">
+              <span class="product-name">${item.name}</span>
+              <span class="customize-hint">${customizeHint}</span>
+            </button>`
+          : `<div class="product-info"><span class="product-name">${item.name}</span></div>`;
+        return `
+        <div class="product-card ${selectedVariants.length ? "in-cart" : ""} ${editDelta > 0 ? "edit-added" : editDelta < 0 ? "edit-removed" : ""}">
+          ${productInfo}
+          <div class="variant-options" aria-label="Choose a size for ${item.name}">
+            ${item.variants.map(variant => {
+              const selectedQty = cart
+                .filter(entry => entry.id === variant.id)
+                .reduce((sum, entry) => sum + entry.qty, 0);
+              return `
+                <button class="variant-choice ${selectedQty ? "selected" : ""}" data-id="${variant.id}" aria-label="Add ${item.name} ${variant.size || ""}">
+                  ${variant.size === "Regular" ? "" : `<span>${variant.size}</span>`}
+                  <strong>${money(variant.price)}</strong>
+                  ${selectedQty ? `<em>${selectedQty}</em>` : ""}
+                </button>
+              `;
+            }).join("")}
+          </div>
+        </div>
+      `;
+      }).join("") || `<div class="empty-cart col-span-full">No menu items found.</div>`;
+      $("itemGrid").querySelectorAll(".variant-choice").forEach(button => {
+        if (button.dataset.id) button.addEventListener("click", () => addItem(button.dataset.id));
+        if (button.dataset.selectorFamily) button.addEventListener("click", () => openSelector(button.dataset.selectorFamily));
+      });
+      $("itemGrid").querySelectorAll("[data-customize]").forEach(button => {
+        button.addEventListener("click", () => openCustomization(button.dataset.customize));
+      });
+      $("itemGrid").querySelectorAll(".product-info[data-selector-family]").forEach(button => {
+        button.addEventListener("click", () => openSelector(button.dataset.selectorFamily));
+      });
+    }
+
+    function upsertCartItem(item, customization = null) {
+      const key = cartKey(item, customization);
+      const existing = cart.find(entry => entry.cartKey === key);
+      if (existing) existing.qty += 1;
+      else cart.push({ ...item, cartKey: key, customization, qty: 1 });
+    }
+
+    function addItem(id, customization = null) {
+      const item = menuItems.find(entry => entry.id === id);
+      const resolvedCustomization = customization || (isCustomizableDrink(item) ? { ...customizationDefaultsFor(item) } : null);
+      upsertCartItem(item, resolvedCustomization);
+      renderCart();
+      renderItems();
+      toast(`${item.name}${item.size ? ` ${item.size}` : ""} added`);
+    }
+
+    function updateQty(key, delta) {
+      const entry = cart.find(item => item.cartKey === key);
+      if (!entry) return;
+      entry.qty += delta;
+      if (entry.qty <= 0) cart = cart.filter(item => item.cartKey !== key);
+      renderCart();
+      renderItems();
+    }
+
+    function totals() {
+      const subtotal = cart.reduce((sum, item) => sum + item.price * item.qty, 0);
+      const rounded = Math.round(subtotal);
+      return { subtotal, rounding: rounded - subtotal, total: rounded, count: cart.reduce((sum, item) => sum + item.qty, 0) };
+    }
+
+    function renderCart() {
+      const total = totals();
+      const editing = Boolean(editingOrder);
+      const delta = editing ? total.total - editingOrder.total : 0;
+      $("orderLabel").textContent = "Slot A";
+      $("slotValue").textContent = editing
+        ? `Editing order #${editingOrder.orderNo}`
+        : (total.count ? `${total.count} items · ${money(total.total)}` : "Ready to add");
+      $("orderDock").classList.toggle("editing", editing);
+      $("orderDockTitle").textContent = editing ? "Editing order" : "Current order";
+      $("orderDockBadge").textContent = editing ? `#${editingOrder.orderNo}` : "Slot A";
+      $("itemCount").textContent = `${total.count} item${total.count === 1 ? "" : "s"}`;
+      $("grandTotal").textContent = money(total.total);
+      $("originalTotal").textContent = editing ? `Was ${money(editingOrder.total)}` : "";
+      $("orderDelta").textContent = !editing ? "" : (delta === 0 ? "No change" : `${delta > 0 ? "+" : "-"}${money(Math.abs(delta))}`);
+      $("orderDelta").className = `order-delta ${delta > 0 ? "positive" : delta < 0 ? "negative" : "neutral"}`;
+      $("clearCartBtn").disabled = editing ? false : !cart.length;
+      $("clearCartBtn").innerHTML = editing
+        ? `<i data-lucide="x-circle"></i>Cancel edit`
+        : `<i data-lucide="trash-2"></i>Clear`;
+      $("payBtn").innerHTML = editing
+        ? `<i data-lucide="save"></i>Save changes`
+        : `<i data-lucide="check-circle-2"></i>Complete Sale`;
+
+      const rows = displayCartItems();
+      if (!rows.length) {
+        $("cartList").innerHTML = `<div class="empty-cart"><div><strong>No items yet</strong><br><span>Tap menu tiles to start billing.</span></div></div>`;
+        lucide.createIcons();
+        return;
+      }
+      $("cartList").innerHTML = rows.map(({ item, currentQty }) => {
+        const change = editChange(item.cartKey, currentQty);
+        const isRemoved = change.type === "removed";
+        const changeLabel = change.type === "added"
+          ? `Added ${change.difference > 1 ? `+${change.difference}` : ""}`
+          : change.type === "reduced"
+            ? `Removed ${Math.abs(change.difference)}`
+            : change.type === "removed" ? "Removed" : "";
+        return `
+        <div class="cart-row ${change.type ? `change-${change.type}` : ""}">
+          <div class="cart-item-main">
+            <div class="cart-name">${item.name}${item.size ? ` (${item.size})` : ""}</div>
+            ${item.customization ? `<div class="cart-custom">${customizationLabel(item.customization)}</div>` : ""}
+            ${changeLabel ? `<div class="cart-change ${change.type === "added" ? "added" : "removed"}"><i data-lucide="${change.type === "added" ? "plus-circle" : "minus-circle"}"></i>${changeLabel}</div>` : ""}
+            <div class="cart-sub">${isRemoved ? `Was ${money(item.price * change.originalQty)}` : money(item.price * currentQty)}</div>
+            ${isRemoved ? "" : `<button class="remove-item" data-remove="${item.cartKey}" aria-label="Remove ${item.name}"><i data-lucide="x"></i></button>`}
+          </div>
+          ${isRemoved ? `<div class="qty-controls"><div class="cart-line-price">${money(item.price)}</div><button class="restore-item" data-restore-item="${item.cartKey}">Undo removal</button></div>` : `
+            <div class="qty-controls">
+              <div class="cart-line-price">${money(item.price)}</div>
+              <button class="icon-btn" data-dec="${item.cartKey}" aria-label="Reduce ${item.name}"><i data-lucide="minus"></i></button>
+              <div class="qty">${currentQty}</div>
+              <button class="icon-btn" data-inc="${item.cartKey}" aria-label="Add ${item.name}"><i data-lucide="plus"></i></button>
+            </div>
+          `}
+        </div>
+      `;
+      }).join("");
+      $("cartList").querySelectorAll("[data-dec]").forEach(button => button.addEventListener("click", () => updateQty(button.dataset.dec, -1)));
+      $("cartList").querySelectorAll("[data-inc]").forEach(button => button.addEventListener("click", () => updateQty(button.dataset.inc, 1)));
+      $("cartList").querySelectorAll("[data-remove]").forEach(button => button.addEventListener("click", () => {
+        cart = cart.filter(item => item.cartKey !== button.dataset.remove);
+        renderCart();
+        renderItems();
+      }));
+      $("cartList").querySelectorAll("[data-restore-item]").forEach(button => button.addEventListener("click", () => {
+        const original = originalEditItem(button.dataset.restoreItem);
+        if (!original) return;
+        cart.push(structuredClone(original));
+        renderCart();
+        renderItems();
+      }));
+      lucide.createIcons();
+    }
+
+    function clearCart(silent = false) {
+      cart = [];
+      renderCart();
+      renderItems();
+      if (!silent) toast("Current bill cleared");
+    }
+
+    function holdOrder() {
+      if (editingOrder) return toast("Save or cancel this order edit first");
+      if (!cart.length) return toast("Add items before holding an order");
+      heldOrders.unshift({ orderNo, cart: structuredClone(cart), time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }), total: totals().total });
+      orderNo += 1;
+      clearCart(true);
+      renderHeld();
+      toast("Order held");
+    }
+
+    function restoreHeld(index) {
+      if (cart.length) holdOrder();
+      const restored = heldOrders.splice(index, 1)[0];
+      cart = structuredClone(restored.cart);
+      orderNo = restored.orderNo;
+      renderCart();
+      renderHeld();
+      closeDrawers();
+      toast(`Order #${orderNo} restored`);
+    }
+
+    function startOrderEdit(orderNumber) {
+      const sale = sales.find(entry => entry.orderNo === orderNumber);
+      if (!sale) return toast("That order is no longer available");
+      if (cart.length && !editingOrder) holdOrder();
+      editingOrder = {
+        orderNo: sale.orderNo,
+        total: sale.total,
+        items: structuredClone(sale.items)
+      };
+      cart = structuredClone(sale.items);
+      closePreviousOrders();
+      renderCart();
+      renderItems();
+      toast(`Editing order #${sale.orderNo}`);
+    }
+
+    function cancelOrderEdit() {
+      if (!editingOrder) return;
+      const orderNumber = editingOrder.orderNo;
+      editingOrder = null;
+      cart = [];
+      renderCart();
+      renderItems();
+      openPreviousOrders();
+      expandedPreviousOrderNo = orderNumber;
+      renderPreviousOrders();
+      toast(`Edit for order #${orderNumber} cancelled`);
+    }
+
+    function saveOrderEdit() {
+      if (!editingOrder) return;
+      if (!cart.length) return toast("Add an item before saving the order");
+      const total = totals();
+      const sale = sales.find(entry => entry.orderNo === editingOrder.orderNo);
+      if (!sale) return toast("That order is no longer available");
+      const orderNumber = sale.orderNo;
+      sale.total = total.total;
+      sale.count = total.count;
+      sale.items = structuredClone(cart);
+      sale.method = "Edited";
+      sale.time = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+      editingOrder = null;
+      cart = [];
+      renderCart();
+      renderItems();
+      renderSales();
+      openPreviousOrders();
+      expandedPreviousOrderNo = orderNumber;
+      renderPreviousOrders();
+      toast(`Order #${orderNumber} updated`);
+    }
+
+    function renderHeld() {
+      $("heldCount").textContent = heldOrders.length;
+      $("heldList").innerHTML = heldOrders.length ? heldOrders.map((order, index) => `
+        <div class="held-card">
+          <div class="flex justify-between gap-3">
+            <strong>Order #${order.orderNo}</strong>
+            <span>${money(order.total)}</span>
+          </div>
+          <div class="text-sm text-slate-500">${order.time} · ${order.cart.reduce((sum, item) => sum + item.qty, 0)} items</div>
+          <button class="btn btn-sm btn-primary" data-restore="${index}">Restore</button>
+        </div>
+      `).join("") : `<div class="empty-cart">No held orders.</div>`;
+      document.querySelectorAll("[data-restore]").forEach(button => {
+        button.addEventListener("click", () => restoreHeld(Number(button.dataset.restore)));
+      });
+    }
+
+    function completeSale() {
+      if (editingOrder) return saveOrderEdit();
+      const total = totals();
+      if (!cart.length) return toast("Add items before completing sale");
+      sales.unshift({
+        orderNo,
+        total: total.total,
+        count: total.count,
+        method: "Complete",
+        time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+        items: structuredClone(cart)
+      });
+      orderNo += 1;
+      clearCart(true);
+      renderSales();
+      renderPreviousOrders();
+      toast("Sale completed");
+    }
+
+    function renderSales() {
+      const salesTotal = sales.reduce((sum, sale) => sum + sale.total, 0);
+      const counts = new Map();
+      sales.forEach(sale => sale.items.forEach(item => {
+        const label = `${item.name}${item.size ? ` (${item.size})` : ""}`;
+        counts.set(label, (counts.get(label) || 0) + item.qty);
+      }));
+      const best = Array.from(counts.entries()).sort((a, b) => b[1] - a[1])[0];
+      [
+        ["todaySales", money(salesTotal)],
+        ["ordersDone", sales.length],
+        ["bestSeller", best ? best[0] : "None"],
+        ["topTodaySales", money(salesTotal)],
+        ["topOrdersDone", sales.length]
+      ].forEach(([id, value]) => {
+        const element = $(id);
+        if (element) element.textContent = value;
+      });
+      $("salesList").innerHTML = sales.length ? sales.map(sale => `
+        <div class="sale-card">
+          <div class="flex justify-between gap-3">
+            <strong>Order #${sale.orderNo}</strong>
+            <span class="font-black">${money(sale.total)}</span>
+          </div>
+          <div class="text-sm text-slate-500">${sale.time} · ${sale.method} · ${sale.count} items</div>
+          <div class="text-sm">${sale.items.map(item => `${item.qty}x ${item.name}${item.size ? ` (${item.size})` : ""}`).join(", ")}</div>
+        </div>
+      `).join("") : `<div class="empty-cart">No sales completed yet.</div>`;
+    }
+
+    function previousOrderItemLabel(item) {
+      const size = item.size && item.size !== "Regular" ? ` (${item.size})` : "";
+      return `${item.name}${size}`;
+    }
+
+    function renderPreviousOrders() {
+      const totalSales = sales.reduce((sum, sale) => sum + sale.total, 0);
+      const itemCount = sales.reduce((sum, sale) => sum + sale.count, 0);
+      $("previousOrderCount").textContent = sales.length;
+      $("previousOrderTotal").textContent = money(totalSales);
+      $("previousItemsCount").textContent = itemCount;
+
+      const query = previousOrdersQuery.trim().toLowerCase();
+      const visibleSales = sales.filter(sale => !query || [
+        `order ${sale.orderNo}`,
+        `${sale.orderNo}`,
+        ...sale.items.map(item => `${item.name} ${item.size || ""}`)
+      ].some(value => value.toLowerCase().includes(query)));
+
+      const search = `
+        <label class="orders-search">
+          <i data-lucide="search"></i>
+          <span class="sr-only">Search previous orders</span>
+          <input id="previousOrdersSearch" type="search" placeholder="Search order number or item" value="${previousOrdersQuery.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/\"/g, "&quot;")}">
+        </label>
+      `;
+      const empty = sales.length
+        ? `<div class="previous-orders-empty"><i data-lucide="search-x"></i><strong>No matching orders</strong><span>Try an order number or another item name.</span></div>`
+        : `<div class="previous-orders-empty"><i data-lucide="receipt-text"></i><strong>No completed orders yet</strong><span>Completed sales will appear here with their full bill details.</span><button id="emptyOrdersBackBtn">Back to POS</button></div>`;
+      const cards = visibleSales.map(sale => {
+        const expanded = expandedPreviousOrderNo === sale.orderNo;
+        const preview = sale.items.slice(0, 2).map(previousOrderItemLabel).join(" · ");
+        const remainder = sale.items.length - 2;
+        return `
+          <article class="previous-order-card ${expanded ? "open" : ""}">
+            <button class="previous-order-summary" data-previous-order="${sale.orderNo}" aria-expanded="${expanded}">
+              <div>
+                <div class="previous-order-number"><strong>Order #${sale.orderNo}</strong><span class="order-complete-tag">Completed</span></div>
+                <div class="previous-order-meta">${sale.time} · ${sale.count} item${sale.count === 1 ? "" : "s"} · ${preview}${remainder > 0 ? ` +${remainder}` : ""}</div>
+              </div>
+              <div class="previous-order-total"><strong>${money(sale.total)}</strong><span><i data-lucide="${expanded ? "chevron-up" : "chevron-down"}"></i>${expanded ? "Hide details" : "View details"}</span></div>
+            </button>
+            <div class="previous-order-details">
+              <div class="previous-order-detail-head"><span>Order items</span><span>${sale.method}</span></div>
+              ${sale.items.map(item => `
+                <div class="previous-order-line">
+                  <div><strong>${previousOrderItemLabel(item)}</strong><span>${item.customization ? customizationLabel(item.customization) : `${money(item.price)} each`} · Qty ${item.qty}</span></div>
+                  <b>${money(item.price * item.qty)}</b>
+                </div>
+              `).join("")}
+              <div class="previous-order-edit-action"><button data-edit-previous-order="${sale.orderNo}"><i data-lucide="pencil"></i>Edit order</button></div>
+            </div>
+          </article>
+        `;
+      }).join("");
+      $("previousOrdersList").innerHTML = `${search}${cards || empty}`;
+      $("previousOrdersSearch").addEventListener("input", event => {
+        previousOrdersQuery = event.target.value;
+        renderPreviousOrders();
+        $("previousOrdersSearch").focus();
+      });
+      $("previousOrdersList").querySelectorAll("[data-previous-order]").forEach(button => {
+        button.addEventListener("click", () => {
+          const orderNo = Number(button.dataset.previousOrder);
+          expandedPreviousOrderNo = expandedPreviousOrderNo === orderNo ? null : orderNo;
+          renderPreviousOrders();
+        });
+      });
+      $("previousOrdersList").querySelectorAll("[data-edit-previous-order]").forEach(button => {
+        button.addEventListener("click", () => startOrderEdit(Number(button.dataset.editPreviousOrder)));
+      });
+      $("emptyOrdersBackBtn")?.addEventListener("click", closePreviousOrders);
+      lucide.createIcons();
+    }
+
+    function openPreviousOrders() {
+      closeDrawers();
+      previousOrdersQuery = "";
+      expandedPreviousOrderNo = null;
+      document.querySelector(".app-shell").classList.add("orders-view");
+      renderPreviousOrders();
+    }
+
+    function closePreviousOrders() {
+      document.querySelector(".app-shell").classList.remove("orders-view");
+    }
+
+    function toast(message) {
+      const el = document.createElement("div");
+      el.className = "toast-msg";
+      el.textContent = message;
+      $("toastWrap").appendChild(el);
+      setTimeout(() => el.remove(), 2200);
+    }
+
+    function openDrawer(name) {
+      closeDrawers(false);
+      $("drawerBackdrop").classList.add("open");
+      $(name).classList.add("open");
+    }
+
+    function closeDrawers(hideBackdrop = true) {
+      $("heldDrawer").classList.remove("open");
+      $("salesDrawer").classList.remove("open");
+      if (hideBackdrop) $("drawerBackdrop").classList.remove("open");
+    }
+
+    document.addEventListener("keydown", (event) => {
+      if (event.target.matches("input")) return;
+      const keyItem = menuItems.find(item => item.code.toLowerCase() === event.key.toLowerCase());
+      if (keyItem) addItem(keyItem.id);
+      if (event.key === "Escape") {
+        closeSelector();
+        closeCustomization();
+        closeDrawers();
+        closePreviousOrders();
+      }
+    });
+
+    $("searchInput").addEventListener("input", renderItems);
+    $("clearSearchBtn").addEventListener("click", () => { $("searchInput").value = ""; renderItems(); });
+    $("clearCartBtn").addEventListener("click", () => editingOrder ? cancelOrderEdit() : clearCart());
+    $("newOrderBtn").addEventListener("click", () => {
+      if (editingOrder) return cancelOrderEdit();
+      orderNo += cart.length ? 1 : 0;
+      clearCart();
+    });
+    $("holdBtn").addEventListener("click", holdOrder);
+    $("heldBtn").addEventListener("click", () => openDrawer("heldDrawer"));
+    $("ordersBtn").addEventListener("click", openPreviousOrders);
+    $("salesBtn").addEventListener("click", () => openDrawer("salesDrawer"));
+    $("closeOrdersBtn").addEventListener("click", closePreviousOrders);
+    $("closeHeldBtn").addEventListener("click", closeDrawers);
+    $("closeSalesBtn").addEventListener("click", closeDrawers);
+    $("drawerBackdrop").addEventListener("click", closeDrawers);
+    $("payBtn").addEventListener("click", completeSale);
+    $("closeCustomizeBtn").addEventListener("click", closeCustomization);
+    $("customizeBackdrop").addEventListener("click", event => {
+      if (event.target === $("customizeBackdrop")) closeCustomization();
+    });
+    $("closeSelectorBtn").addEventListener("click", closeSelector);
+    $("selectorBackdrop").addEventListener("click", event => {
+      if (event.target === $("selectorBackdrop")) closeSelector();
+    });
+    document.querySelectorAll(".custom-option").forEach(button => {
+      button.addEventListener("click", () => {
+        if (!pendingCustomization) return;
+        pendingCustomization[button.closest("[data-custom-group]").dataset.customGroup] = button.dataset.customValue;
+        renderCustomizationSheet();
+      });
+    });
+    $("addCustomizedBtn").addEventListener("click", () => {
+      if (!pendingCustomizedVariantId || !pendingCustomization) return;
+      const item = menuItems.find(entry => entry.id === pendingCustomizedVariantId);
+      const customization = { ...pendingCustomization };
+      closeCustomization();
+      addItem(item.id, customization);
+    });
+    $("addSelectorBtn").addEventListener("click", () => {
+      const selections = selectorSelectionEntries();
+      if (!selections.length) return;
+      selections.forEach(({ variant }) => {
+        const item = menuItems.find(entry => entry.id === variant.id);
+        upsertCartItem(item, null);
+      });
+      closeSelector();
+      renderCart();
+      renderItems();
+      toast(selections.length === 1 ? `${selections[0].group.name} added` : `${selections.length} drinks added`);
+    });
+
+    function fitDesignFrame() {
+      const frame = document.querySelector(".design-frame");
+      const scale = Math.min(1, window.innerWidth / 800, window.innerHeight / 1340);
+      frame.style.width = `${800 * scale}px`;
+      frame.style.height = `${1340 * scale}px`;
+      frame.style.setProperty("--frame-scale", scale);
+    }
+
+    window.addEventListener("resize", fitDesignFrame);
+    window.visualViewport?.addEventListener("resize", fitDesignFrame);
+
+    renderCategories();
+    renderItems();
+    renderCart();
+    renderHeld();
+    renderSales();
+    renderPreviousOrders();
+    lucide.createIcons();
+    fitDesignFrame();
+  </script>
+</body>
+</html>
