@@ -1391,7 +1391,7 @@
     .orders-tools {
       min-width: 0;
       display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
+      grid-template-columns: repeat(4, minmax(0, 1fr));
       gap: 10px;
       padding: 13px 16px;
       border-bottom: 1px solid #dedbd5;
@@ -1430,6 +1430,11 @@
       background: #fae7de;
     }
     .orders-stat.accent strong { color: #8c2739; }
+    .orders-stat.warning {
+      border-color: #e7c3aa;
+      background: #fff0dc;
+    }
+    .orders-stat.warning strong { color: #9a431f; }
     .previous-orders-list {
       min-height: 0;
       display: grid;
@@ -1469,6 +1474,11 @@
       background: #fff;
     }
     .previous-order-card.open { border-color: #b76a78; }
+    .previous-order-card.unpaid {
+      border-color: #cc7b56;
+      background: #fff6ec;
+      box-shadow: inset 4px 0 0 #b64a2a;
+    }
     .previous-order-summary {
       width: 100%;
       min-width: 0;
@@ -1498,6 +1508,21 @@
       font-size: 10px;
       font-weight: 900;
       white-space: nowrap;
+    }
+    .payment-tag {
+      padding: 4px 7px;
+      border-radius: 999px;
+      font-size: 10px;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+    .payment-tag.paid {
+      background: #e2f2e9;
+      color: #18704e;
+    }
+    .payment-tag.unpaid {
+      background: #ffe0ce;
+      color: #a43d21;
     }
     .previous-order-meta {
       margin-top: 5px;
@@ -1570,6 +1595,8 @@
     .previous-order-edit-action {
       display: flex;
       justify-content: flex-end;
+      gap: 8px;
+      flex-wrap: wrap;
       padding: 11px 14px;
       border-top: 1px solid #ece9e4;
     }
@@ -2186,6 +2213,7 @@
       <div class="orders-tools">
         <div class="orders-stat"><span>Orders</span><strong id="previousOrderCount">0</strong></div>
         <div class="orders-stat accent"><span>Collected</span><strong id="previousOrderTotal">Rs 0</strong></div>
+        <div class="orders-stat warning"><span>Unpaid</span><strong id="previousUnpaidTotal">Rs 0</strong></div>
         <div class="orders-stat"><span>Items sold</span><strong id="previousItemsCount">0</strong></div>
       </div>
       <div class="previous-orders-list" id="previousOrdersList"></div>
@@ -3271,6 +3299,7 @@
         total: total.total,
         count: total.count,
         method: "Complete",
+        paid: false,
         time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
         items: structuredClone(cart)
       });
@@ -3311,7 +3340,7 @@
     }
 
     function renderSales() {
-      const salesTotal = sales.reduce((sum, sale) => sum + sale.total, 0);
+      const salesTotal = sales.filter(orderIsPaid).reduce((sum, sale) => sum + sale.total, 0);
       const counts = new Map();
       sales.forEach(sale => sale.items.forEach(item => {
         const label = `${item.name}${item.size ? ` (${item.size})` : ""}`;
@@ -3334,7 +3363,7 @@
             <strong>Order #${sale.orderNo}</strong>
             <span class="font-black">${money(sale.total)}</span>
           </div>
-          <div class="text-sm text-slate-500">${sale.time} · ${sale.method} · ${sale.count} items</div>
+          <div class="text-sm text-slate-500">${sale.time} · ${sale.method} · ${paymentLabel(sale)} · ${sale.count} items</div>
           <div class="text-sm">${sale.items.map(item => `${item.qty}x ${item.name}${item.size ? ` (${item.size})` : ""}`).join(", ")}</div>
         </div>
       `).join("") : `<div class="empty-cart">No sales completed yet.</div>`;
@@ -3345,17 +3374,37 @@
       return `${item.name}${size}`;
     }
 
+    function orderIsPaid(sale) {
+      return sale.paid === true;
+    }
+
+    function paymentLabel(sale) {
+      return orderIsPaid(sale) ? "Paid" : "Not paid";
+    }
+
+    function setOrderPaid(orderNumber, paid) {
+      const sale = sales.find(entry => entry.orderNo === orderNumber);
+      if (!sale) return toast("That order is no longer available");
+      sale.paid = paid;
+      renderSales();
+      renderPreviousOrders();
+      toast(`Order #${orderNumber} marked ${paid ? "paid" : "not paid"}`);
+    }
+
     function renderPreviousOrders() {
-      const totalSales = sales.reduce((sum, sale) => sum + sale.total, 0);
+      const totalSales = sales.filter(orderIsPaid).reduce((sum, sale) => sum + sale.total, 0);
+      const unpaidTotal = sales.filter(sale => !orderIsPaid(sale)).reduce((sum, sale) => sum + sale.total, 0);
       const itemCount = sales.reduce((sum, sale) => sum + sale.count, 0);
       $("previousOrderCount").textContent = sales.length;
       $("previousOrderTotal").textContent = money(totalSales);
+      $("previousUnpaidTotal").textContent = money(unpaidTotal);
       $("previousItemsCount").textContent = itemCount;
 
       const query = previousOrdersQuery.trim().toLowerCase();
       const visibleSales = sales.filter(sale => !query || [
         `order ${sale.orderNo}`,
         `${sale.orderNo}`,
+        paymentLabel(sale),
         ...sale.items.map(item => `${item.name} ${item.size || ""}`)
       ].some(value => value.toLowerCase().includes(query)));
 
@@ -3370,26 +3419,30 @@
         : `<div class="previous-orders-empty"><i data-lucide="receipt-text"></i><strong>No completed orders yet</strong><span>Completed sales will appear here with their full bill details.</span><button id="emptyOrdersBackBtn">Back to POS</button></div>`;
       const cards = visibleSales.map(sale => {
         const expanded = expandedPreviousOrderNo === sale.orderNo;
+        const paid = orderIsPaid(sale);
         const preview = sale.items.slice(0, 2).map(previousOrderItemLabel).join(" · ");
         const remainder = sale.items.length - 2;
         return `
-          <article class="previous-order-card ${expanded ? "open" : ""}">
+          <article class="previous-order-card ${expanded ? "open" : ""} ${paid ? "" : "unpaid"}">
             <button class="previous-order-summary" data-previous-order="${sale.orderNo}" aria-expanded="${expanded}">
               <div>
-                <div class="previous-order-number"><strong>Order #${sale.orderNo}</strong><span class="order-complete-tag">Completed</span></div>
-                <div class="previous-order-meta">${sale.time} · ${sale.count} item${sale.count === 1 ? "" : "s"} · ${preview}${remainder > 0 ? ` +${remainder}` : ""}</div>
+                <div class="previous-order-number"><strong>Order #${sale.orderNo}</strong><span class="order-complete-tag">Completed</span><span class="payment-tag ${paid ? "paid" : "unpaid"}">${paymentLabel(sale)}</span></div>
+                <div class="previous-order-meta">${sale.time} · ${sale.count} item${sale.count === 1 ? "" : "s"} · ${paymentLabel(sale)} · ${preview}${remainder > 0 ? ` +${remainder}` : ""}</div>
               </div>
               <div class="previous-order-total"><strong>${money(sale.total)}</strong><span><i data-lucide="${expanded ? "chevron-up" : "chevron-down"}"></i>${expanded ? "Hide details" : "View details"}</span></div>
             </button>
             <div class="previous-order-details">
-              <div class="previous-order-detail-head"><span>Order items</span><span>${sale.method}</span></div>
+              <div class="previous-order-detail-head"><span>Order items</span><span>${sale.method} · ${paymentLabel(sale)}</span></div>
               ${sale.items.map(item => `
                 <div class="previous-order-line">
                   <div><strong>${previousOrderItemLabel(item)}</strong><span>${item.customization ? customizationLabel(item.customization) : `${money(item.price)} each`} · Qty ${item.qty}</span></div>
                   <b>${money(item.price * item.qty)}</b>
                 </div>
               `).join("")}
-              <div class="previous-order-edit-action"><button data-edit-previous-order="${sale.orderNo}"><i data-lucide="pencil"></i>Edit order</button></div>
+              <div class="previous-order-edit-action">
+                <button data-toggle-paid-order="${sale.orderNo}" data-paid-next="${paid ? "false" : "true"}"><i data-lucide="${paid ? "circle-dollar-sign" : "badge-check"}"></i>${paid ? "Mark not paid" : "Mark paid"}</button>
+                <button data-edit-previous-order="${sale.orderNo}"><i data-lucide="pencil"></i>Edit order</button>
+              </div>
             </div>
           </article>
         `;
@@ -3409,6 +3462,9 @@
       });
       $("previousOrdersList").querySelectorAll("[data-edit-previous-order]").forEach(button => {
         button.addEventListener("click", () => startOrderEdit(Number(button.dataset.editPreviousOrder)));
+      });
+      $("previousOrdersList").querySelectorAll("[data-toggle-paid-order]").forEach(button => {
+        button.addEventListener("click", () => setOrderPaid(Number(button.dataset.togglePaidOrder), button.dataset.paidNext === "true"));
       });
       $("emptyOrdersBackBtn")?.addEventListener("click", closePreviousOrders);
       lucide.createIcons();
