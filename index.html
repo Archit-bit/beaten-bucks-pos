@@ -731,6 +731,7 @@
       position: relative;
       width: 800px;
       height: 1340px;
+      overflow: hidden;
     }
     .design-frame .app-shell {
       width: 800px;
@@ -1614,6 +1615,261 @@
       font-size: 13px;
       font-weight: 850;
     }
+    .menu-admin-screen {
+      min-width: 0;
+      min-height: 0;
+      display: none;
+      grid-template-rows: auto auto minmax(0, 1fr);
+      background: #f7f7f4;
+    }
+    .app-shell.menu-view {
+      grid-template-rows: 86px minmax(0, 1fr);
+    }
+    .app-shell.menu-view .pos-layout,
+    .app-shell.menu-view .order-dock,
+    .app-shell.menu-view .previous-orders-screen { display: none; }
+    .app-shell.menu-view .menu-admin-screen { display: grid; }
+    .menu-admin-tools {
+      min-width: 0;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr)) auto;
+      gap: 10px;
+      align-items: stretch;
+      padding: 13px 16px;
+      border-bottom: 1px solid #dedbd5;
+      background: #fbfbf9;
+    }
+    .menu-admin-add {
+      min-height: 58px;
+      padding: 0 15px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      border: 0;
+      border-radius: 9px;
+      background: #8c2739;
+      color: #fff;
+      font-size: 13px;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+    .menu-admin-add svg { width: 18px; height: 18px; }
+    .menu-admin-body {
+      min-width: 0;
+      min-height: 0;
+      display: grid;
+      grid-template-columns: minmax(0, 1.1fr) 286px;
+      gap: 12px;
+      padding: 14px 16px 18px;
+      overflow: hidden;
+    }
+    .menu-admin-list-panel,
+    .menu-admin-form-panel {
+      min-width: 0;
+      min-height: 0;
+      overflow: hidden;
+      border: 1px solid #dedbd5;
+      border-radius: 11px;
+      background: #fff;
+    }
+    .menu-admin-list-panel {
+      display: grid;
+      grid-template-rows: auto minmax(0, 1fr);
+    }
+    .menu-admin-search {
+      min-width: 0;
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      min-height: 54px;
+      padding: 0 13px;
+      border-bottom: 1px solid #e5e2dd;
+      background: #fcfcfa;
+      color: #69716c;
+    }
+    .menu-admin-search svg { width: 20px; height: 20px; flex: none; }
+    .menu-admin-search input {
+      width: 100%;
+      min-width: 0;
+      border: 0;
+      outline: 0;
+      background: transparent;
+      color: #292b28;
+      font-size: 14px;
+    }
+    .menu-admin-list {
+      min-height: 0;
+      display: grid;
+      align-content: start;
+      gap: 8px;
+      overflow-y: auto;
+      padding: 10px;
+      background: #f8f8f5;
+    }
+    .menu-admin-item {
+      min-width: 0;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 10px;
+      align-items: center;
+      padding: 11px 12px;
+      border: 1px solid #e1ded8;
+      border-radius: 9px;
+      background: #fff;
+      color: #292b28;
+      text-align: left;
+    }
+    .menu-admin-item.active {
+      border-color: #9d3f50;
+      background: #fae7de;
+      box-shadow: inset 0 0 0 1px #9d3f50;
+    }
+    .menu-admin-item strong {
+      display: block;
+      overflow: hidden;
+      font-size: 14px;
+      line-height: 1.16;
+      font-weight: 900;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .menu-admin-item span {
+      display: block;
+      margin-top: 4px;
+      overflow: hidden;
+      color: #77746f;
+      font-size: 11px;
+      font-weight: 750;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .menu-admin-item b {
+      color: #8c2739;
+      font-size: 16px;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+    .profit-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      margin-top: 5px;
+      padding: 3px 6px;
+      border-radius: 999px;
+      background: #edf6ef;
+      color: #18704e;
+      font-size: 10px;
+      font-weight: 900;
+    }
+    .menu-admin-empty {
+      min-height: 220px;
+      display: grid;
+      place-items: center;
+      align-content: center;
+      gap: 8px;
+      border: 1px dashed #d3cfc9;
+      border-radius: 10px;
+      background: #fff;
+      color: #73736e;
+      text-align: center;
+      font-size: 13px;
+      font-weight: 750;
+    }
+    .menu-admin-empty svg { width: 30px; height: 30px; color: #9a5361; }
+    .menu-admin-form-panel {
+      display: grid;
+      grid-template-rows: auto minmax(0, 1fr);
+    }
+    .menu-form-head {
+      padding: 15px 15px 13px;
+      border-bottom: 1px solid #e5e2dd;
+      background: #fcfcfa;
+    }
+    .menu-form-head span {
+      display: block;
+      color: #8c2739;
+      font-size: 10px;
+      font-weight: 900;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+    .menu-form-head strong {
+      display: block;
+      margin-top: 4px;
+      color: #292b28;
+      font-size: 18px;
+      line-height: 1.12;
+      font-weight: 900;
+    }
+    .menu-admin-form {
+      min-height: 0;
+      display: grid;
+      align-content: start;
+      gap: 11px;
+      overflow-y: auto;
+      padding: 14px;
+    }
+    .menu-field {
+      display: grid;
+      gap: 6px;
+    }
+    .menu-field label {
+      color: #68645f;
+      font-size: 11px;
+      font-weight: 900;
+      letter-spacing: .04em;
+      text-transform: uppercase;
+    }
+    .menu-field input,
+    .menu-field select {
+      width: 100%;
+      min-width: 0;
+      min-height: 43px;
+      padding: 0 10px;
+      border: 1px solid #d9d6cf;
+      border-radius: 8px;
+      outline: 0;
+      background: #fff;
+      color: #292b28;
+      font-size: 14px;
+      font-weight: 750;
+    }
+    .menu-field-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 9px;
+    }
+    .menu-form-actions {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 8px;
+      margin-top: 2px;
+    }
+    .menu-save-btn,
+    .menu-secondary-btn {
+      min-height: 43px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 900;
+    }
+    .menu-save-btn {
+      border: 0;
+      background: #8c2739;
+      color: #fff;
+    }
+    .menu-secondary-btn {
+      padding: 0 12px;
+      border: 1px solid #dedbd5;
+      background: #fff;
+      color: #7d4a56;
+    }
+    .menu-save-btn svg,
+    .menu-secondary-btn svg { width: 16px; height: 16px; }
     .customize-backdrop {
       position: absolute;
       inset: 0;
@@ -1829,6 +2085,7 @@
       <div class="header-actions">
         <button class="header-action" id="holdBtn"><i data-lucide="pause-circle"></i><span>Hold</span></button>
         <button class="header-action" id="heldBtn"><i data-lucide="clipboard-list"></i><span>Held <b id="heldCount">0</b></span></button>
+        <button class="header-action" id="menuBtn"><i data-lucide="notebook-tabs"></i><span>Menu</span></button>
         <button class="header-action" id="ordersBtn"><i data-lucide="receipt-text"></i><span>Orders</span></button>
         <button class="header-action" id="salesBtn"><i data-lucide="chart-no-axes-column-increasing"></i><span>Sales</span></button>
       </div>
@@ -1843,9 +2100,8 @@
       <section class="menu-workspace" aria-label="Menu items">
         <div class="search-row">
           <label class="search-box">
-            <span class="sr-only">Search menu</span>
             <i data-lucide="search"></i>
-            <input id="searchInput" type="search" placeholder="Search any item">
+            <input id="searchInput" type="search" placeholder="Search any item" aria-label="Search menu">
           </label>
           <button class="clear-search" id="clearSearchBtn" aria-label="Clear search"><i data-lucide="x"></i></button>
         </div>
@@ -1872,6 +2128,77 @@
         <div class="orders-stat"><span>Items sold</span><strong id="previousItemsCount">0</strong></div>
       </div>
       <div class="previous-orders-list" id="previousOrdersList"></div>
+    </section>
+
+    <section class="menu-admin-screen" id="menuAdminScreen" aria-label="Menu management">
+      <div class="orders-page-head">
+        <button class="orders-back-btn" id="closeMenuBtn" aria-label="Back to point of sale"><i data-lucide="arrow-left"></i></button>
+        <div>
+          <span class="orders-page-kicker">Catalog setup</span>
+          <h2 class="orders-page-title">Menu</h2>
+          <p class="orders-page-subtitle">Add items, edit category, set price and track profit per item.</p>
+        </div>
+      </div>
+      <div class="menu-admin-tools">
+        <div class="orders-stat"><span>Total items</span><strong id="menuAdminItemCount">0</strong></div>
+        <div class="orders-stat accent"><span>Avg profit</span><strong id="menuAdminAvgProfit">Rs 0</strong></div>
+        <div class="orders-stat"><span>Categories</span><strong id="menuAdminCategoryCount">0</strong></div>
+        <button class="menu-admin-add" id="addMenuItemBtn"><i data-lucide="plus-circle"></i>Add new item</button>
+      </div>
+      <div class="menu-admin-body">
+        <div class="menu-admin-list-panel">
+          <label class="menu-admin-search">
+            <i data-lucide="search"></i>
+            <input id="menuAdminSearch" type="search" placeholder="Search item, category or size" aria-label="Search menu items">
+          </label>
+          <div class="menu-admin-list" id="menuAdminList"></div>
+        </div>
+        <aside class="menu-admin-form-panel" aria-label="Menu item editor">
+          <div class="menu-form-head">
+            <span id="menuFormMode">Edit item</span>
+            <strong id="menuFormTitle">Select an item</strong>
+          </div>
+          <form class="menu-admin-form" id="menuAdminForm">
+            <div class="menu-field">
+              <label for="menuItemName">Item name</label>
+              <input id="menuItemName" name="name" autocomplete="off" required>
+            </div>
+            <div class="menu-field">
+              <label for="menuItemCategory">Category</label>
+              <input id="menuItemCategory" name="category" list="menuCategoryOptions" autocomplete="off" required>
+              <datalist id="menuCategoryOptions"></datalist>
+            </div>
+            <div class="menu-field-grid">
+              <div class="menu-field">
+                <label for="menuItemSize">Size</label>
+                <select id="menuItemSize" name="size">
+                  <option>M</option>
+                  <option>L</option>
+                  <option>Regular</option>
+                </select>
+              </div>
+              <div class="menu-field">
+                <label for="menuItemCode">Shortcut</label>
+                <input id="menuItemCode" name="code" autocomplete="off" maxlength="4">
+              </div>
+            </div>
+            <div class="menu-field-grid">
+              <div class="menu-field">
+                <label for="menuItemPrice">Price</label>
+                <input id="menuItemPrice" name="price" type="number" min="0" step="1" required>
+              </div>
+              <div class="menu-field">
+                <label for="menuItemProfit">Profit</label>
+                <input id="menuItemProfit" name="profit" type="number" min="0" step="1" required>
+              </div>
+            </div>
+            <div class="menu-form-actions">
+              <button class="menu-save-btn" type="submit"><i data-lucide="save"></i>Save item</button>
+              <button class="menu-secondary-btn" type="button" id="resetMenuFormBtn"><i data-lucide="rotate-ccw"></i>Reset</button>
+            </div>
+          </form>
+        </aside>
+      </div>
     </section>
 
     <section class="order-dock" id="orderDock" aria-label="Current order">
@@ -1975,7 +2302,7 @@
 
   <script>
     const rupee = new Intl.NumberFormat("en-IN", { maximumFractionDigits: 0 });
-    const menuItems = [
+    const seedMenuItems = [
       { id: "cold-1", name: "Handbeaten Cold Coffee", size: "M", price: 70, category: "Cold Coffee", code: "1" },
       { id: "cold-2", name: "Handbeaten Cold Coffee", size: "L", price: 90, category: "Cold Coffee", code: "2" },
       { id: "cold-3", name: "Davidoff Cold Coffee", size: "M", price: 120, category: "Cold Coffee", code: "3" },
@@ -2085,39 +2412,13 @@
       { id: "snack-11", name: "Aloo Patties", size: "Regular", price: 30, category: "Snacks", code: "43" },
       { id: "snack-12", name: "Paneer Patties", size: "Regular", price: 40, category: "Snacks", code: "44" },
       { id: "snack-13", name: "Masala Patties", size: "Regular", price: 40, category: "Snacks", code: "45" }
-    ].flatMap(item => {
-      if (item.category !== "Thick Milkshake" || item.size !== "Regular") return [item];
-      return [
-        { ...item, id: `${item.id}-m`, size: "M" },
-        { ...item, id: `${item.id}-l`, size: "L", price: item.price + 20, code: `${item.code}-l` }
-      ];
-    });
-    const groupedMenuItems = Object.values(menuItems.reduce((groups, item) => {
-      const key = `${item.category}::${item.name}`;
-      if (!groups[key]) {
-        groups[key] = {
-          id: key,
-          name: item.name,
-          category: item.category,
-          variants: []
-        };
-      }
-      groups[key].variants.push({
-        id: item.id,
-        size: item.size,
-        price: item.price,
-        code: item.code
-      });
-      return groups;
-    }, {})).map(group => ({
-      ...group,
-      variants: group.variants.sort((a, b) => {
-        const order = { M: 1, L: 2, Regular: 3 };
-        return (order[a.size] || 9) - (order[b.size] || 9);
-      })
-    }));
-    const categories = Array.from(new Set(groupedMenuItems.map(item => item.category)));
-    let activeCategory = categories[0] || "";
+    ];
+    let menuItems = [];
+    let groupedMenuItems = [];
+    let categories = [];
+    let selectorFamilies = [];
+    let selectorFamilyByGroupId = new Map();
+    let activeCategory = "";
     let cart = [];
     let heldOrders = [];
     let sales = [];
@@ -2130,9 +2431,17 @@
     let previousOrdersQuery = "";
     let expandedPreviousOrderNo = null;
     let editingOrder = null;
+    let menuAdminQuery = "";
+    let editingMenuItemId = "";
 
     const $ = (id) => document.getElementById(id);
     const money = (value) => `Rs ${rupee.format(value || 0)}`;
+    const escapeHtml = (value) => String(value ?? "")
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#039;");
     const coldCoffeeDefaults = { strength: "Light", sugar: "Sugar", ice: "Ice" };
     const milkshakeDefaults = { strength: "Light", sugar: "Sugar", ice: "Ice" };
     const isCustomizableDrink = (item) => ["Cold Coffee", "Thick Milkshake"].includes(item.category);
@@ -2147,15 +2456,70 @@
         matcher: (group) => group.name.toLowerCase().includes("mojito")
       }
     ];
-    const selectorFamilies = selectorFamilyConfigs
-      .map(config => ({
-        ...config,
-        groups: groupedMenuItems.filter(group => group.category === config.category && config.matcher(group))
-      }))
-      .filter(config => config.groups.length);
-    const selectorFamilyByGroupId = new Map(
-      selectorFamilies.flatMap(family => family.groups.map(group => [group.id, family]))
-    );
+    function normalizeMenuItem(item) {
+      const price = Number(item.price) || 0;
+      return {
+        ...item,
+        id: item.id || `custom-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+        name: (item.name || "New item").trim(),
+        category: (item.category || activeCategory || "Snacks").trim(),
+        size: item.size || "Regular",
+        price,
+        profit: Number(item.profit ?? Math.round(price * 0.35)) || 0,
+        code: (item.code || "").trim()
+      };
+    }
+
+    function expandSeedMenuItem(item) {
+      if (item.category !== "Thick Milkshake" || item.size !== "Regular") return [normalizeMenuItem(item)];
+      return [
+        normalizeMenuItem({ ...item, id: `${item.id}-m`, size: "M" }),
+        normalizeMenuItem({ ...item, id: `${item.id}-l`, size: "L", price: item.price + 20, code: `${item.code}-l` })
+      ];
+    }
+
+    function rebuildMenuModel() {
+      menuItems = menuItems.map(normalizeMenuItem);
+      groupedMenuItems = Object.values(menuItems.reduce((groups, item) => {
+        const key = `${item.category}::${item.name}`;
+        if (!groups[key]) {
+          groups[key] = {
+            id: key,
+            name: item.name,
+            category: item.category,
+            variants: []
+          };
+        }
+        groups[key].variants.push({
+          id: item.id,
+          size: item.size,
+          price: item.price,
+          profit: item.profit,
+          code: item.code
+        });
+        return groups;
+      }, {})).map(group => ({
+        ...group,
+        variants: group.variants.sort((a, b) => {
+          const order = { M: 1, L: 2, Regular: 3 };
+          return (order[a.size] || 9) - (order[b.size] || 9);
+        })
+      }));
+      categories = Array.from(new Set(groupedMenuItems.map(item => item.category)));
+      if (!categories.includes(activeCategory)) activeCategory = categories[0] || "";
+      selectorFamilies = selectorFamilyConfigs
+        .map(config => ({
+          ...config,
+          groups: groupedMenuItems.filter(group => group.category === config.category && config.matcher(group))
+        }))
+        .filter(config => config.groups.length);
+      selectorFamilyByGroupId = new Map(
+        selectorFamilies.flatMap(family => family.groups.map(group => [group.id, family]))
+      );
+    }
+
+    menuItems = seedMenuItems.flatMap(expandSeedMenuItem);
+    rebuildMenuModel();
 
     function cartKey(item, customization) {
       if (!customization) return item.id;
@@ -2765,8 +3129,7 @@
       const search = `
         <label class="orders-search">
           <i data-lucide="search"></i>
-          <span class="sr-only">Search previous orders</span>
-          <input id="previousOrdersSearch" type="search" placeholder="Search order number or item" value="${previousOrdersQuery.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/\"/g, "&quot;")}">
+          <input id="previousOrdersSearch" type="search" placeholder="Search order number or item" aria-label="Search previous orders" value="${previousOrdersQuery.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/\"/g, "&quot;")}">
         </label>
       `;
       const empty = sales.length
@@ -2820,6 +3183,7 @@
 
     function openPreviousOrders() {
       closeDrawers();
+      closeMenuAdmin();
       previousOrdersQuery = "";
       expandedPreviousOrderNo = null;
       document.querySelector(".app-shell").classList.add("orders-view");
@@ -2828,6 +3192,123 @@
 
     function closePreviousOrders() {
       document.querySelector(".app-shell").classList.remove("orders-view");
+    }
+
+    function menuAdminMatches(item, query) {
+      return !query || [
+        item.name,
+        item.category,
+        item.size,
+        item.code,
+        money(item.price),
+        money(item.profit)
+      ].some(value => String(value || "").toLowerCase().includes(query));
+    }
+
+    function renderMenuForm() {
+      const item = menuItems.find(entry => entry.id === editingMenuItemId);
+      const isNew = !item;
+      $("menuFormMode").textContent = isNew ? "Add item" : "Edit item";
+      $("menuFormTitle").textContent = isNew ? "New menu item" : `${item.name} (${item.size})`;
+      $("menuItemName").value = item?.name || "";
+      $("menuItemCategory").value = item?.category || activeCategory || categories[0] || "Snacks";
+      $("menuItemSize").value = item?.size || "Regular";
+      $("menuItemCode").value = item?.code || "";
+      $("menuItemPrice").value = item?.price ?? "";
+      $("menuItemProfit").value = item?.profit ?? "";
+    }
+
+    function renderMenuAdmin() {
+      const totalProfit = menuItems.reduce((sum, item) => sum + item.profit, 0);
+      $("menuAdminItemCount").textContent = menuItems.length;
+      $("menuAdminAvgProfit").textContent = money(menuItems.length ? Math.round(totalProfit / menuItems.length) : 0);
+      $("menuAdminCategoryCount").textContent = categories.length;
+      $("menuCategoryOptions").innerHTML = categories.map(category => `<option value="${escapeHtml(category)}"></option>`).join("");
+
+      const query = menuAdminQuery.trim().toLowerCase();
+      const visibleItems = menuItems.filter(item => menuAdminMatches(item, query));
+      $("menuAdminList").innerHTML = visibleItems.length ? visibleItems.map(item => `
+        <button class="menu-admin-item ${item.id === editingMenuItemId ? "active" : ""}" data-menu-edit="${item.id}">
+          <div>
+            <strong>${escapeHtml(item.name)}${item.size !== "Regular" ? ` (${escapeHtml(item.size)})` : ""}</strong>
+            <span>${escapeHtml(item.category)} · ${escapeHtml(item.size)}${item.code ? ` · Key ${escapeHtml(item.code)}` : ""}</span>
+            <small class="profit-pill">Profit ${money(item.profit)}</small>
+          </div>
+          <b>${money(item.price)}</b>
+        </button>
+      `).join("") : `<div class="menu-admin-empty"><i data-lucide="search-x"></i><strong>No menu items found</strong><span>Try another search or add a new item.</span></div>`;
+
+      $("menuAdminList").querySelectorAll("[data-menu-edit]").forEach(button => {
+        button.addEventListener("click", () => {
+          editingMenuItemId = button.dataset.menuEdit;
+          renderMenuAdmin();
+        });
+      });
+      renderMenuForm();
+      lucide.createIcons();
+    }
+
+    function syncOpenCartItem(updatedItem) {
+      cart = cart.map(entry => entry.id === updatedItem.id
+        ? {
+            ...entry,
+            name: updatedItem.name,
+            category: updatedItem.category,
+            size: updatedItem.size,
+            price: updatedItem.price,
+            profit: updatedItem.profit,
+            code: updatedItem.code
+          }
+        : entry);
+    }
+
+    function saveMenuAdminItem(event) {
+      event.preventDefault();
+      const existing = menuItems.find(item => item.id === editingMenuItemId);
+      const formItem = normalizeMenuItem({
+        id: existing?.id || `custom-${Date.now()}`,
+        name: $("menuItemName").value,
+        category: $("menuItemCategory").value,
+        size: $("menuItemSize").value,
+        code: $("menuItemCode").value,
+        price: Number($("menuItemPrice").value),
+        profit: Number($("menuItemProfit").value)
+      });
+      if (!formItem.name || !formItem.category) return toast("Item name and category are required");
+      if (existing) {
+        Object.assign(existing, formItem);
+        syncOpenCartItem(formItem);
+        toast(`${formItem.name} updated`);
+      } else {
+        menuItems.push(formItem);
+        editingMenuItemId = formItem.id;
+        activeCategory = formItem.category;
+        toast(`${formItem.name} added to menu`);
+      }
+      rebuildMenuModel();
+      renderCategories();
+      renderItems();
+      renderCart();
+      renderMenuAdmin();
+    }
+
+    function startNewMenuItem() {
+      editingMenuItemId = "";
+      renderMenuAdmin();
+      $("menuItemName").focus();
+    }
+
+    function openMenuAdmin() {
+      closeDrawers();
+      closePreviousOrders();
+      document.querySelector(".app-shell").classList.add("menu-view");
+      if (editingOrder) toast("Menu can be edited while this order remains open");
+      if (!editingMenuItemId && menuItems.length) editingMenuItemId = menuItems[0].id;
+      renderMenuAdmin();
+    }
+
+    function closeMenuAdmin() {
+      document.querySelector(".app-shell").classList.remove("menu-view");
     }
 
     function toast(message) {
@@ -2859,6 +3340,7 @@
         closeCustomization();
         closeDrawers();
         closePreviousOrders();
+        closeMenuAdmin();
       }
     });
 
@@ -2872,13 +3354,23 @@
     });
     $("holdBtn").addEventListener("click", holdOrder);
     $("heldBtn").addEventListener("click", () => openDrawer("heldDrawer"));
+    $("menuBtn").addEventListener("click", openMenuAdmin);
     $("ordersBtn").addEventListener("click", openPreviousOrders);
     $("salesBtn").addEventListener("click", () => openDrawer("salesDrawer"));
+    $("closeMenuBtn").addEventListener("click", closeMenuAdmin);
     $("closeOrdersBtn").addEventListener("click", closePreviousOrders);
     $("closeHeldBtn").addEventListener("click", closeDrawers);
     $("closeSalesBtn").addEventListener("click", closeDrawers);
     $("drawerBackdrop").addEventListener("click", closeDrawers);
     $("payBtn").addEventListener("click", completeSale);
+    $("addMenuItemBtn").addEventListener("click", startNewMenuItem);
+    $("resetMenuFormBtn").addEventListener("click", renderMenuForm);
+    $("menuAdminSearch").addEventListener("input", event => {
+      menuAdminQuery = event.target.value;
+      renderMenuAdmin();
+      $("menuAdminSearch").focus();
+    });
+    $("menuAdminForm").addEventListener("submit", saveMenuAdminItem);
     $("closeCustomizeBtn").addEventListener("click", closeCustomization);
     $("customizeBackdrop").addEventListener("click", event => {
       if (event.target === $("customizeBackdrop")) closeCustomization();
@@ -2931,6 +3423,7 @@
     renderHeld();
     renderSales();
     renderPreviousOrders();
+    renderMenuAdmin();
     lucide.createIcons();
     fitDesignFrame();
   </script>
