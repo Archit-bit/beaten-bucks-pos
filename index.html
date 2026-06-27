@@ -2444,6 +2444,7 @@
       .replace(/'/g, "&#039;");
     const coldCoffeeDefaults = { strength: "Light", sugar: "Sugar", ice: "Ice" };
     const milkshakeDefaults = { strength: "Light", sugar: "Sugar", ice: "Ice" };
+    const menuStorageKey = "beaten-bucks-menu-items-v1";
     const isCustomizableDrink = (item) => ["Cold Coffee", "Thick Milkshake"].includes(item.category);
     const customizationDefaultsFor = (item) => item.category === "Thick Milkshake" ? milkshakeDefaults : coldCoffeeDefaults;
     const selectorFamilyConfigs = [
@@ -2476,6 +2477,24 @@
         normalizeMenuItem({ ...item, id: `${item.id}-m`, size: "M" }),
         normalizeMenuItem({ ...item, id: `${item.id}-l`, size: "L", price: item.price + 20, code: `${item.code}-l` })
       ];
+    }
+
+    function loadMenuItems() {
+      try {
+        const saved = JSON.parse(localStorage.getItem(menuStorageKey) || "null");
+        if (Array.isArray(saved) && saved.length) return saved.map(normalizeMenuItem);
+      } catch (error) {
+        console.warn("Could not load saved menu", error);
+      }
+      return seedMenuItems.flatMap(expandSeedMenuItem);
+    }
+
+    function persistMenuItems() {
+      try {
+        localStorage.setItem(menuStorageKey, JSON.stringify(menuItems));
+      } catch (error) {
+        console.warn("Could not save menu", error);
+      }
     }
 
     function rebuildMenuModel() {
@@ -2518,7 +2537,7 @@
       );
     }
 
-    menuItems = seedMenuItems.flatMap(expandSeedMenuItem);
+    menuItems = loadMenuItems();
     rebuildMenuModel();
 
     function cartKey(item, customization) {
@@ -3286,6 +3305,7 @@
         toast(`${formItem.name} added to menu`);
       }
       rebuildMenuModel();
+      persistMenuItems();
       renderCategories();
       renderItems();
       renderCart();
