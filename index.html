@@ -1116,6 +1116,16 @@
     }
     .variant-choice:first-child { border-left: 0; }
     .variant-choice strong { min-width: 0; color: #8c2739; font-size: 12px; white-space: nowrap; }
+    .variant-choice.has-qty {
+      grid-template-columns: auto minmax(0, 1fr);
+      grid-template-areas:
+        "size price"
+        "qty qty";
+      row-gap: 4px;
+      padding: 5px 7px;
+    }
+    .variant-choice.has-qty > span { grid-area: size; }
+    .variant-choice.has-qty > strong { grid-area: price; }
     .variant-choice em {
       min-width: 17px;
       display: grid;
@@ -1127,6 +1137,36 @@
       font-style: normal;
     }
     .variant-choice.selected { background: #f9e4da; }
+    .tile-qty-controls {
+      grid-area: qty;
+      display: grid;
+      grid-template-columns: 28px minmax(0, 1fr) 28px;
+      overflow: hidden;
+      border: 1px solid #dfc5c4;
+      border-radius: 8px;
+      background: #fff;
+    }
+    .tile-qty-btn {
+      min-width: 0;
+      min-height: 27px;
+      border: 0;
+      background: transparent;
+      color: #8c2739;
+      font-size: 16px;
+      font-weight: 900;
+      line-height: 1;
+    }
+    .tile-qty-btn + .tile-qty-value,
+    .tile-qty-value + .tile-qty-btn {
+      border-left: 1px solid #ead7d7;
+    }
+    .tile-qty-value {
+      display: grid;
+      place-items: center;
+      color: #262825;
+      font-size: 12px;
+      font-weight: 900;
+    }
     .order-dock {
       min-width: 0;
       min-height: 0;
@@ -1500,15 +1540,6 @@
       min-width: 0;
     }
     .previous-order-number strong { font-size: 16px; font-weight: 900; }
-    .order-complete-tag {
-      padding: 4px 7px;
-      border-radius: 999px;
-      background: #e2f2e9;
-      color: #18704e;
-      font-size: 10px;
-      font-weight: 900;
-      white-space: nowrap;
-    }
     .payment-tag {
       padding: 4px 7px;
       border-radius: 999px;
@@ -2844,6 +2875,13 @@
         .reduce((sum, entry) => sum + entry.qty, 0);
     }
 
+    function defaultCartKeyForVariant(id) {
+      const item = menuItems.find(entry => entry.id === id);
+      if (!item) return id;
+      const customization = isCustomizableDrink(item) ? customizationDefaultsFor(item) : null;
+      return cartKey(item, customization);
+    }
+
     function cartQtyForGroup(group) {
       return group.variants.reduce((sum, variant) => sum + cartQtyForVariant(variant.id), 0);
     }
@@ -3099,11 +3137,18 @@
               const selectedQty = cart
                 .filter(entry => entry.id === variant.id)
                 .reduce((sum, entry) => sum + entry.qty, 0);
+              const defaultKey = defaultCartKeyForVariant(variant.id);
               return `
-                <button class="variant-choice ${selectedQty ? "selected" : ""}" data-id="${variant.id}" aria-label="Add ${item.name} ${variant.size || ""}">
+                <button class="variant-choice ${selectedQty ? "selected has-qty" : ""}" data-id="${variant.id}" aria-label="Add ${item.name} ${variant.size || ""}">
                   ${variant.size === "Regular" ? "" : `<span>${variant.size}</span>`}
                   <strong>${money(variant.price)}</strong>
-                  ${selectedQty ? `<em>${selectedQty}</em>` : ""}
+                  ${selectedQty ? `
+                    <div class="tile-qty-controls" aria-label="Set quantity for ${item.name} ${variant.size || ""}">
+                      <button class="tile-qty-btn" type="button" data-tile-dec="${defaultKey}" aria-label="Reduce quantity">−</button>
+                      <div class="tile-qty-value">${selectedQty}</div>
+                      <button class="tile-qty-btn" type="button" data-tile-inc="${defaultKey}" aria-label="Increase quantity">+</button>
+                    </div>
+                  ` : ""}
                 </button>
               `;
             }).join("")}
@@ -3114,6 +3159,18 @@
       $("itemGrid").querySelectorAll(".variant-choice").forEach(button => {
         if (button.dataset.id) button.addEventListener("click", () => addItem(button.dataset.id));
         if (button.dataset.selectorFamily) button.addEventListener("click", () => openSelector(button.dataset.selectorFamily));
+      });
+      $("itemGrid").querySelectorAll("[data-tile-dec]").forEach(button => {
+        button.addEventListener("click", event => {
+          event.stopPropagation();
+          updateQty(button.dataset.tileDec, -1);
+        });
+      });
+      $("itemGrid").querySelectorAll("[data-tile-inc]").forEach(button => {
+        button.addEventListener("click", event => {
+          event.stopPropagation();
+          updateQty(button.dataset.tileInc, 1);
+        });
       });
       $("itemGrid").querySelectorAll("[data-customize]").forEach(button => {
         button.addEventListener("click", () => openCustomization(button.dataset.customize));
@@ -3426,7 +3483,7 @@
           <article class="previous-order-card ${expanded ? "open" : ""} ${paid ? "" : "unpaid"}">
             <button class="previous-order-summary" data-previous-order="${sale.orderNo}" aria-expanded="${expanded}">
               <div>
-                <div class="previous-order-number"><strong>Order #${sale.orderNo}</strong><span class="order-complete-tag">Completed</span><span class="payment-tag ${paid ? "paid" : "unpaid"}">${paymentLabel(sale)}</span></div>
+                <div class="previous-order-number"><strong>Order #${sale.orderNo}</strong><span class="payment-tag ${paid ? "paid" : "unpaid"}">${paymentLabel(sale)}</span></div>
                 <div class="previous-order-meta">${sale.time} · ${sale.count} item${sale.count === 1 ? "" : "s"} · ${paymentLabel(sale)} · ${preview}${remainder > 0 ? ` +${remainder}` : ""}</div>
               </div>
               <div class="previous-order-total"><strong>${money(sale.total)}</strong><span><i data-lucide="${expanded ? "chevron-up" : "chevron-down"}"></i>${expanded ? "Hide details" : "View details"}</span></div>
