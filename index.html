@@ -724,14 +724,12 @@
       padding: 0;
       display: grid;
       place-items: center;
-      overflow: hidden;
     }
     .design-frame {
       --frame-scale: 1;
       position: relative;
       width: 800px;
       height: 1340px;
-      overflow: hidden;
     }
     .design-frame .app-shell {
       width: 800px;
@@ -741,7 +739,8 @@
       margin: 0;
       border: 1px solid rgba(105, 74, 46, 0.12);
       border-radius: 34px;
-      transform: scale(var(--frame-scale));
+      zoom: var(--frame-scale);
+      transform: none;
       transform-origin: top left;
     }
     .design-frame .topbar { padding: 22px 22px 18px; }
