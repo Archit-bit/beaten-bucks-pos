@@ -1782,6 +1782,47 @@
       line-height: 1.28;
       font-weight: 700;
     }
+    .packaging-builder {
+      display: grid;
+      gap: 8px;
+    }
+    .packaging-row {
+      min-width: 0;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 64px 34px;
+      gap: 7px;
+      align-items: center;
+    }
+    .packaging-row input,
+    .packaging-row select {
+      min-height: 38px;
+      font-size: 12px;
+    }
+    .packaging-remove {
+      width: 34px;
+      height: 38px;
+      display: grid;
+      place-items: center;
+      border: 1px solid #ead7d7;
+      border-radius: 8px;
+      background: #fff8f8;
+      color: #a34040;
+    }
+    .packaging-remove svg { width: 15px; height: 15px; }
+    .menu-inline-action {
+      min-height: 38px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      border: 1px dashed #b9939b;
+      border-radius: 8px;
+      background: #fff;
+      color: #8c2739;
+      font-size: 12px;
+      font-weight: 900;
+    }
+    .menu-inline-action svg { width: 15px; height: 15px; }
     .menu-admin-empty {
       min-height: 220px;
       display: grid;
@@ -2214,13 +2255,10 @@
               </div>
             </div>
             <div class="menu-field">
-              <label for="menuItemPackaging">Packaging used</label>
-              <select id="menuItemPackaging" name="packagingItemId"></select>
-              <div class="menu-helper-note">This packaging stock will reduce automatically when the item is sold.</div>
-            </div>
-            <div class="menu-field">
-              <label for="menuItemPackagingQty">Packaging qty per sale</label>
-              <input id="menuItemPackagingQty" name="packagingQty" type="number" min="0" step="0.1">
+              <label>Packaging used</label>
+              <div class="packaging-builder" id="menuPackagingRows"></div>
+              <button class="menu-inline-action" type="button" id="addMenuPackagingBtn"><i data-lucide="plus-circle"></i>Add packing material</button>
+              <div class="menu-helper-note">Add all packing materials used by one sale, like cup plus straw. Each material will reduce from inventory.</div>
             </div>
             <div class="menu-form-actions">
               <button class="menu-save-btn" type="submit"><i data-lucide="save"></i>Save item</button>
@@ -2593,6 +2631,28 @@
       return "";
     }
 
+    function defaultPackagingItemsFor(item) {
+      const primary = defaultPackagingFor(item);
+      const materials = primary ? [{ inventoryItemId: primary, qty: 1 }] : [];
+      if (item.category === "Cold Coffee" || item.category === "Thick Milkshake" || item.category === "Mojito / Soda / Ice Tea") {
+        materials.push({ inventoryItemId: "inv-straw", qty: 1 });
+      }
+      return materials;
+    }
+
+    function normalizePackagingItems(item) {
+      const rawItems = Array.isArray(item.packagingItems)
+        ? item.packagingItems
+        : (item.packagingItemId ? [{ inventoryItemId: item.packagingItemId, qty: item.packagingQty ?? 1 }] : null);
+      const materials = rawItems ?? defaultPackagingItemsFor(item);
+      return materials
+        .map(material => ({
+          inventoryItemId: material.inventoryItemId || material.id || "",
+          qty: Number(material.qty ?? material.packagingQty ?? 1) || 0
+        }))
+        .filter(material => material.inventoryItemId && material.qty > 0);
+    }
+
     function normalizeInventoryItem(item) {
       return {
         ...item,
@@ -2609,7 +2669,6 @@
 
     function normalizeMenuItem(item) {
       const price = Number(item.price) || 0;
-      const packagingItemId = item.packagingItemId === undefined ? defaultPackagingFor(item) : item.packagingItemId;
       return {
         ...item,
         id: item.id || `custom-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
@@ -2618,8 +2677,7 @@
         size: item.size || "Regular",
         price,
         profit: Number(item.profit ?? Math.round(price * 0.35)) || 0,
-        packagingItemId,
-        packagingQty: Number(item.packagingQty ?? (packagingItemId ? 1 : 0)) || 0,
+        packagingItems: normalizePackagingItems(item),
         code: (item.code || "").trim()
       };
     }
@@ -2685,8 +2743,7 @@
           size: item.size,
           price: item.price,
           profit: item.profit,
-          packagingItemId: item.packagingItemId,
-          packagingQty: item.packagingQty,
+          packagingItems: item.packagingItems,
           code: item.code
         });
         return groups;
@@ -3218,6 +3275,7 @@
       const sale = sales.find(entry => entry.orderNo === editingOrder.orderNo);
       if (!sale) return toast("That order is no longer available");
       const orderNumber = sale.orderNo;
+      applyInventoryUsageDelta(editingOrder.items, cart);
       sale.total = total.total;
       sale.count = total.count;
       sale.items = structuredClone(cart);
@@ -3255,7 +3313,7 @@
       if (editingOrder) return saveOrderEdit();
       const total = totals();
       if (!cart.length) return toast("Add items before completing sale");
-      applyInventoryForSale(cart);
+      applyInventoryUsageDelta([], cart);
       sales.unshift({
         orderNo,
         total: total.total,
@@ -3271,14 +3329,30 @@
       toast("Sale completed");
     }
 
-    function applyInventoryForSale(items) {
+    function packagingUsageForItems(items) {
+      const usage = new Map();
       items.forEach(item => {
-        if (!item.packagingItemId || !item.packagingQty) return;
-        const stockItem = inventoryItems.find(entry => entry.id === item.packagingItemId);
+        packagingMaterialsFor(item).forEach(material => {
+          const used = material.qty * item.qty;
+          usage.set(material.inventoryItemId, (usage.get(material.inventoryItemId) || 0) + used);
+        });
+      });
+      return usage;
+    }
+
+    function applyInventoryUsageDelta(previousItems, nextItems) {
+      const before = packagingUsageForItems(previousItems);
+      const after = packagingUsageForItems(nextItems);
+      const materialIds = new Set([...before.keys(), ...after.keys()]);
+      materialIds.forEach(id => {
+        const stockItem = inventoryItems.find(entry => entry.id === id);
         if (!stockItem) return;
-        const used = item.packagingQty * item.qty;
-        stockItem.stock = Math.max(0, Number((stockItem.stock - used).toFixed(2)));
-        stockItem.updatedAt = `Sold ${used} ${stockItem.unit}`;
+        const delta = (after.get(id) || 0) - (before.get(id) || 0);
+        if (!delta) return;
+        stockItem.stock = Math.max(0, Number((stockItem.stock - delta).toFixed(2)));
+        stockItem.updatedAt = delta > 0
+          ? `Sold ${delta} ${stockItem.unit}`
+          : `Restored ${Math.abs(delta)} ${stockItem.unit}`;
       });
       persistInventoryItems();
       renderInventoryAdmin();
@@ -3407,16 +3481,63 @@
       return item ? `${item.name} (${item.unit})` : "No packaging";
     }
 
+    function packagingMaterialsFor(item) {
+      if (Array.isArray(item.packagingItems)) return item.packagingItems;
+      if (item.packagingItemId) return [{ inventoryItemId: item.packagingItemId, qty: item.packagingQty || 1 }];
+      return [];
+    }
+
+    function packagingSummary(item) {
+      const materials = packagingMaterialsFor(item);
+      return materials.length
+        ? materials.map(material => `${inventoryLabel(material.inventoryItemId)} x ${material.qty}`).join(" · ")
+        : "No packaging";
+    }
+
     function menuAdminMatches(item, query) {
       return !query || [
         item.name,
         item.category,
         item.size,
         item.code,
-        inventoryLabel(item.packagingItemId),
+        packagingSummary(item),
         money(item.price),
         money(item.profit)
       ].some(value => String(value || "").toLowerCase().includes(query));
+    }
+
+    function packagingOptions(selectedId = "") {
+      return `<option value="">Select material</option>${inventoryItems
+        .filter(entry => entry.type === "Packaging" || entry.type === "Consumable")
+        .map(entry => `<option value="${escapeHtml(entry.id)}" ${entry.id === selectedId ? "selected" : ""}>${escapeHtml(entry.name)} · ${escapeHtml(entry.unit)} left ${entry.stock}</option>`)
+        .join("")}`;
+    }
+
+    function readPackagingRows() {
+      return Array.from($("menuPackagingRows").querySelectorAll(".packaging-row"))
+        .map(row => ({
+          inventoryItemId: row.querySelector("[data-packaging-material]").value,
+          qty: Number(row.querySelector("[data-packaging-qty]").value)
+        }))
+        .filter(material => material.inventoryItemId && material.qty > 0);
+    }
+
+    function renderMenuPackagingRows(materials = []) {
+      $("menuPackagingRows").innerHTML = materials.length ? materials.map((material, index) => `
+        <div class="packaging-row" data-packaging-row="${index}">
+          <select data-packaging-material aria-label="Packing material">${packagingOptions(material.inventoryItemId)}</select>
+          <input data-packaging-qty type="number" min="0" step="0.1" value="${material.qty}" aria-label="Qty used">
+          <button class="packaging-remove" type="button" data-remove-packaging="${index}" aria-label="Remove packing material"><i data-lucide="x"></i></button>
+        </div>
+      `).join("") : `<div class="menu-helper-note">No packing materials set yet.</div>`;
+      $("menuPackagingRows").querySelectorAll("[data-remove-packaging]").forEach(button => {
+        button.addEventListener("click", () => {
+          const materials = readPackagingRows();
+          materials.splice(Number(button.dataset.removePackaging), 1);
+          renderMenuPackagingRows(materials);
+        });
+      });
+      lucide.createIcons();
     }
 
     function renderMenuForm() {
@@ -3430,12 +3551,10 @@
       $("menuItemCode").value = item?.code || "";
       $("menuItemPrice").value = item?.price ?? "";
       $("menuItemProfit").value = item?.profit ?? "";
-      $("menuItemPackaging").innerHTML = `<option value="">No packaging</option>${inventoryItems
-        .filter(entry => entry.type === "Packaging" || entry.type === "Consumable")
-        .map(entry => `<option value="${escapeHtml(entry.id)}">${escapeHtml(entry.name)} · ${escapeHtml(entry.unit)} left ${entry.stock}</option>`)
-        .join("")}`;
-      $("menuItemPackaging").value = item?.packagingItemId || "";
-      $("menuItemPackagingQty").value = item?.packagingQty ?? (item?.packagingItemId ? 1 : 0);
+      renderMenuPackagingRows(item?.packagingItems || defaultPackagingItemsFor({
+        category: $("menuItemCategory").value,
+        size: $("menuItemSize").value
+      }));
     }
 
     function renderMenuAdmin() {
@@ -3453,7 +3572,7 @@
             <strong>${escapeHtml(item.name)}${item.size !== "Regular" ? ` (${escapeHtml(item.size)})` : ""}</strong>
             <span>${escapeHtml(item.category)} · ${escapeHtml(item.size)}${item.code ? ` · Key ${escapeHtml(item.code)}` : ""}</span>
             <small class="profit-pill">Profit ${money(item.profit)}</small>
-            ${item.packagingItemId ? `<small class="profit-pill warn">${escapeHtml(inventoryLabel(item.packagingItemId))} x ${item.packagingQty}</small>` : ""}
+            ${packagingMaterialsFor(item).map(material => `<small class="profit-pill warn">${escapeHtml(inventoryLabel(material.inventoryItemId))} x ${material.qty}</small>`).join("")}
           </div>
           <b>${money(item.price)}</b>
         </button>
@@ -3478,8 +3597,7 @@
             size: updatedItem.size,
             price: updatedItem.price,
             profit: updatedItem.profit,
-            packagingItemId: updatedItem.packagingItemId,
-            packagingQty: updatedItem.packagingQty,
+            packagingItems: structuredClone(updatedItem.packagingItems),
             code: updatedItem.code
           }
         : entry);
@@ -3496,8 +3614,7 @@
         code: $("menuItemCode").value,
         price: Number($("menuItemPrice").value),
         profit: Number($("menuItemProfit").value),
-        packagingItemId: $("menuItemPackaging").value,
-        packagingQty: Number($("menuItemPackagingQty").value)
+        packagingItems: readPackagingRows()
       });
       if (!formItem.name || !formItem.category) return toast("Item name and category are required");
       if (existing) {
@@ -3724,6 +3841,12 @@
     $("payBtn").addEventListener("click", completeSale);
     $("addMenuItemBtn").addEventListener("click", startNewMenuItem);
     $("resetMenuFormBtn").addEventListener("click", renderMenuForm);
+    $("addMenuPackagingBtn").addEventListener("click", () => {
+      const materials = readPackagingRows();
+      const firstMaterial = inventoryItems.find(entry => entry.type === "Packaging" || entry.type === "Consumable");
+      materials.push({ inventoryItemId: firstMaterial?.id || "", qty: 1 });
+      renderMenuPackagingRows(materials);
+    });
     $("menuAdminSearch").addEventListener("input", event => {
       menuAdminQuery = event.target.value;
       renderMenuAdmin();
