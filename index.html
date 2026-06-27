@@ -2144,12 +2144,11 @@
         <div><strong>Beaten Bucks</strong><span>Counter POS</span></div>
       </div>
       <div class="header-actions">
-        <button class="header-action" id="holdBtn"><i data-lucide="pause-circle"></i><span>Hold</span></button>
-        <button class="header-action" id="heldBtn"><i data-lucide="clipboard-list"></i><span>Held <b id="heldCount">0</b></span></button>
         <button class="header-action" id="menuBtn"><i data-lucide="notebook-tabs"></i><span>Menu</span></button>
         <button class="header-action" id="inventoryBtn"><i data-lucide="boxes"></i><span>Stock</span></button>
         <button class="header-action" id="ordersBtn"><i data-lucide="receipt-text"></i><span>Orders</span></button>
         <button class="header-action" id="salesBtn"><i data-lucide="chart-no-axes-column-increasing"></i><span>Sales</span></button>
+        <button class="header-action" id="fullscreenBtn"><i data-lucide="maximize-2"></i><span>Full</span></button>
       </div>
     </header>
 
@@ -2431,14 +2430,6 @@
   </div>
 
   <div class="drawer-backdrop" id="drawerBackdrop"></div>
-  <aside class="drawer-side-panel" id="heldDrawer" aria-label="Held orders">
-    <div class="drawer-head">
-      <h2 class="panel-title">Held Orders</h2>
-      <button class="icon-btn" id="closeHeldBtn" aria-label="Close held orders"><i data-lucide="x"></i></button>
-    </div>
-    <div class="held-list" id="heldList"></div>
-  </aside>
-
   <aside class="drawer-side-panel" id="salesDrawer" aria-label="Sales history">
     <div class="drawer-head">
       <h2 class="panel-title">Today's Sales</h2>
@@ -2579,7 +2570,6 @@
     let inventoryItems = [];
     let activeCategory = "";
     let cart = [];
-    let heldOrders = [];
     let sales = [];
     let orderNo = 1001;
     let pendingCustomizedGroup = null;
@@ -3218,31 +3208,10 @@
       if (!silent) toast("Current bill cleared");
     }
 
-    function holdOrder() {
-      if (editingOrder) return toast("Save or cancel this order edit first");
-      if (!cart.length) return toast("Add items before holding an order");
-      heldOrders.unshift({ orderNo, cart: structuredClone(cart), time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }), total: totals().total });
-      orderNo += 1;
-      clearCart(true);
-      renderHeld();
-      toast("Order held");
-    }
-
-    function restoreHeld(index) {
-      if (cart.length) holdOrder();
-      const restored = heldOrders.splice(index, 1)[0];
-      cart = structuredClone(restored.cart);
-      orderNo = restored.orderNo;
-      renderCart();
-      renderHeld();
-      closeDrawers();
-      toast(`Order #${orderNo} restored`);
-    }
-
     function startOrderEdit(orderNumber) {
       const sale = sales.find(entry => entry.orderNo === orderNumber);
       if (!sale) return toast("That order is no longer available");
-      if (cart.length && !editingOrder) holdOrder();
+      if (cart.length && !editingOrder) return toast("Complete or clear current order before editing");
       editingOrder = {
         orderNo: sale.orderNo,
         total: sale.total,
@@ -3290,23 +3259,6 @@
       expandedPreviousOrderNo = orderNumber;
       renderPreviousOrders();
       toast(`Order #${orderNumber} updated`);
-    }
-
-    function renderHeld() {
-      $("heldCount").textContent = heldOrders.length;
-      $("heldList").innerHTML = heldOrders.length ? heldOrders.map((order, index) => `
-        <div class="held-card">
-          <div class="flex justify-between gap-3">
-            <strong>Order #${order.orderNo}</strong>
-            <span>${money(order.total)}</span>
-          </div>
-          <div class="text-sm text-slate-500">${order.time} · ${order.cart.reduce((sum, item) => sum + item.qty, 0)} items</div>
-          <button class="btn btn-sm btn-primary" data-restore="${index}">Restore</button>
-        </div>
-      `).join("") : `<div class="empty-cart">No held orders.</div>`;
-      document.querySelectorAll("[data-restore]").forEach(button => {
-        button.addEventListener("click", () => restoreHeld(Number(button.dataset.restore)));
-      });
     }
 
     function completeSale() {
@@ -3799,9 +3751,33 @@
     }
 
     function closeDrawers(hideBackdrop = true) {
-      $("heldDrawer").classList.remove("open");
       $("salesDrawer").classList.remove("open");
       if (hideBackdrop) $("drawerBackdrop").classList.remove("open");
+    }
+
+    function renderFullscreenButton() {
+      const active = Boolean(document.fullscreenElement);
+      $("fullscreenBtn").innerHTML = active
+        ? `<i data-lucide="minimize-2"></i><span>Exit</span>`
+        : `<i data-lucide="maximize-2"></i><span>Full</span>`;
+      lucide.createIcons();
+    }
+
+    async function toggleFullscreen() {
+      try {
+        if (document.fullscreenElement) {
+          await document.exitFullscreen();
+        } else {
+          await document.documentElement.requestFullscreen();
+        }
+      } catch (error) {
+        toast("Fullscreen is not available in this browser");
+      } finally {
+        setTimeout(() => {
+          fitDesignFrame();
+          renderFullscreenButton();
+        }, 120);
+      }
     }
 
     document.addEventListener("keydown", (event) => {
@@ -3826,16 +3802,14 @@
       orderNo += cart.length ? 1 : 0;
       clearCart();
     });
-    $("holdBtn").addEventListener("click", holdOrder);
-    $("heldBtn").addEventListener("click", () => openDrawer("heldDrawer"));
     $("menuBtn").addEventListener("click", openMenuAdmin);
     $("inventoryBtn").addEventListener("click", openInventoryAdmin);
     $("ordersBtn").addEventListener("click", openPreviousOrders);
     $("salesBtn").addEventListener("click", () => openDrawer("salesDrawer"));
+    $("fullscreenBtn").addEventListener("click", toggleFullscreen);
     $("closeMenuBtn").addEventListener("click", closeMenuAdmin);
     $("closeInventoryBtn").addEventListener("click", closeInventoryAdmin);
     $("closeOrdersBtn").addEventListener("click", closePreviousOrders);
-    $("closeHeldBtn").addEventListener("click", closeDrawers);
     $("closeSalesBtn").addEventListener("click", closeDrawers);
     $("drawerBackdrop").addEventListener("click", closeDrawers);
     $("payBtn").addEventListener("click", completeSale);
@@ -3908,16 +3882,20 @@
 
     window.addEventListener("resize", fitDesignFrame);
     window.visualViewport?.addEventListener("resize", fitDesignFrame);
+    document.addEventListener("fullscreenchange", () => {
+      fitDesignFrame();
+      renderFullscreenButton();
+    });
 
     renderCategories();
     renderItems();
     renderCart();
-    renderHeld();
     renderSales();
     renderPreviousOrders();
     renderMenuAdmin();
     renderInventoryAdmin();
     lucide.createIcons();
+    renderFullscreenButton();
     fitDesignFrame();
   </script>
 </body>
