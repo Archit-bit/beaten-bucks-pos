@@ -1614,20 +1614,27 @@
       font-size: 13px;
       font-weight: 850;
     }
-    .menu-admin-screen {
+    .menu-admin-screen,
+    .inventory-admin-screen {
       min-width: 0;
       min-height: 0;
       display: none;
       grid-template-rows: auto auto minmax(0, 1fr);
       background: #f7f7f4;
     }
-    .app-shell.menu-view {
+    .app-shell.menu-view,
+    .app-shell.inventory-view {
       grid-template-rows: 86px minmax(0, 1fr);
     }
     .app-shell.menu-view .pos-layout,
     .app-shell.menu-view .order-dock,
     .app-shell.menu-view .previous-orders-screen { display: none; }
+    .app-shell.inventory-view .pos-layout,
+    .app-shell.inventory-view .order-dock,
+    .app-shell.inventory-view .previous-orders-screen,
+    .app-shell.inventory-view .menu-admin-screen { display: none; }
     .app-shell.menu-view .menu-admin-screen { display: grid; }
+    .app-shell.inventory-view .inventory-admin-screen { display: grid; }
     .menu-admin-tools {
       min-width: 0;
       display: grid;
@@ -1760,6 +1767,20 @@
       color: #18704e;
       font-size: 10px;
       font-weight: 900;
+    }
+    .profit-pill.warn {
+      background: #fff0d9;
+      color: #a35d00;
+    }
+    .profit-pill.danger {
+      background: #f9e4e4;
+      color: #a34040;
+    }
+    .menu-helper-note {
+      color: #807973;
+      font-size: 11px;
+      line-height: 1.28;
+      font-weight: 700;
     }
     .menu-admin-empty {
       min-height: 220px;
@@ -2085,6 +2106,7 @@
         <button class="header-action" id="holdBtn"><i data-lucide="pause-circle"></i><span>Hold</span></button>
         <button class="header-action" id="heldBtn"><i data-lucide="clipboard-list"></i><span>Held <b id="heldCount">0</b></span></button>
         <button class="header-action" id="menuBtn"><i data-lucide="notebook-tabs"></i><span>Menu</span></button>
+        <button class="header-action" id="inventoryBtn"><i data-lucide="boxes"></i><span>Stock</span></button>
         <button class="header-action" id="ordersBtn"><i data-lucide="receipt-text"></i><span>Orders</span></button>
         <button class="header-action" id="salesBtn"><i data-lucide="chart-no-axes-column-increasing"></i><span>Sales</span></button>
       </div>
@@ -2191,10 +2213,100 @@
                 <input id="menuItemProfit" name="profit" type="number" min="0" step="1" required>
               </div>
             </div>
+            <div class="menu-field">
+              <label for="menuItemPackaging">Packaging used</label>
+              <select id="menuItemPackaging" name="packagingItemId"></select>
+              <div class="menu-helper-note">This packaging stock will reduce automatically when the item is sold.</div>
+            </div>
+            <div class="menu-field">
+              <label for="menuItemPackagingQty">Packaging qty per sale</label>
+              <input id="menuItemPackagingQty" name="packagingQty" type="number" min="0" step="0.1">
+            </div>
             <div class="menu-form-actions">
               <button class="menu-save-btn" type="submit"><i data-lucide="save"></i>Save item</button>
               <button class="menu-secondary-btn" type="button" id="resetMenuFormBtn"><i data-lucide="rotate-ccw"></i>Reset</button>
             </div>
+          </form>
+        </aside>
+      </div>
+    </section>
+
+    <section class="inventory-admin-screen" id="inventoryAdminScreen" aria-label="Inventory management">
+      <div class="orders-page-head">
+        <button class="orders-back-btn" id="closeInventoryBtn" aria-label="Back to point of sale"><i data-lucide="arrow-left"></i></button>
+        <div>
+          <span class="orders-page-kicker">Stock control</span>
+          <h2 class="orders-page-title">Inventory</h2>
+          <p class="orders-page-subtitle">Add stock, enter night closing count, and manage packaging used by menu items.</p>
+        </div>
+      </div>
+      <div class="menu-admin-tools">
+        <div class="orders-stat"><span>Inventory items</span><strong id="inventoryItemCount">0</strong></div>
+        <div class="orders-stat accent"><span>Packaging stock</span><strong id="inventoryPackagingTotal">0</strong></div>
+        <div class="orders-stat"><span>Low stock</span><strong id="inventoryLowStockCount">0</strong></div>
+        <button class="menu-admin-add" id="addInventoryItemBtn"><i data-lucide="plus-circle"></i>Add inventory</button>
+      </div>
+      <div class="menu-admin-body">
+        <div class="menu-admin-list-panel">
+          <label class="menu-admin-search">
+            <i data-lucide="search"></i>
+            <input id="inventorySearch" type="search" placeholder="Search inventory, packaging or unit" aria-label="Search inventory">
+          </label>
+          <div class="menu-admin-list" id="inventoryList"></div>
+        </div>
+        <aside class="menu-admin-form-panel" aria-label="Inventory editor">
+          <div class="menu-form-head">
+            <span id="inventoryFormMode">Edit stock</span>
+            <strong id="inventoryFormTitle">Select inventory</strong>
+          </div>
+          <form class="menu-admin-form" id="inventoryForm">
+            <div class="menu-field">
+              <label for="inventoryName">Inventory name</label>
+              <input id="inventoryName" name="name" autocomplete="off" required>
+            </div>
+            <div class="menu-field-grid">
+              <div class="menu-field">
+                <label for="inventoryType">Type</label>
+                <select id="inventoryType" name="type">
+                  <option>Packaging</option>
+                  <option>Ingredient</option>
+                  <option>Consumable</option>
+                </select>
+              </div>
+              <div class="menu-field">
+                <label for="inventoryUnit">Unit</label>
+                <input id="inventoryUnit" name="unit" autocomplete="off" placeholder="pcs, kg, ltr" required>
+              </div>
+            </div>
+            <div class="menu-field-grid">
+              <div class="menu-field">
+                <label for="inventoryStock">Current stock</label>
+                <input id="inventoryStock" name="stock" type="number" min="0" step="0.1" required>
+              </div>
+              <div class="menu-field">
+                <label for="inventoryMinStock">Low alert at</label>
+                <input id="inventoryMinStock" name="minStock" type="number" min="0" step="0.1" required>
+              </div>
+            </div>
+            <div class="menu-form-actions">
+              <button class="menu-save-btn" type="submit"><i data-lucide="save"></i>Save stock</button>
+              <button class="menu-secondary-btn" type="button" id="resetInventoryFormBtn"><i data-lucide="rotate-ccw"></i>Reset</button>
+            </div>
+            <div class="menu-field-grid">
+              <div class="menu-field">
+                <label for="inventoryAddQty">Add stock</label>
+                <input id="inventoryAddQty" type="number" min="0" step="0.1" placeholder="Qty received">
+              </div>
+              <div class="menu-field">
+                <label for="inventoryNightCount">Night left</label>
+                <input id="inventoryNightCount" type="number" min="0" step="0.1" placeholder="Closing count">
+              </div>
+            </div>
+            <div class="menu-form-actions">
+              <button class="menu-secondary-btn" type="button" id="addInventoryStockBtn"><i data-lucide="package-plus"></i>Add stock</button>
+              <button class="menu-save-btn" type="button" id="closeInventoryNightBtn"><i data-lucide="moon"></i>Update left</button>
+            </div>
+            <div class="menu-helper-note">At night, enter the actual items left. The system replaces current stock with that closing count.</div>
           </form>
         </aside>
       </div>
@@ -2412,11 +2524,21 @@
       { id: "snack-12", name: "Paneer Patties", size: "Regular", price: 40, category: "Snacks", code: "44" },
       { id: "snack-13", name: "Masala Patties", size: "Regular", price: 40, category: "Snacks", code: "45" }
     ];
+    const seedInventoryItems = [
+      { id: "inv-cold-cup-m", name: "Cold cup M", type: "Packaging", unit: "pcs", stock: 220, minStock: 50 },
+      { id: "inv-cold-cup-l", name: "Cold cup L", type: "Packaging", unit: "pcs", stock: 180, minStock: 45 },
+      { id: "inv-hot-cup-m", name: "Hot cup M", type: "Packaging", unit: "pcs", stock: 260, minStock: 60 },
+      { id: "inv-hot-cup-l", name: "Hot cup L", type: "Packaging", unit: "pcs", stock: 180, minStock: 45 },
+      { id: "inv-snack-plate", name: "Snack plate", type: "Packaging", unit: "pcs", stock: 150, minStock: 35 },
+      { id: "inv-straw", name: "Straw", type: "Consumable", unit: "pcs", stock: 320, minStock: 80 },
+      { id: "inv-napkin", name: "Napkin", type: "Consumable", unit: "pcs", stock: 500, minStock: 100 }
+    ];
     let menuItems = [];
     let groupedMenuItems = [];
     let categories = [];
     let selectorFamilies = [];
     let selectorFamilyByGroupId = new Map();
+    let inventoryItems = [];
     let activeCategory = "";
     let cart = [];
     let heldOrders = [];
@@ -2432,6 +2554,8 @@
     let editingOrder = null;
     let menuAdminQuery = "";
     let editingMenuItemId = "";
+    let inventoryQuery = "";
+    let editingInventoryItemId = "";
 
     const $ = (id) => document.getElementById(id);
     const money = (value) => `Rs ${rupee.format(value || 0)}`;
@@ -2444,6 +2568,7 @@
     const coldCoffeeDefaults = { strength: "Light", sugar: "Sugar", ice: "Ice" };
     const milkshakeDefaults = { strength: "Light", sugar: "Sugar", ice: "Ice" };
     const menuStorageKey = "beaten-bucks-menu-items-v1";
+    const inventoryStorageKey = "beaten-bucks-inventory-items-v1";
     const isCustomizableDrink = (item) => ["Cold Coffee", "Thick Milkshake"].includes(item.category);
     const customizationDefaultsFor = (item) => item.category === "Thick Milkshake" ? milkshakeDefaults : coldCoffeeDefaults;
     const selectorFamilyConfigs = [
@@ -2456,8 +2581,35 @@
         matcher: (group) => group.name.toLowerCase().includes("mojito")
       }
     ];
+
+    function defaultPackagingFor(item) {
+      if (item.category === "Cold Coffee" || item.category === "Thick Milkshake" || item.category === "Mojito / Soda / Ice Tea") {
+        return item.size === "L" ? "inv-cold-cup-l" : "inv-cold-cup-m";
+      }
+      if (item.category === "Hot Coffee" || item.category === "Tea") {
+        return item.size === "L" ? "inv-hot-cup-l" : "inv-hot-cup-m";
+      }
+      if (item.category === "Snacks") return "inv-snack-plate";
+      return "";
+    }
+
+    function normalizeInventoryItem(item) {
+      return {
+        ...item,
+        id: item.id || `inventory-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+        name: (item.name || "New inventory").trim(),
+        type: item.type || "Packaging",
+        unit: (item.unit || "pcs").trim(),
+        stock: Number(item.stock) || 0,
+        minStock: Number(item.minStock) || 0,
+        lastCount: Number(item.lastCount ?? item.stock) || 0,
+        updatedAt: item.updatedAt || "Ready"
+      };
+    }
+
     function normalizeMenuItem(item) {
       const price = Number(item.price) || 0;
+      const packagingItemId = item.packagingItemId === undefined ? defaultPackagingFor(item) : item.packagingItemId;
       return {
         ...item,
         id: item.id || `custom-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
@@ -2466,6 +2618,8 @@
         size: item.size || "Regular",
         price,
         profit: Number(item.profit ?? Math.round(price * 0.35)) || 0,
+        packagingItemId,
+        packagingQty: Number(item.packagingQty ?? (packagingItemId ? 1 : 0)) || 0,
         code: (item.code || "").trim()
       };
     }
@@ -2496,6 +2650,24 @@
       }
     }
 
+    function loadInventoryItems() {
+      try {
+        const saved = JSON.parse(localStorage.getItem(inventoryStorageKey) || "null");
+        if (Array.isArray(saved) && saved.length) return saved.map(normalizeInventoryItem);
+      } catch (error) {
+        console.warn("Could not load saved inventory", error);
+      }
+      return seedInventoryItems.map(normalizeInventoryItem);
+    }
+
+    function persistInventoryItems() {
+      try {
+        localStorage.setItem(inventoryStorageKey, JSON.stringify(inventoryItems));
+      } catch (error) {
+        console.warn("Could not save inventory", error);
+      }
+    }
+
     function rebuildMenuModel() {
       menuItems = menuItems.map(normalizeMenuItem);
       groupedMenuItems = Object.values(menuItems.reduce((groups, item) => {
@@ -2513,6 +2685,8 @@
           size: item.size,
           price: item.price,
           profit: item.profit,
+          packagingItemId: item.packagingItemId,
+          packagingQty: item.packagingQty,
           code: item.code
         });
         return groups;
@@ -2536,6 +2710,7 @@
       );
     }
 
+    inventoryItems = loadInventoryItems();
     menuItems = loadMenuItems();
     rebuildMenuModel();
 
@@ -3080,6 +3255,7 @@
       if (editingOrder) return saveOrderEdit();
       const total = totals();
       if (!cart.length) return toast("Add items before completing sale");
+      applyInventoryForSale(cart);
       sales.unshift({
         orderNo,
         total: total.total,
@@ -3093,6 +3269,19 @@
       renderSales();
       renderPreviousOrders();
       toast("Sale completed");
+    }
+
+    function applyInventoryForSale(items) {
+      items.forEach(item => {
+        if (!item.packagingItemId || !item.packagingQty) return;
+        const stockItem = inventoryItems.find(entry => entry.id === item.packagingItemId);
+        if (!stockItem) return;
+        const used = item.packagingQty * item.qty;
+        stockItem.stock = Math.max(0, Number((stockItem.stock - used).toFixed(2)));
+        stockItem.updatedAt = `Sold ${used} ${stockItem.unit}`;
+      });
+      persistInventoryItems();
+      renderInventoryAdmin();
     }
 
     function renderSales() {
@@ -3202,6 +3391,7 @@
     function openPreviousOrders() {
       closeDrawers();
       closeMenuAdmin();
+      closeInventoryAdmin();
       previousOrdersQuery = "";
       expandedPreviousOrderNo = null;
       document.querySelector(".app-shell").classList.add("orders-view");
@@ -3212,12 +3402,18 @@
       document.querySelector(".app-shell").classList.remove("orders-view");
     }
 
+    function inventoryLabel(id) {
+      const item = inventoryItems.find(entry => entry.id === id);
+      return item ? `${item.name} (${item.unit})` : "No packaging";
+    }
+
     function menuAdminMatches(item, query) {
       return !query || [
         item.name,
         item.category,
         item.size,
         item.code,
+        inventoryLabel(item.packagingItemId),
         money(item.price),
         money(item.profit)
       ].some(value => String(value || "").toLowerCase().includes(query));
@@ -3234,6 +3430,12 @@
       $("menuItemCode").value = item?.code || "";
       $("menuItemPrice").value = item?.price ?? "";
       $("menuItemProfit").value = item?.profit ?? "";
+      $("menuItemPackaging").innerHTML = `<option value="">No packaging</option>${inventoryItems
+        .filter(entry => entry.type === "Packaging" || entry.type === "Consumable")
+        .map(entry => `<option value="${escapeHtml(entry.id)}">${escapeHtml(entry.name)} · ${escapeHtml(entry.unit)} left ${entry.stock}</option>`)
+        .join("")}`;
+      $("menuItemPackaging").value = item?.packagingItemId || "";
+      $("menuItemPackagingQty").value = item?.packagingQty ?? (item?.packagingItemId ? 1 : 0);
     }
 
     function renderMenuAdmin() {
@@ -3251,6 +3453,7 @@
             <strong>${escapeHtml(item.name)}${item.size !== "Regular" ? ` (${escapeHtml(item.size)})` : ""}</strong>
             <span>${escapeHtml(item.category)} · ${escapeHtml(item.size)}${item.code ? ` · Key ${escapeHtml(item.code)}` : ""}</span>
             <small class="profit-pill">Profit ${money(item.profit)}</small>
+            ${item.packagingItemId ? `<small class="profit-pill warn">${escapeHtml(inventoryLabel(item.packagingItemId))} x ${item.packagingQty}</small>` : ""}
           </div>
           <b>${money(item.price)}</b>
         </button>
@@ -3275,6 +3478,8 @@
             size: updatedItem.size,
             price: updatedItem.price,
             profit: updatedItem.profit,
+            packagingItemId: updatedItem.packagingItemId,
+            packagingQty: updatedItem.packagingQty,
             code: updatedItem.code
           }
         : entry);
@@ -3290,7 +3495,9 @@
         size: $("menuItemSize").value,
         code: $("menuItemCode").value,
         price: Number($("menuItemPrice").value),
-        profit: Number($("menuItemProfit").value)
+        profit: Number($("menuItemProfit").value),
+        packagingItemId: $("menuItemPackaging").value,
+        packagingQty: Number($("menuItemPackagingQty").value)
       });
       if (!formItem.name || !formItem.category) return toast("Item name and category are required");
       if (existing) {
@@ -3311,6 +3518,135 @@
       renderMenuAdmin();
     }
 
+    function inventoryMatches(item, query) {
+      return !query || [
+        item.name,
+        item.type,
+        item.unit,
+        item.stock,
+        item.minStock
+      ].some(value => String(value || "").toLowerCase().includes(query));
+    }
+
+    function renderInventoryForm() {
+      const item = inventoryItems.find(entry => entry.id === editingInventoryItemId);
+      const isNew = !item;
+      $("inventoryFormMode").textContent = isNew ? "Add inventory" : "Edit stock";
+      $("inventoryFormTitle").textContent = isNew ? "New stock item" : item.name;
+      $("inventoryName").value = item?.name || "";
+      $("inventoryType").value = item?.type || "Packaging";
+      $("inventoryUnit").value = item?.unit || "pcs";
+      $("inventoryStock").value = item?.stock ?? "";
+      $("inventoryMinStock").value = item?.minStock ?? "";
+      $("inventoryAddQty").value = "";
+      $("inventoryNightCount").value = "";
+    }
+
+    function renderInventoryAdmin() {
+      const lowStock = inventoryItems.filter(item => item.stock <= item.minStock);
+      const packagingTotal = inventoryItems
+        .filter(item => item.type === "Packaging")
+        .reduce((sum, item) => sum + item.stock, 0);
+      $("inventoryItemCount").textContent = inventoryItems.length;
+      $("inventoryPackagingTotal").textContent = rupee.format(packagingTotal);
+      $("inventoryLowStockCount").textContent = lowStock.length;
+
+      const query = inventoryQuery.trim().toLowerCase();
+      const visibleItems = inventoryItems.filter(item => inventoryMatches(item, query));
+      $("inventoryList").innerHTML = visibleItems.length ? visibleItems.map(item => {
+        const low = item.stock <= item.minStock;
+        return `
+          <button class="menu-admin-item ${item.id === editingInventoryItemId ? "active" : ""}" data-inventory-edit="${item.id}">
+            <div>
+              <strong>${escapeHtml(item.name)}</strong>
+              <span>${escapeHtml(item.type)} · ${escapeHtml(item.unit)} · Min ${item.minStock}</span>
+              <small class="profit-pill ${low ? "danger" : ""}">${low ? "Low stock" : "In stock"}</small>
+              <small class="profit-pill warn">Last: ${escapeHtml(item.updatedAt)}</small>
+            </div>
+            <b>${rupee.format(item.stock)}</b>
+          </button>
+        `;
+      }).join("") : `<div class="menu-admin-empty"><i data-lucide="package-search"></i><strong>No inventory found</strong><span>Try another search or add a new stock item.</span></div>`;
+
+      $("inventoryList").querySelectorAll("[data-inventory-edit]").forEach(button => {
+        button.addEventListener("click", () => {
+          editingInventoryItemId = button.dataset.inventoryEdit;
+          renderInventoryAdmin();
+        });
+      });
+      renderInventoryForm();
+      renderMenuAdmin();
+      lucide.createIcons();
+    }
+
+    function saveInventoryItem(event) {
+      event.preventDefault();
+      const existing = inventoryItems.find(item => item.id === editingInventoryItemId);
+      const formItem = normalizeInventoryItem({
+        id: existing?.id || `inventory-${Date.now()}`,
+        name: $("inventoryName").value,
+        type: $("inventoryType").value,
+        unit: $("inventoryUnit").value,
+        stock: Number($("inventoryStock").value),
+        minStock: Number($("inventoryMinStock").value),
+        lastCount: Number($("inventoryStock").value),
+        updatedAt: existing?.updatedAt || "Saved"
+      });
+      if (!formItem.name) return toast("Inventory name is required");
+      if (existing) {
+        Object.assign(existing, formItem);
+        toast(`${formItem.name} stock saved`);
+      } else {
+        inventoryItems.push(formItem);
+        editingInventoryItemId = formItem.id;
+        toast(`${formItem.name} added to inventory`);
+      }
+      persistInventoryItems();
+      renderInventoryAdmin();
+      renderMenuAdmin();
+    }
+
+    function updateInventoryStock(mode) {
+      const item = inventoryItems.find(entry => entry.id === editingInventoryItemId);
+      if (!item) return toast("Select inventory first");
+      if (mode === "add") {
+        const qty = Number($("inventoryAddQty").value);
+        if (!qty) return toast("Enter quantity to add");
+        item.stock += qty;
+        item.updatedAt = `Added ${qty} ${item.unit}`;
+        toast(`${item.name} stock increased`);
+      } else {
+        const left = Number($("inventoryNightCount").value);
+        if ($("inventoryNightCount").value === "") return toast("Enter night left count");
+        item.stock = left;
+        item.lastCount = left;
+        item.updatedAt = `Night left ${left} ${item.unit}`;
+        toast(`${item.name} closing count updated`);
+      }
+      persistInventoryItems();
+      renderInventoryAdmin();
+      renderMenuAdmin();
+    }
+
+    function startNewInventoryItem() {
+      editingInventoryItemId = "";
+      renderInventoryAdmin();
+      $("inventoryName").focus();
+    }
+
+    function openInventoryAdmin() {
+      closeDrawers();
+      closePreviousOrders();
+      closeMenuAdmin();
+      document.querySelector(".app-shell").classList.add("inventory-view");
+      if (!editingInventoryItemId && inventoryItems.length) editingInventoryItemId = inventoryItems[0].id;
+      renderInventoryAdmin();
+    }
+
+    function closeInventoryAdmin() {
+      document.querySelector(".app-shell").classList.remove("inventory-view");
+    }
+
     function startNewMenuItem() {
       editingMenuItemId = "";
       renderMenuAdmin();
@@ -3320,6 +3656,7 @@
     function openMenuAdmin() {
       closeDrawers();
       closePreviousOrders();
+      closeInventoryAdmin();
       document.querySelector(".app-shell").classList.add("menu-view");
       if (editingOrder) toast("Menu can be edited while this order remains open");
       if (!editingMenuItemId && menuItems.length) editingMenuItemId = menuItems[0].id;
@@ -3360,6 +3697,7 @@
         closeDrawers();
         closePreviousOrders();
         closeMenuAdmin();
+        closeInventoryAdmin();
       }
     });
 
@@ -3374,9 +3712,11 @@
     $("holdBtn").addEventListener("click", holdOrder);
     $("heldBtn").addEventListener("click", () => openDrawer("heldDrawer"));
     $("menuBtn").addEventListener("click", openMenuAdmin);
+    $("inventoryBtn").addEventListener("click", openInventoryAdmin);
     $("ordersBtn").addEventListener("click", openPreviousOrders);
     $("salesBtn").addEventListener("click", () => openDrawer("salesDrawer"));
     $("closeMenuBtn").addEventListener("click", closeMenuAdmin);
+    $("closeInventoryBtn").addEventListener("click", closeInventoryAdmin);
     $("closeOrdersBtn").addEventListener("click", closePreviousOrders);
     $("closeHeldBtn").addEventListener("click", closeDrawers);
     $("closeSalesBtn").addEventListener("click", closeDrawers);
@@ -3390,6 +3730,16 @@
       $("menuAdminSearch").focus();
     });
     $("menuAdminForm").addEventListener("submit", saveMenuAdminItem);
+    $("addInventoryItemBtn").addEventListener("click", startNewInventoryItem);
+    $("resetInventoryFormBtn").addEventListener("click", renderInventoryForm);
+    $("inventorySearch").addEventListener("input", event => {
+      inventoryQuery = event.target.value;
+      renderInventoryAdmin();
+      $("inventorySearch").focus();
+    });
+    $("inventoryForm").addEventListener("submit", saveInventoryItem);
+    $("addInventoryStockBtn").addEventListener("click", () => updateInventoryStock("add"));
+    $("closeInventoryNightBtn").addEventListener("click", () => updateInventoryStock("night"));
     $("closeCustomizeBtn").addEventListener("click", closeCustomization);
     $("customizeBackdrop").addEventListener("click", event => {
       if (event.target === $("customizeBackdrop")) closeCustomization();
@@ -3443,6 +3793,7 @@
     renderSales();
     renderPreviousOrders();
     renderMenuAdmin();
+    renderInventoryAdmin();
     lucide.createIcons();
     fitDesignFrame();
   </script>
