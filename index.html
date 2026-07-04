@@ -828,7 +828,11 @@
       letter-spacing: 0.06em;
       text-transform: uppercase;
     }
-    .order-slot strong { font-size: 20px; line-height: 1; }
+    .order-slot strong {
+      font-size: 19px;
+      line-height: 1.08;
+      padding-bottom: 1px;
+    }
     .order-slot small { letter-spacing: 0; text-transform: none; }
     .new-order-btn {
       width: 58px;
@@ -1116,16 +1120,6 @@
     }
     .variant-choice:first-child { border-left: 0; }
     .variant-choice strong { min-width: 0; color: #8c2739; font-size: 12px; white-space: nowrap; }
-    .variant-choice.has-qty {
-      grid-template-columns: auto minmax(0, 1fr);
-      grid-template-areas:
-        "size price"
-        "qty qty";
-      row-gap: 4px;
-      padding: 5px 7px;
-    }
-    .variant-choice.has-qty > span { grid-area: size; }
-    .variant-choice.has-qty > strong { grid-area: price; }
     .variant-choice em {
       min-width: 17px;
       display: grid;
@@ -1137,36 +1131,6 @@
       font-style: normal;
     }
     .variant-choice.selected { background: #f9e4da; }
-    .tile-qty-controls {
-      grid-area: qty;
-      display: grid;
-      grid-template-columns: 28px minmax(0, 1fr) 28px;
-      overflow: hidden;
-      border: 1px solid #dfc5c4;
-      border-radius: 8px;
-      background: #fff;
-    }
-    .tile-qty-btn {
-      min-width: 0;
-      min-height: 27px;
-      border: 0;
-      background: transparent;
-      color: #8c2739;
-      font-size: 16px;
-      font-weight: 900;
-      line-height: 1;
-    }
-    .tile-qty-btn + .tile-qty-value,
-    .tile-qty-value + .tile-qty-btn {
-      border-left: 1px solid #ead7d7;
-    }
-    .tile-qty-value {
-      display: grid;
-      place-items: center;
-      color: #262825;
-      font-size: 12px;
-      font-weight: 900;
-    }
     .order-dock {
       min-width: 0;
       min-height: 0;
@@ -1201,10 +1165,16 @@
       color: #8c2739;
       font-size: 13px;
     }
-    .order-summary-total { display: flex; align-items: baseline; gap: 10px; white-space: nowrap; }
+    .order-summary-total { display: flex; align-items: baseline; gap: 10px; white-space: nowrap; min-width: 0; }
     .order-summary-total span { color: #777a75; font-size: 13px; font-weight: 700; }
-    .order-summary-total strong { color: #8c2739; font-size: 25px; line-height: 1; font-weight: 900; }
-    .summary-total-value { display: grid; justify-items: end; gap: 2px; }
+    .order-summary-total strong {
+      color: #8c2739;
+      font-size: 24px;
+      line-height: 1.08;
+      font-weight: 900;
+      padding-bottom: 1px;
+    }
+    .summary-total-value { display: grid; justify-items: end; gap: 2px; min-width: 0; }
     .original-total,
     .order-delta { display: none; }
     .order-dock.editing .original-total {
@@ -1673,7 +1643,8 @@
       font-weight: 850;
     }
     .menu-admin-screen,
-    .inventory-admin-screen {
+    .inventory-admin-screen,
+    .layout-setup-screen {
       min-width: 0;
       min-height: 0;
       display: none;
@@ -1681,7 +1652,8 @@
       background: #f7f7f4;
     }
     .app-shell.menu-view,
-    .app-shell.inventory-view {
+    .app-shell.inventory-view,
+    .app-shell.layout-view {
       grid-template-rows: 86px minmax(0, 1fr);
     }
     .app-shell.menu-view .pos-layout,
@@ -1691,8 +1663,14 @@
     .app-shell.inventory-view .order-dock,
     .app-shell.inventory-view .previous-orders-screen,
     .app-shell.inventory-view .menu-admin-screen { display: none; }
+    .app-shell.layout-view .pos-layout,
+    .app-shell.layout-view .order-dock,
+    .app-shell.layout-view .previous-orders-screen,
+    .app-shell.layout-view .menu-admin-screen,
+    .app-shell.layout-view .inventory-admin-screen { display: none; }
     .app-shell.menu-view .menu-admin-screen { display: grid; }
     .app-shell.inventory-view .inventory-admin-screen { display: grid; }
+    .app-shell.layout-view .layout-setup-screen { display: grid; }
     .menu-admin-tools {
       min-width: 0;
       display: grid;
@@ -1989,6 +1967,141 @@
     }
     .menu-save-btn svg,
     .menu-secondary-btn svg { width: 16px; height: 16px; }
+    .layout-setup-body {
+      min-width: 0;
+      min-height: 0;
+      display: grid;
+      grid-template-columns: 292px minmax(0, 1fr);
+      gap: 12px;
+      padding: 14px 16px 18px;
+      overflow: hidden;
+    }
+    .layout-panel {
+      min-width: 0;
+      min-height: 0;
+      display: grid;
+      grid-template-rows: auto minmax(0, 1fr);
+      overflow: hidden;
+      border: 1px solid #dedbd5;
+      border-radius: 11px;
+      background: #fff;
+    }
+    .layout-panel-head {
+      min-width: 0;
+      padding: 14px 15px 12px;
+      border-bottom: 1px solid #e5e2dd;
+      background: #fcfcfa;
+    }
+    .layout-panel-head span {
+      display: block;
+      color: #8c2739;
+      font-size: 10px;
+      font-weight: 900;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+    .layout-panel-head strong {
+      display: block;
+      margin-top: 4px;
+      overflow: hidden;
+      color: #292b28;
+      font-size: 18px;
+      line-height: 1.12;
+      font-weight: 900;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .layout-list {
+      min-height: 0;
+      display: grid;
+      align-content: start;
+      gap: 8px;
+      overflow-y: auto;
+      padding: 10px;
+      background: #f8f8f5;
+    }
+    .layout-row {
+      min-width: 0;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 8px;
+      align-items: stretch;
+      border: 1px solid #e1ded8;
+      border-radius: 9px;
+      background: #fff;
+      overflow: hidden;
+    }
+    .layout-row.active {
+      border-color: #9d3f50;
+      background: #fae7de;
+      box-shadow: inset 0 0 0 1px #9d3f50;
+    }
+    .layout-main {
+      min-width: 0;
+      padding: 11px 12px;
+      display: grid;
+      align-content: center;
+      gap: 4px;
+      border: 0;
+      background: transparent;
+      color: #292b28;
+      text-align: left;
+    }
+    .layout-main strong {
+      min-width: 0;
+      overflow: hidden;
+      font-size: 14px;
+      line-height: 1.16;
+      font-weight: 900;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .layout-main span {
+      min-width: 0;
+      overflow: hidden;
+      color: #77746f;
+      font-size: 11px;
+      font-weight: 750;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .layout-controls {
+      display: grid;
+      grid-template-columns: repeat(2, 36px);
+      border-left: 1px solid #e5e2dd;
+      background: #fcfcfa;
+    }
+    .layout-icon-btn {
+      width: 36px;
+      min-height: 42px;
+      display: grid;
+      place-items: center;
+      border: 0;
+      border-left: 1px solid #ece9e4;
+      background: transparent;
+      color: #7d4a56;
+    }
+    .layout-icon-btn:first-child { border-left: 0; }
+    .layout-icon-btn:disabled {
+      color: #bdb8b2;
+      background: #f2f1ee;
+    }
+    .layout-icon-btn svg { width: 18px; height: 18px; }
+    .layout-empty {
+      min-height: 220px;
+      display: grid;
+      place-items: center;
+      align-content: center;
+      gap: 8px;
+      border: 1px dashed #d3cfc9;
+      border-radius: 10px;
+      background: #fff;
+      color: #73736e;
+      text-align: center;
+      font-size: 13px;
+      font-weight: 750;
+    }
+    .layout-empty svg { width: 30px; height: 30px; color: #9a5361; }
     .customize-backdrop {
       position: absolute;
       inset: 0;
@@ -2185,6 +2298,152 @@
       background: #8c2739;
       color: #fff;
     }
+    .virtual-keyboard {
+      position: absolute;
+      left: 12px;
+      right: 12px;
+      bottom: 12px;
+      z-index: 180;
+      display: none;
+      grid-template-rows: auto auto minmax(0, 1fr);
+      gap: 8px;
+      padding: 12px;
+      border: 1px solid #cbc7c0;
+      border-radius: 12px;
+      background: #fdfdfb;
+      box-shadow: 0 24px 60px rgba(32, 24, 20, 0.28);
+    }
+    .virtual-keyboard.open { display: grid; }
+    .keyboard-head {
+      min-width: 0;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 10px;
+      align-items: center;
+    }
+    .keyboard-target {
+      min-width: 0;
+      display: grid;
+      gap: 2px;
+    }
+    .keyboard-target span {
+      color: #8c2739;
+      font-size: 10px;
+      font-weight: 900;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+    .keyboard-target strong {
+      min-width: 0;
+      overflow: hidden;
+      color: #292b28;
+      font-size: 16px;
+      line-height: 1.15;
+      font-weight: 900;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .keyboard-close {
+      width: 42px;
+      height: 42px;
+      display: grid;
+      place-items: center;
+      border: 1px solid #dedbd5;
+      border-radius: 9px;
+      background: #fff;
+      color: #7d4a56;
+    }
+    .keyboard-close svg { width: 20px; height: 20px; }
+    .keyboard-preview {
+      min-width: 0;
+      min-height: 42px;
+      padding: 8px 11px;
+      overflow: hidden;
+      border: 1px solid #dedbd5;
+      border-radius: 9px;
+      background: #fff;
+      color: #292b28;
+      font-size: 17px;
+      line-height: 1.35;
+      font-weight: 800;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .keyboard-mode-row {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr)) 86px;
+      gap: 8px;
+    }
+    .keyboard-mode,
+    .keyboard-action,
+    .keyboard-key {
+      border: 1px solid #dedbd5;
+      border-radius: 8px;
+      background: #fff;
+      color: #2d302c;
+      font-weight: 900;
+    }
+    .keyboard-mode {
+      min-height: 40px;
+      color: #68434c;
+      font-size: 13px;
+    }
+    .keyboard-mode.active {
+      border-color: #8c2739;
+      background: #fae7de;
+      color: #8c2739;
+      box-shadow: inset 0 0 0 1px #8c2739;
+    }
+    .keyboard-action {
+      min-height: 40px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      color: #8c2739;
+      font-size: 13px;
+    }
+    .keyboard-action svg { width: 17px; height: 17px; }
+    .keyboard-keys {
+      min-width: 0;
+      display: grid;
+      gap: 7px;
+    }
+    .keyboard-row {
+      min-width: 0;
+      display: grid;
+      grid-template-columns: repeat(10, minmax(0, 1fr));
+      gap: 7px;
+    }
+    .keyboard-row.numberpad { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    .keyboard-row.compact { grid-template-columns: 1.35fr repeat(8, minmax(0, 1fr)) 1.35fr; }
+    .keyboard-row.actions { grid-template-columns: 1.35fr 1fr 1fr minmax(0, 4fr) 1fr 1.35fr; }
+    .keyboard-key {
+      min-width: 0;
+      min-height: 48px;
+      display: grid;
+      place-items: center;
+      padding: 0 5px;
+      font-size: 18px;
+      line-height: 1;
+    }
+    .keyboard-key.wide {
+      font-size: 13px;
+    }
+    .keyboard-key.primary {
+      border-color: #8c2739;
+      background: #8c2739;
+      color: #fff;
+    }
+    .keyboard-key.danger {
+      color: #a34040;
+      background: #fff8f8;
+    }
+    .keyboard-key svg { width: 19px; height: 19px; }
+    input.virtual-keyboard-field:focus {
+      border-color: #8c2739;
+      box-shadow: 0 0 0 3px rgba(140, 39, 57, 0.14);
+    }
   </style>
 </head>
 <body>
@@ -2204,6 +2463,7 @@
       <div class="header-actions">
         <button class="header-action" id="menuBtn"><i data-lucide="notebook-tabs"></i><span>Menu</span></button>
         <button class="header-action" id="inventoryBtn"><i data-lucide="boxes"></i><span>Stock</span></button>
+        <button class="header-action" id="layoutBtn"><i data-lucide="layout-dashboard"></i><span>Layout</span></button>
         <button class="header-action" id="ordersBtn"><i data-lucide="receipt-text"></i><span>Orders</span></button>
         <button class="header-action" id="salesBtn"><i data-lucide="chart-no-axes-column-increasing"></i><span>Sales</span></button>
         <button class="header-action" id="fullscreenBtn"><i data-lucide="maximize-2"></i><span>Full</span></button>
@@ -2324,6 +2584,39 @@
             </div>
           </form>
         </aside>
+      </div>
+    </section>
+
+    <section class="layout-setup-screen" id="layoutSetupScreen" aria-label="Order screen tile setup">
+      <div class="orders-page-head">
+        <button class="orders-back-btn" id="closeLayoutBtn" aria-label="Back to point of sale"><i data-lucide="arrow-left"></i></button>
+        <div>
+          <span class="orders-page-kicker">Order screen</span>
+          <h2 class="orders-page-title">Tile Setup</h2>
+          <p class="orders-page-subtitle">Arrange categories and product tiles exactly as staff will see them while billing.</p>
+        </div>
+      </div>
+      <div class="menu-admin-tools">
+        <div class="orders-stat"><span>Categories</span><strong id="layoutCategoryCount">0</strong></div>
+        <div class="orders-stat accent"><span>Tiles shown</span><strong id="layoutTileCount">0</strong></div>
+        <div class="orders-stat"><span>Editing</span><strong id="layoutEditingLabel">None</strong></div>
+        <button class="menu-admin-add" id="resetLayoutBtn"><i data-lucide="rotate-ccw"></i>Default order</button>
+      </div>
+      <div class="layout-setup-body">
+        <section class="layout-panel" aria-label="Category arrangement">
+          <div class="layout-panel-head">
+            <span>Categories</span>
+            <strong>Order screen rail</strong>
+          </div>
+          <div class="layout-list" id="layoutCategoryList"></div>
+        </section>
+        <section class="layout-panel" aria-label="Tile arrangement">
+          <div class="layout-panel-head">
+            <span>Tiles in category</span>
+            <strong id="layoutActiveCategoryTitle">Select category</strong>
+          </div>
+          <div class="layout-list" id="layoutTileList"></div>
+        </section>
       </div>
     </section>
 
@@ -2486,6 +2779,24 @@
         </div>
       </section>
     </div>
+
+    <section class="virtual-keyboard" id="virtualKeyboard" aria-label="POS on-screen keyboard">
+      <div class="keyboard-head">
+        <div class="keyboard-target">
+          <span id="keyboardFieldType">Text entry</span>
+          <strong id="keyboardFieldLabel">Select a field</strong>
+        </div>
+        <button class="keyboard-close" id="keyboardCloseBtn" type="button" aria-label="Close keyboard"><i data-lucide="x"></i></button>
+      </div>
+      <div class="keyboard-preview" id="keyboardPreview"></div>
+      <div class="keyboard-mode-row">
+        <button class="keyboard-mode" type="button" data-keyboard-mode="letters">ABC</button>
+        <button class="keyboard-mode" type="button" data-keyboard-mode="numbers">123</button>
+        <button class="keyboard-mode" type="button" data-keyboard-mode="symbols">#+=</button>
+        <button class="keyboard-action" id="keyboardDoneBtn" type="button"><i data-lucide="check"></i>Done</button>
+      </div>
+      <div class="keyboard-keys" id="keyboardKeys"></div>
+    </section>
   </div>
 
   <div class="drawer-backdrop" id="drawerBackdrop"></div>
@@ -2627,6 +2938,7 @@
     let selectorFamilies = [];
     let selectorFamilyByGroupId = new Map();
     let inventoryItems = [];
+    let tileLayout = { categoryOrder: [], groupOrderByCategory: {} };
     let activeCategory = "";
     let cart = [];
     let sales = [];
@@ -2639,10 +2951,14 @@
     let previousOrdersQuery = "";
     let expandedPreviousOrderNo = null;
     let editingOrder = null;
+    let layoutSetupCategory = "";
     let menuAdminQuery = "";
     let editingMenuItemId = "";
     let inventoryQuery = "";
     let editingInventoryItemId = "";
+    let activeKeyboardInput = null;
+    let keyboardMode = "letters";
+    let keyboardShift = false;
 
     const $ = (id) => document.getElementById(id);
     const money = (value) => `Rs ${rupee.format(value || 0)}`;
@@ -2656,8 +2972,34 @@
     const milkshakeDefaults = { strength: "Light", sugar: "Sugar", ice: "Ice" };
     const menuStorageKey = "beaten-bucks-menu-items-v1";
     const inventoryStorageKey = "beaten-bucks-inventory-items-v1";
+    const layoutStorageKey = "beaten-bucks-tile-layout-v1";
     const isCustomizableDrink = (item) => ["Cold Coffee", "Thick Milkshake"].includes(item.category);
     const customizationDefaultsFor = (item) => item.category === "Thick Milkshake" ? milkshakeDefaults : coldCoffeeDefaults;
+    const keyboardInputSelector = [
+      "input[type='text']",
+      "input[type='search']",
+      "input[type='number']",
+      "input:not([type])"
+    ].join(",");
+    const keyboardLayouts = {
+      letters: [
+        ["q", "w", "e", "r", "t", "y", "u", "i", "o", "p"],
+        ["a", "s", "d", "f", "g", "h", "j", "k", "l"],
+        ["shift", "z", "x", "c", "v", "b", "n", "m", "backspace"],
+        ["clear", "-", ".", "space", "'", "done"]
+      ],
+      numbers: [
+        ["1", "2", "3", "backspace"],
+        ["4", "5", "6", "clear"],
+        ["7", "8", "9", "done"],
+        [".", "0", "-", "space"]
+      ],
+      symbols: [
+        ["@", "#", "$", "&", "*", "(", ")", "/", "+", "="],
+        ["%", "!", "?", ":", ";", ",", ".", "-", "_", "backspace"],
+        ["clear", "\"", "'", "space", "done"]
+      ]
+    };
     const selectorFamilyConfigs = [
       {
         id: "family-mojito",
@@ -2775,6 +3117,35 @@
       }
     }
 
+    function loadTileLayout() {
+      try {
+        const saved = JSON.parse(localStorage.getItem(layoutStorageKey) || "null");
+        if (saved && Array.isArray(saved.categoryOrder) && saved.groupOrderByCategory) {
+          return {
+            categoryOrder: saved.categoryOrder,
+            groupOrderByCategory: saved.groupOrderByCategory
+          };
+        }
+      } catch (error) {
+        console.warn("Could not load tile layout", error);
+      }
+      return { categoryOrder: [], groupOrderByCategory: {} };
+    }
+
+    function persistTileLayout() {
+      try {
+        localStorage.setItem(layoutStorageKey, JSON.stringify(tileLayout));
+      } catch (error) {
+        console.warn("Could not save tile layout", error);
+      }
+    }
+
+    function orderBySavedKeys(values, savedOrder) {
+      const available = new Set(values);
+      const ordered = (savedOrder || []).filter(value => available.has(value));
+      return [...ordered, ...values.filter(value => !ordered.includes(value))];
+    }
+
     function rebuildMenuModel() {
       menuItems = menuItems.map(normalizeMenuItem);
       groupedMenuItems = Object.values(menuItems.reduce((groups, item) => {
@@ -2803,8 +3174,11 @@
           return (order[a.size] || 9) - (order[b.size] || 9);
         })
       }));
-      categories = Array.from(new Set(groupedMenuItems.map(item => item.category)));
+      const defaultCategories = Array.from(new Set(groupedMenuItems.map(item => item.category)));
+      categories = orderBySavedKeys(defaultCategories, tileLayout.categoryOrder);
+      tileLayout.categoryOrder = categories.slice();
       if (!categories.includes(activeCategory)) activeCategory = categories[0] || "";
+      if (!categories.includes(layoutSetupCategory)) layoutSetupCategory = activeCategory || categories[0] || "";
       selectorFamilies = selectorFamilyConfigs
         .map(config => ({
           ...config,
@@ -2818,6 +3192,7 @@
 
     inventoryItems = loadInventoryItems();
     menuItems = loadMenuItems();
+    tileLayout = loadTileLayout();
     rebuildMenuModel();
 
     function cartKey(item, customization) {
@@ -2875,13 +3250,6 @@
         .reduce((sum, entry) => sum + entry.qty, 0);
     }
 
-    function defaultCartKeyForVariant(id) {
-      const item = menuItems.find(entry => entry.id === id);
-      if (!item) return id;
-      const customization = isCustomizableDrink(item) ? customizationDefaultsFor(item) : null;
-      return cartKey(item, customization);
-    }
-
     function cartQtyForGroup(group) {
       return group.variants.reduce((sum, variant) => sum + cartQtyForVariant(variant.id), 0);
     }
@@ -2921,23 +3289,41 @@
       return `${labels.join(" · ")}${remainder > 0 ? ` +${remainder} more` : ""}`;
     }
 
-    function buildDisplayItems(category, query) {
+    function baseDisplayEntriesForCategory(category) {
       const items = groupedMenuItems.filter(item => item.category === category);
       const insertedFamilies = new Set();
-      const display = [];
+      const entries = [];
       items.forEach(item => {
         const family = selectorFamilyByGroupId.get(item.id);
         if (family) {
           if (insertedFamilies.has(family.id)) return;
           insertedFamilies.add(family.id);
-          if (!query || family.name.toLowerCase().includes(query) || family.groups.some(group => itemMatchesQuery(group, query))) {
-            display.push({ type: "family", family });
-          }
+          entries.push({ key: `family::${family.id}`, type: "family", family });
           return;
         }
-        if (itemMatchesQuery(item, query)) display.push({ type: "item", item });
+        entries.push({ key: `group::${item.id}`, type: "item", item });
       });
-      return display;
+      return entries;
+    }
+
+    function orderedDisplayEntriesForCategory(category) {
+      const entries = baseDisplayEntriesForCategory(category);
+      const savedOrder = tileLayout.groupOrderByCategory?.[category] || [];
+      const orderedKeys = orderBySavedKeys(entries.map(entry => entry.key), savedOrder);
+      const byKey = new Map(entries.map(entry => [entry.key, entry]));
+      tileLayout.groupOrderByCategory[category] = orderedKeys;
+      return orderedKeys.map(key => byKey.get(key)).filter(Boolean);
+    }
+
+    function buildDisplayItems(category, query) {
+      return orderedDisplayEntriesForCategory(category).filter(entry => {
+        if (entry.type === "family") {
+          return !query
+            || entry.family.name.toLowerCase().includes(query)
+            || entry.family.groups.some(group => itemMatchesQuery(group, query));
+        }
+        return itemMatchesQuery(entry.item, query);
+      });
     }
 
     function renderCustomizationSheet() {
@@ -3068,6 +3454,164 @@
       $("selectorBackdrop").setAttribute("aria-hidden", "true");
     }
 
+    function isVirtualKeyboardInput(element) {
+      return element?.matches?.(keyboardInputSelector) && !element.disabled;
+    }
+
+    function prepareVirtualKeyboardInput(input) {
+      if (!isVirtualKeyboardInput(input)) return;
+      input.setAttribute("inputmode", "none");
+      input.setAttribute("autocomplete", "off");
+      input.readOnly = true;
+      input.classList.add("virtual-keyboard-field");
+    }
+
+    function prepareVirtualKeyboardInputs(root = document) {
+      root.querySelectorAll(keyboardInputSelector).forEach(prepareVirtualKeyboardInput);
+    }
+
+    function keyboardFieldLabel(input) {
+      const explicit = input.id ? document.querySelector(`label[for="${CSS.escape(input.id)}"]`) : null;
+      return input.getAttribute("aria-label")
+        || explicit?.textContent?.trim()
+        || input.placeholder
+        || input.name
+        || "Text field";
+    }
+
+    function keyboardFieldType(input) {
+      return input.type === "number" ? "Number entry" : "Text entry";
+    }
+
+    function setKeyboardMode(mode) {
+      keyboardMode = mode;
+      keyboardShift = false;
+      renderVirtualKeyboard();
+    }
+
+    function openVirtualKeyboard(input) {
+      if (!isVirtualKeyboardInput(input)) return;
+      prepareVirtualKeyboardInput(input);
+      activeKeyboardInput = input;
+      keyboardMode = input.type === "number" ? "numbers" : "letters";
+      $("keyboardFieldType").textContent = keyboardFieldType(input);
+      $("keyboardFieldLabel").textContent = keyboardFieldLabel(input);
+      $("virtualKeyboard").classList.add("open");
+      updateKeyboardPreview();
+      renderVirtualKeyboard();
+      setTimeout(() => input.scrollIntoView({ block: "center", inline: "nearest" }), 0);
+    }
+
+    function closeVirtualKeyboard() {
+      $("virtualKeyboard").classList.remove("open");
+      activeKeyboardInput?.blur();
+      activeKeyboardInput = null;
+    }
+
+    function updateKeyboardPreview() {
+      if (!activeKeyboardInput || !document.contains(activeKeyboardInput)) {
+        $("keyboardPreview").textContent = "";
+        return;
+      }
+      $("keyboardPreview").textContent = activeKeyboardInput.value || activeKeyboardInput.placeholder || "";
+    }
+
+    function keyLabel(key) {
+      const labels = {
+        backspace: "Del",
+        clear: "Clear",
+        done: "Done",
+        shift: keyboardShift ? "CAP" : "Cap",
+        space: "Space"
+      };
+      if (labels[key]) return labels[key];
+      return keyboardMode === "letters" ? key.toUpperCase() : key;
+    }
+
+    function keyClass(key) {
+      if (["space", "clear", "done", "shift", "backspace"].includes(key)) return "keyboard-key wide";
+      return "keyboard-key";
+    }
+
+    function renderVirtualKeyboard() {
+      document.querySelectorAll("[data-keyboard-mode]").forEach(button => {
+        button.classList.toggle("active", button.dataset.keyboardMode === keyboardMode);
+      });
+      $("keyboardKeys").innerHTML = keyboardLayouts[keyboardMode].map(row => {
+        const rowClass = keyboardMode === "numbers"
+          ? "keyboard-row numberpad"
+          : row.length < 6 ? "keyboard-row actions" : row.length < 10 ? "keyboard-row compact" : "keyboard-row";
+        return `
+          <div class="${rowClass}">
+            ${row.map(key => `
+              <button class="${keyClass(key)} ${key === "done" ? "primary" : ""} ${key === "clear" ? "danger" : ""}" type="button" data-virtual-key="${escapeHtml(key)}" aria-label="${escapeHtml(keyLabel(key))}">
+                ${key === "backspace" ? `<i data-lucide="delete"></i>` : escapeHtml(keyLabel(key))}
+              </button>
+            `).join("")}
+          </div>
+        `;
+      }).join("");
+      $("keyboardKeys").querySelectorAll("[data-virtual-key]").forEach(button => {
+        button.addEventListener("click", () => applyVirtualKey(button.dataset.virtualKey));
+      });
+      lucide.createIcons();
+    }
+
+    function sanitizeKeyboardValue(input, value) {
+      const maxLength = Number(input.getAttribute("maxlength")) || 0;
+      const nextValue = input.type === "number" ? value.replace(/[^0-9.-]/g, "") : value;
+      return maxLength ? nextValue.slice(0, maxLength) : nextValue;
+    }
+
+    function writeKeyboardValue(input, value, cursorPosition = value.length) {
+      const nextValue = sanitizeKeyboardValue(input, value);
+      input.value = nextValue;
+      if (input.type !== "number") {
+        const cursor = Math.min(cursorPosition, nextValue.length);
+        input.setSelectionRange(cursor, cursor);
+      }
+      input.dispatchEvent(new Event("input", { bubbles: true }));
+      input.dispatchEvent(new Event("change", { bubbles: true }));
+      setTimeout(updateKeyboardPreview, 0);
+    }
+
+    function insertKeyboardText(text) {
+      if (!activeKeyboardInput || !document.contains(activeKeyboardInput)) return;
+      const input = activeKeyboardInput;
+      const value = input.value || "";
+      const start = input.type === "number" ? value.length : input.selectionStart ?? value.length;
+      const end = input.type === "number" ? value.length : input.selectionEnd ?? value.length;
+      writeKeyboardValue(input, `${value.slice(0, start)}${text}${value.slice(end)}`, start + text.length);
+    }
+
+    function backspaceKeyboardText() {
+      if (!activeKeyboardInput || !document.contains(activeKeyboardInput)) return;
+      const input = activeKeyboardInput;
+      const value = input.value || "";
+      const start = input.type === "number" ? value.length : input.selectionStart ?? value.length;
+      const end = input.type === "number" ? value.length : input.selectionEnd ?? value.length;
+      if (start !== end) return writeKeyboardValue(input, `${value.slice(0, start)}${value.slice(end)}`, start);
+      if (start <= 0) return;
+      writeKeyboardValue(input, `${value.slice(0, start - 1)}${value.slice(end)}`, start - 1);
+    }
+
+    function applyVirtualKey(key) {
+      if (!activeKeyboardInput || !document.contains(activeKeyboardInput)) return closeVirtualKeyboard();
+      if (key === "done") return closeVirtualKeyboard();
+      if (key === "clear") return writeKeyboardValue(activeKeyboardInput, "", 0);
+      if (key === "backspace") return backspaceKeyboardText();
+      if (key === "shift") {
+        keyboardShift = !keyboardShift;
+        return renderVirtualKeyboard();
+      }
+      const text = key === "space" ? " " : (keyboardMode === "letters" && !keyboardShift ? key : key.toUpperCase());
+      insertKeyboardText(text);
+      if (keyboardShift) {
+        keyboardShift = false;
+        renderVirtualKeyboard();
+      }
+    }
+
     function renderCategories() {
       $("categoryBar").innerHTML = categories.map(category => `
         <button class="category-btn ${category === activeCategory ? "active" : ""}" data-category="${category}">
@@ -3137,18 +3681,11 @@
               const selectedQty = cart
                 .filter(entry => entry.id === variant.id)
                 .reduce((sum, entry) => sum + entry.qty, 0);
-              const defaultKey = defaultCartKeyForVariant(variant.id);
               return `
-                <button class="variant-choice ${selectedQty ? "selected has-qty" : ""}" data-id="${variant.id}" aria-label="Add ${item.name} ${variant.size || ""}">
+                <button class="variant-choice ${selectedQty ? "selected" : ""}" data-id="${variant.id}" aria-label="Add ${item.name} ${variant.size || ""}">
                   ${variant.size === "Regular" ? "" : `<span>${variant.size}</span>`}
                   <strong>${money(variant.price)}</strong>
-                  ${selectedQty ? `
-                    <div class="tile-qty-controls" aria-label="Set quantity for ${item.name} ${variant.size || ""}">
-                      <button class="tile-qty-btn" type="button" data-tile-dec="${defaultKey}" aria-label="Reduce quantity">−</button>
-                      <div class="tile-qty-value">${selectedQty}</div>
-                      <button class="tile-qty-btn" type="button" data-tile-inc="${defaultKey}" aria-label="Increase quantity">+</button>
-                    </div>
-                  ` : ""}
+                  ${selectedQty ? `<em>${selectedQty}</em>` : ""}
                 </button>
               `;
             }).join("")}
@@ -3159,18 +3696,6 @@
       $("itemGrid").querySelectorAll(".variant-choice").forEach(button => {
         if (button.dataset.id) button.addEventListener("click", () => addItem(button.dataset.id));
         if (button.dataset.selectorFamily) button.addEventListener("click", () => openSelector(button.dataset.selectorFamily));
-      });
-      $("itemGrid").querySelectorAll("[data-tile-dec]").forEach(button => {
-        button.addEventListener("click", event => {
-          event.stopPropagation();
-          updateQty(button.dataset.tileDec, -1);
-        });
-      });
-      $("itemGrid").querySelectorAll("[data-tile-inc]").forEach(button => {
-        button.addEventListener("click", event => {
-          event.stopPropagation();
-          updateQty(button.dataset.tileInc, 1);
-        });
       });
       $("itemGrid").querySelectorAll("[data-customize]").forEach(button => {
         button.addEventListener("click", () => openCustomization(button.dataset.customize));
@@ -3531,6 +4056,7 @@
       closeDrawers();
       closeMenuAdmin();
       closeInventoryAdmin();
+      closeLayoutSetup();
       previousOrdersQuery = "";
       expandedPreviousOrderNo = null;
       document.querySelector(".app-shell").classList.add("orders-view");
@@ -3539,6 +4065,130 @@
 
     function closePreviousOrders() {
       document.querySelector(".app-shell").classList.remove("orders-view");
+    }
+
+    function moveValue(list, value, direction) {
+      const index = list.indexOf(value);
+      const nextIndex = index + direction;
+      if (index < 0 || nextIndex < 0 || nextIndex >= list.length) return list;
+      const next = list.slice();
+      [next[index], next[nextIndex]] = [next[nextIndex], next[index]];
+      return next;
+    }
+
+    function layoutEntryName(entry) {
+      return entry.type === "family" ? entry.family.name : entry.item.name;
+    }
+
+    function layoutEntryDetail(entry) {
+      if (entry.type === "family") {
+        const variantCount = entry.family.groups.reduce((sum, group) => sum + group.variants.length, 0);
+        return `${entry.family.groups.length} flavours · ${variantCount} sizes`;
+      }
+      return `${entry.item.variants.length} size${entry.item.variants.length === 1 ? "" : "s"} · ${entry.item.variants.map(variant => `${variant.size} ${money(variant.price)}`).join(" · ")}`;
+    }
+
+    function renderLayoutSetup() {
+      if (!categories.includes(layoutSetupCategory)) layoutSetupCategory = activeCategory || categories[0] || "";
+      const entries = layoutSetupCategory ? orderedDisplayEntriesForCategory(layoutSetupCategory) : [];
+      const totalTiles = categories.reduce((sum, category) => sum + orderedDisplayEntriesForCategory(category).length, 0);
+      $("layoutCategoryCount").textContent = categories.length;
+      $("layoutTileCount").textContent = totalTiles;
+      $("layoutEditingLabel").textContent = layoutSetupCategory || "None";
+      $("layoutActiveCategoryTitle").textContent = layoutSetupCategory || "Select category";
+
+      $("layoutCategoryList").innerHTML = categories.length ? categories.map((category, index) => `
+        <div class="layout-row ${category === layoutSetupCategory ? "active" : ""}">
+          <button class="layout-main" data-layout-category="${escapeHtml(category)}">
+            <strong>${escapeHtml(category)}</strong>
+            <span>${menuItems.filter(item => item.category === category).length} menu items</span>
+          </button>
+          <div class="layout-controls">
+            <button class="layout-icon-btn" data-move-category="${escapeHtml(category)}" data-direction="-1" ${index === 0 ? "disabled" : ""} aria-label="Move ${escapeHtml(category)} up"><i data-lucide="chevron-up"></i></button>
+            <button class="layout-icon-btn" data-move-category="${escapeHtml(category)}" data-direction="1" ${index === categories.length - 1 ? "disabled" : ""} aria-label="Move ${escapeHtml(category)} down"><i data-lucide="chevron-down"></i></button>
+          </div>
+        </div>
+      `).join("") : `<div class="layout-empty"><i data-lucide="layout-list"></i><strong>No categories</strong><span>Add menu items before arranging tiles.</span></div>`;
+
+      $("layoutTileList").innerHTML = entries.length ? entries.map((entry, index) => `
+        <div class="layout-row">
+          <button class="layout-main" data-preview-category="${escapeHtml(layoutSetupCategory)}">
+            <strong>${escapeHtml(layoutEntryName(entry))}</strong>
+            <span>${escapeHtml(layoutEntryDetail(entry))}</span>
+          </button>
+          <div class="layout-controls">
+            <button class="layout-icon-btn" data-move-tile="${escapeHtml(entry.key)}" data-direction="-1" ${index === 0 ? "disabled" : ""} aria-label="Move ${escapeHtml(layoutEntryName(entry))} up"><i data-lucide="chevron-up"></i></button>
+            <button class="layout-icon-btn" data-move-tile="${escapeHtml(entry.key)}" data-direction="1" ${index === entries.length - 1 ? "disabled" : ""} aria-label="Move ${escapeHtml(layoutEntryName(entry))} down"><i data-lucide="chevron-down"></i></button>
+          </div>
+        </div>
+      `).join("") : `<div class="layout-empty"><i data-lucide="layout-grid"></i><strong>No tiles</strong><span>This category has no visible order-screen tiles.</span></div>`;
+
+      $("layoutCategoryList").querySelectorAll("[data-layout-category]").forEach(button => {
+        button.addEventListener("click", () => {
+          layoutSetupCategory = button.dataset.layoutCategory;
+          activeCategory = layoutSetupCategory;
+          renderCategories();
+          renderItems();
+          renderLayoutSetup();
+        });
+      });
+      $("layoutCategoryList").querySelectorAll("[data-move-category]").forEach(button => {
+        button.addEventListener("click", event => {
+          event.stopPropagation();
+          layoutSetupCategory = button.dataset.moveCategory;
+          activeCategory = layoutSetupCategory;
+          tileLayout.categoryOrder = moveValue(categories, button.dataset.moveCategory, Number(button.dataset.direction));
+          persistTileLayout();
+          rebuildMenuModel();
+          renderCategories();
+          renderItems();
+          renderLayoutSetup();
+        });
+      });
+      $("layoutTileList").querySelectorAll("[data-preview-category]").forEach(button => {
+        button.addEventListener("click", () => {
+          activeCategory = button.dataset.previewCategory;
+          closeLayoutSetup();
+          renderCategories();
+          renderItems();
+        });
+      });
+      $("layoutTileList").querySelectorAll("[data-move-tile]").forEach(button => {
+        button.addEventListener("click", event => {
+          event.stopPropagation();
+          const keys = orderedDisplayEntriesForCategory(layoutSetupCategory).map(entry => entry.key);
+          tileLayout.groupOrderByCategory[layoutSetupCategory] = moveValue(keys, button.dataset.moveTile, Number(button.dataset.direction));
+          persistTileLayout();
+          renderItems();
+          renderLayoutSetup();
+        });
+      });
+      lucide.createIcons();
+    }
+
+    function resetTileLayout() {
+      tileLayout = { categoryOrder: [], groupOrderByCategory: {} };
+      rebuildMenuModel();
+      categories.forEach(category => orderedDisplayEntriesForCategory(category));
+      persistTileLayout();
+      renderCategories();
+      renderItems();
+      renderLayoutSetup();
+      toast("Tile layout reset");
+    }
+
+    function openLayoutSetup() {
+      closeDrawers();
+      closePreviousOrders();
+      closeMenuAdmin();
+      closeInventoryAdmin();
+      document.querySelector(".app-shell").classList.add("layout-view");
+      layoutSetupCategory = activeCategory || categories[0] || "";
+      renderLayoutSetup();
+    }
+
+    function closeLayoutSetup() {
+      document.querySelector(".app-shell").classList.remove("layout-view");
     }
 
     function inventoryLabel(id) {
@@ -3682,6 +4332,7 @@
         packagingItems: readPackagingRows()
       });
       if (!formItem.name || !formItem.category) return toast("Item name and category are required");
+      if ($("menuItemPrice").value === "" || $("menuItemProfit").value === "") return toast("Price and profit are required");
       if (existing) {
         Object.assign(existing, formItem);
         syncOpenCartItem(formItem);
@@ -3775,6 +4426,7 @@
         updatedAt: existing?.updatedAt || "Saved"
       });
       if (!formItem.name) return toast("Inventory name is required");
+      if ($("inventoryStock").value === "" || $("inventoryMinStock").value === "") return toast("Stock and low alert are required");
       if (existing) {
         Object.assign(existing, formItem);
         toast(`${formItem.name} stock saved`);
@@ -3820,6 +4472,7 @@
       closeDrawers();
       closePreviousOrders();
       closeMenuAdmin();
+      closeLayoutSetup();
       document.querySelector(".app-shell").classList.add("inventory-view");
       if (!editingInventoryItemId && inventoryItems.length) editingInventoryItemId = inventoryItems[0].id;
       renderInventoryAdmin();
@@ -3839,6 +4492,7 @@
       closeDrawers();
       closePreviousOrders();
       closeInventoryAdmin();
+      closeLayoutSetup();
       document.querySelector(".app-shell").classList.add("menu-view");
       if (editingOrder) toast("Menu can be edited while this order remains open");
       if (!editingMenuItemId && menuItems.length) editingMenuItemId = menuItems[0].id;
@@ -3904,7 +4558,30 @@
         closePreviousOrders();
         closeMenuAdmin();
         closeInventoryAdmin();
+        closeLayoutSetup();
       }
+    });
+
+    document.addEventListener("pointerdown", event => {
+      if (event.target.closest("#virtualKeyboard")) return;
+      const input = event.target.closest?.(keyboardInputSelector);
+      if (input && isVirtualKeyboardInput(input)) {
+        prepareVirtualKeyboardInput(input);
+        return;
+      }
+      if ($("virtualKeyboard").classList.contains("open")) closeVirtualKeyboard();
+    });
+    document.addEventListener("focusin", event => {
+      if (isVirtualKeyboardInput(event.target)) openVirtualKeyboard(event.target);
+    });
+    document.addEventListener("beforeinput", event => {
+      if (isVirtualKeyboardInput(event.target)) event.preventDefault();
+    });
+    $("virtualKeyboard").addEventListener("pointerdown", event => event.preventDefault());
+    $("keyboardCloseBtn").addEventListener("click", closeVirtualKeyboard);
+    $("keyboardDoneBtn").addEventListener("click", closeVirtualKeyboard);
+    document.querySelectorAll("[data-keyboard-mode]").forEach(button => {
+      button.addEventListener("click", () => setKeyboardMode(button.dataset.keyboardMode));
     });
 
     $("searchInput").addEventListener("input", renderItems);
@@ -3917,15 +4594,18 @@
     });
     $("menuBtn").addEventListener("click", openMenuAdmin);
     $("inventoryBtn").addEventListener("click", openInventoryAdmin);
+    $("layoutBtn").addEventListener("click", openLayoutSetup);
     $("ordersBtn").addEventListener("click", openPreviousOrders);
     $("salesBtn").addEventListener("click", () => openDrawer("salesDrawer"));
     $("fullscreenBtn").addEventListener("click", toggleFullscreen);
     $("closeMenuBtn").addEventListener("click", closeMenuAdmin);
     $("closeInventoryBtn").addEventListener("click", closeInventoryAdmin);
+    $("closeLayoutBtn").addEventListener("click", closeLayoutSetup);
     $("closeOrdersBtn").addEventListener("click", closePreviousOrders);
     $("closeSalesBtn").addEventListener("click", closeDrawers);
     $("drawerBackdrop").addEventListener("click", closeDrawers);
     $("payBtn").addEventListener("click", completeSale);
+    $("resetLayoutBtn").addEventListener("click", resetTileLayout);
     $("addMenuItemBtn").addEventListener("click", startNewMenuItem);
     $("resetMenuFormBtn").addEventListener("click", renderMenuForm);
     $("addMenuPackagingBtn").addEventListener("click", () => {
@@ -4007,6 +4687,9 @@
     renderPreviousOrders();
     renderMenuAdmin();
     renderInventoryAdmin();
+    renderLayoutSetup();
+    prepareVirtualKeyboardInputs();
+    renderVirtualKeyboard();
     lucide.createIcons();
     renderFullscreenButton();
     fitDesignFrame();
