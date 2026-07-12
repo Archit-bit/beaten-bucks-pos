@@ -4,6 +4,9 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, interactive-widget=resizes-content">
   <title>Tapri POS Prototype</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/daisyui@5.5.19/daisyui.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/daisyui@5.5.19/themes.css">
   <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4.2.4/dist/index.global.js"></script>
@@ -724,6 +727,7 @@
       padding: 0;
       display: grid;
       place-items: center;
+      overflow: hidden;
     }
     .design-frame {
       --frame-scale: 1;
@@ -739,8 +743,7 @@
       margin: 0;
       border: 1px solid rgba(105, 74, 46, 0.12);
       border-radius: 34px;
-      zoom: var(--frame-scale);
-      transform: none;
+      transform: scale(var(--frame-scale));
       transform-origin: top left;
     }
     .design-frame .topbar { padding: 22px 22px 18px; }
@@ -828,11 +831,7 @@
       letter-spacing: 0.06em;
       text-transform: uppercase;
     }
-    .order-slot strong {
-      font-size: 19px;
-      line-height: 1.08;
-      padding-bottom: 1px;
-    }
+    .order-slot strong { font-size: 20px; line-height: 1; }
     .order-slot small { letter-spacing: 0; text-transform: none; }
     .new-order-btn {
       width: 58px;
@@ -1165,16 +1164,10 @@
       color: #8c2739;
       font-size: 13px;
     }
-    .order-summary-total { display: flex; align-items: baseline; gap: 10px; white-space: nowrap; min-width: 0; }
+    .order-summary-total { display: flex; align-items: baseline; gap: 10px; white-space: nowrap; }
     .order-summary-total span { color: #777a75; font-size: 13px; font-weight: 700; }
-    .order-summary-total strong {
-      color: #8c2739;
-      font-size: 24px;
-      line-height: 1.08;
-      font-weight: 900;
-      padding-bottom: 1px;
-    }
-    .summary-total-value { display: grid; justify-items: end; gap: 2px; min-width: 0; }
+    .order-summary-total strong { color: #8c2739; font-size: 25px; line-height: 1; font-weight: 900; }
+    .summary-total-value { display: grid; justify-items: end; gap: 2px; }
     .original-total,
     .order-delta { display: none; }
     .order-dock.editing .original-total {
@@ -1401,7 +1394,7 @@
     .orders-tools {
       min-width: 0;
       display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
+      grid-template-columns: repeat(3, minmax(0, 1fr));
       gap: 10px;
       padding: 13px 16px;
       border-bottom: 1px solid #dedbd5;
@@ -1440,11 +1433,6 @@
       background: #fae7de;
     }
     .orders-stat.accent strong { color: #8c2739; }
-    .orders-stat.warning {
-      border-color: #e7c3aa;
-      background: #fff0dc;
-    }
-    .orders-stat.warning strong { color: #9a431f; }
     .previous-orders-list {
       min-height: 0;
       display: grid;
@@ -1484,11 +1472,6 @@
       background: #fff;
     }
     .previous-order-card.open { border-color: #b76a78; }
-    .previous-order-card.unpaid {
-      border-color: #cc7b56;
-      background: #fff6ec;
-      box-shadow: inset 4px 0 0 #b64a2a;
-    }
     .previous-order-summary {
       width: 100%;
       min-width: 0;
@@ -1510,20 +1493,14 @@
       min-width: 0;
     }
     .previous-order-number strong { font-size: 16px; font-weight: 900; }
-    .payment-tag {
+    .order-complete-tag {
       padding: 4px 7px;
       border-radius: 999px;
+      background: #e2f2e9;
+      color: #18704e;
       font-size: 10px;
       font-weight: 900;
       white-space: nowrap;
-    }
-    .payment-tag.paid {
-      background: #e2f2e9;
-      color: #18704e;
-    }
-    .payment-tag.unpaid {
-      background: #ffe0ce;
-      color: #a43d21;
     }
     .previous-order-meta {
       margin-top: 5px;
@@ -1596,8 +1573,6 @@
     .previous-order-edit-action {
       display: flex;
       justify-content: flex-end;
-      gap: 8px;
-      flex-wrap: wrap;
       padding: 11px 14px;
       border-top: 1px solid #ece9e4;
     }
@@ -1642,466 +1617,6 @@
       font-size: 13px;
       font-weight: 850;
     }
-    .menu-admin-screen,
-    .inventory-admin-screen,
-    .layout-setup-screen {
-      min-width: 0;
-      min-height: 0;
-      display: none;
-      grid-template-rows: auto auto minmax(0, 1fr);
-      background: #f7f7f4;
-    }
-    .app-shell.menu-view,
-    .app-shell.inventory-view,
-    .app-shell.layout-view {
-      grid-template-rows: 86px minmax(0, 1fr);
-    }
-    .app-shell.menu-view .pos-layout,
-    .app-shell.menu-view .order-dock,
-    .app-shell.menu-view .previous-orders-screen { display: none; }
-    .app-shell.inventory-view .pos-layout,
-    .app-shell.inventory-view .order-dock,
-    .app-shell.inventory-view .previous-orders-screen,
-    .app-shell.inventory-view .menu-admin-screen { display: none; }
-    .app-shell.layout-view .pos-layout,
-    .app-shell.layout-view .order-dock,
-    .app-shell.layout-view .previous-orders-screen,
-    .app-shell.layout-view .menu-admin-screen,
-    .app-shell.layout-view .inventory-admin-screen { display: none; }
-    .app-shell.menu-view .menu-admin-screen { display: grid; }
-    .app-shell.inventory-view .inventory-admin-screen { display: grid; }
-    .app-shell.layout-view .layout-setup-screen { display: grid; }
-    .menu-admin-tools {
-      min-width: 0;
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr)) auto;
-      gap: 10px;
-      align-items: stretch;
-      padding: 13px 16px;
-      border-bottom: 1px solid #dedbd5;
-      background: #fbfbf9;
-    }
-    .menu-admin-add {
-      min-height: 58px;
-      padding: 0 15px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 7px;
-      border: 0;
-      border-radius: 9px;
-      background: #8c2739;
-      color: #fff;
-      font-size: 13px;
-      font-weight: 900;
-      white-space: nowrap;
-    }
-    .menu-admin-add svg { width: 18px; height: 18px; }
-    .menu-admin-body {
-      min-width: 0;
-      min-height: 0;
-      display: grid;
-      grid-template-columns: minmax(0, 1.1fr) 286px;
-      gap: 12px;
-      padding: 14px 16px 18px;
-      overflow: hidden;
-    }
-    .menu-admin-list-panel,
-    .menu-admin-form-panel {
-      min-width: 0;
-      min-height: 0;
-      overflow: hidden;
-      border: 1px solid #dedbd5;
-      border-radius: 11px;
-      background: #fff;
-    }
-    .menu-admin-list-panel {
-      display: grid;
-      grid-template-rows: auto minmax(0, 1fr);
-    }
-    .menu-admin-search {
-      min-width: 0;
-      display: flex;
-      align-items: center;
-      gap: 9px;
-      min-height: 54px;
-      padding: 0 13px;
-      border-bottom: 1px solid #e5e2dd;
-      background: #fcfcfa;
-      color: #69716c;
-    }
-    .menu-admin-search svg { width: 20px; height: 20px; flex: none; }
-    .menu-admin-search input {
-      width: 100%;
-      min-width: 0;
-      border: 0;
-      outline: 0;
-      background: transparent;
-      color: #292b28;
-      font-size: 14px;
-    }
-    .menu-admin-list {
-      min-height: 0;
-      display: grid;
-      align-content: start;
-      gap: 8px;
-      overflow-y: auto;
-      padding: 10px;
-      background: #f8f8f5;
-    }
-    .menu-admin-item {
-      min-width: 0;
-      display: grid;
-      grid-template-columns: minmax(0, 1fr) auto;
-      gap: 10px;
-      align-items: center;
-      padding: 11px 12px;
-      border: 1px solid #e1ded8;
-      border-radius: 9px;
-      background: #fff;
-      color: #292b28;
-      text-align: left;
-    }
-    .menu-admin-item.active {
-      border-color: #9d3f50;
-      background: #fae7de;
-      box-shadow: inset 0 0 0 1px #9d3f50;
-    }
-    .menu-admin-item strong {
-      display: block;
-      overflow: hidden;
-      font-size: 14px;
-      line-height: 1.16;
-      font-weight: 900;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-    .menu-admin-item span {
-      display: block;
-      margin-top: 4px;
-      overflow: hidden;
-      color: #77746f;
-      font-size: 11px;
-      font-weight: 750;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-    .menu-admin-item b {
-      color: #8c2739;
-      font-size: 16px;
-      font-weight: 900;
-      white-space: nowrap;
-    }
-    .profit-pill {
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      margin-top: 5px;
-      padding: 3px 6px;
-      border-radius: 999px;
-      background: #edf6ef;
-      color: #18704e;
-      font-size: 10px;
-      font-weight: 900;
-    }
-    .profit-pill.warn {
-      background: #fff0d9;
-      color: #a35d00;
-    }
-    .profit-pill.danger {
-      background: #f9e4e4;
-      color: #a34040;
-    }
-    .menu-helper-note {
-      color: #807973;
-      font-size: 11px;
-      line-height: 1.28;
-      font-weight: 700;
-    }
-    .packaging-builder {
-      display: grid;
-      gap: 8px;
-    }
-    .packaging-row {
-      min-width: 0;
-      display: grid;
-      grid-template-columns: minmax(0, 1fr) 64px 34px;
-      gap: 7px;
-      align-items: center;
-    }
-    .packaging-row input,
-    .packaging-row select {
-      min-height: 38px;
-      font-size: 12px;
-    }
-    .packaging-remove {
-      width: 34px;
-      height: 38px;
-      display: grid;
-      place-items: center;
-      border: 1px solid #ead7d7;
-      border-radius: 8px;
-      background: #fff8f8;
-      color: #a34040;
-    }
-    .packaging-remove svg { width: 15px; height: 15px; }
-    .menu-inline-action {
-      min-height: 38px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-      border: 1px dashed #b9939b;
-      border-radius: 8px;
-      background: #fff;
-      color: #8c2739;
-      font-size: 12px;
-      font-weight: 900;
-    }
-    .menu-inline-action svg { width: 15px; height: 15px; }
-    .menu-admin-empty {
-      min-height: 220px;
-      display: grid;
-      place-items: center;
-      align-content: center;
-      gap: 8px;
-      border: 1px dashed #d3cfc9;
-      border-radius: 10px;
-      background: #fff;
-      color: #73736e;
-      text-align: center;
-      font-size: 13px;
-      font-weight: 750;
-    }
-    .menu-admin-empty svg { width: 30px; height: 30px; color: #9a5361; }
-    .menu-admin-form-panel {
-      display: grid;
-      grid-template-rows: auto minmax(0, 1fr);
-    }
-    .menu-form-head {
-      padding: 15px 15px 13px;
-      border-bottom: 1px solid #e5e2dd;
-      background: #fcfcfa;
-    }
-    .menu-form-head span {
-      display: block;
-      color: #8c2739;
-      font-size: 10px;
-      font-weight: 900;
-      letter-spacing: .08em;
-      text-transform: uppercase;
-    }
-    .menu-form-head strong {
-      display: block;
-      margin-top: 4px;
-      color: #292b28;
-      font-size: 18px;
-      line-height: 1.12;
-      font-weight: 900;
-    }
-    .menu-admin-form {
-      min-height: 0;
-      display: grid;
-      align-content: start;
-      gap: 11px;
-      overflow-y: auto;
-      padding: 14px;
-    }
-    .menu-field {
-      display: grid;
-      gap: 6px;
-    }
-    .menu-field label {
-      color: #68645f;
-      font-size: 11px;
-      font-weight: 900;
-      letter-spacing: .04em;
-      text-transform: uppercase;
-    }
-    .menu-field input,
-    .menu-field select {
-      width: 100%;
-      min-width: 0;
-      min-height: 43px;
-      padding: 0 10px;
-      border: 1px solid #d9d6cf;
-      border-radius: 8px;
-      outline: 0;
-      background: #fff;
-      color: #292b28;
-      font-size: 14px;
-      font-weight: 750;
-    }
-    .menu-field-grid {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 9px;
-    }
-    .menu-form-actions {
-      display: grid;
-      grid-template-columns: minmax(0, 1fr) auto;
-      gap: 8px;
-      margin-top: 2px;
-    }
-    .menu-save-btn,
-    .menu-secondary-btn {
-      min-height: 43px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 7px;
-      border-radius: 8px;
-      font-size: 13px;
-      font-weight: 900;
-    }
-    .menu-save-btn {
-      border: 0;
-      background: #8c2739;
-      color: #fff;
-    }
-    .menu-secondary-btn {
-      padding: 0 12px;
-      border: 1px solid #dedbd5;
-      background: #fff;
-      color: #7d4a56;
-    }
-    .menu-save-btn svg,
-    .menu-secondary-btn svg { width: 16px; height: 16px; }
-    .layout-setup-body {
-      min-width: 0;
-      min-height: 0;
-      display: grid;
-      grid-template-columns: 292px minmax(0, 1fr);
-      gap: 12px;
-      padding: 14px 16px 18px;
-      overflow: hidden;
-    }
-    .layout-panel {
-      min-width: 0;
-      min-height: 0;
-      display: grid;
-      grid-template-rows: auto minmax(0, 1fr);
-      overflow: hidden;
-      border: 1px solid #dedbd5;
-      border-radius: 11px;
-      background: #fff;
-    }
-    .layout-panel-head {
-      min-width: 0;
-      padding: 14px 15px 12px;
-      border-bottom: 1px solid #e5e2dd;
-      background: #fcfcfa;
-    }
-    .layout-panel-head span {
-      display: block;
-      color: #8c2739;
-      font-size: 10px;
-      font-weight: 900;
-      letter-spacing: .08em;
-      text-transform: uppercase;
-    }
-    .layout-panel-head strong {
-      display: block;
-      margin-top: 4px;
-      overflow: hidden;
-      color: #292b28;
-      font-size: 18px;
-      line-height: 1.12;
-      font-weight: 900;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-    .layout-list {
-      min-height: 0;
-      display: grid;
-      align-content: start;
-      gap: 8px;
-      overflow-y: auto;
-      padding: 10px;
-      background: #f8f8f5;
-    }
-    .layout-row {
-      min-width: 0;
-      display: grid;
-      grid-template-columns: minmax(0, 1fr) auto;
-      gap: 8px;
-      align-items: stretch;
-      border: 1px solid #e1ded8;
-      border-radius: 9px;
-      background: #fff;
-      overflow: hidden;
-    }
-    .layout-row.active {
-      border-color: #9d3f50;
-      background: #fae7de;
-      box-shadow: inset 0 0 0 1px #9d3f50;
-    }
-    .layout-main {
-      min-width: 0;
-      padding: 11px 12px;
-      display: grid;
-      align-content: center;
-      gap: 4px;
-      border: 0;
-      background: transparent;
-      color: #292b28;
-      text-align: left;
-    }
-    .layout-main strong {
-      min-width: 0;
-      overflow: hidden;
-      font-size: 14px;
-      line-height: 1.16;
-      font-weight: 900;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-    .layout-main span {
-      min-width: 0;
-      overflow: hidden;
-      color: #77746f;
-      font-size: 11px;
-      font-weight: 750;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-    .layout-controls {
-      display: grid;
-      grid-template-columns: repeat(2, 36px);
-      border-left: 1px solid #e5e2dd;
-      background: #fcfcfa;
-    }
-    .layout-icon-btn {
-      width: 36px;
-      min-height: 42px;
-      display: grid;
-      place-items: center;
-      border: 0;
-      border-left: 1px solid #ece9e4;
-      background: transparent;
-      color: #7d4a56;
-    }
-    .layout-icon-btn:first-child { border-left: 0; }
-    .layout-icon-btn:disabled {
-      color: #bdb8b2;
-      background: #f2f1ee;
-    }
-    .layout-icon-btn svg { width: 18px; height: 18px; }
-    .layout-empty {
-      min-height: 220px;
-      display: grid;
-      place-items: center;
-      align-content: center;
-      gap: 8px;
-      border: 1px dashed #d3cfc9;
-      border-radius: 10px;
-      background: #fff;
-      color: #73736e;
-      text-align: center;
-      font-size: 13px;
-      font-weight: 750;
-    }
-    .layout-empty svg { width: 30px; height: 30px; color: #9a5361; }
     .customize-backdrop {
       position: absolute;
       inset: 0;
@@ -2298,152 +1813,423 @@
       background: #8c2739;
       color: #fff;
     }
-    .virtual-keyboard {
-      position: absolute;
-      left: 12px;
-      right: 12px;
-      bottom: 12px;
-      z-index: 180;
-      display: none;
-      grid-template-rows: auto auto minmax(0, 1fr);
-      gap: 8px;
-      padding: 12px;
-      border: 1px solid #cbc7c0;
-      border-radius: 12px;
-      background: #fdfdfb;
-      box-shadow: 0 24px 60px rgba(32, 24, 20, 0.28);
+  
+    /* 2026 ergonomic and responsive refinement */
+    :root {
+      --brand: #7f2638;
+      --brand-strong: #641b2c;
+      --accent: #18794e;
+      --warning: #b76e00;
+      --danger: #b42318;
+      --focus-ring: rgba(127, 38, 56, 0.24);
+      --surface: #f5f3ee;
+      --panel-solid: #ffffff;
+      --ink: #24211e;
+      --muted: #6f6a64;
     }
-    .virtual-keyboard.open { display: grid; }
-    .keyboard-head {
-      min-width: 0;
-      display: grid;
-      grid-template-columns: minmax(0, 1fr) auto;
-      gap: 10px;
-      align-items: center;
+
+    body,
+    button,
+    input,
+    select {
+      font-family: "Inter", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     }
-    .keyboard-target {
-      min-width: 0;
-      display: grid;
-      gap: 2px;
+
+    button,
+    [role="button"],
+    input {
+      min-height: 44px;
     }
-    .keyboard-target span {
-      color: #8c2739;
-      font-size: 10px;
-      font-weight: 900;
-      letter-spacing: .08em;
-      text-transform: uppercase;
+
+    button:focus-visible,
+    input:focus-visible {
+      outline: 3px solid var(--focus-ring);
+      outline-offset: 2px;
     }
-    .keyboard-target strong {
-      min-width: 0;
-      overflow: hidden;
-      color: #292b28;
-      font-size: 16px;
-      line-height: 1.15;
-      font-weight: 900;
-      text-overflow: ellipsis;
-      white-space: nowrap;
+
+    .order-slot {
+      border-width: 2px;
+      border-color: var(--brand);
+      background: #fff0f2;
+      color: var(--brand-strong);
+      box-shadow: 0 0 0 3px rgba(127, 38, 56, 0.08);
     }
-    .keyboard-close {
-      width: 42px;
-      height: 42px;
-      display: grid;
-      place-items: center;
-      border: 1px solid #dedbd5;
-      border-radius: 9px;
-      background: #fff;
-      color: #7d4a56;
+
+    .category-btn.active,
+    .active-category,
+    [aria-selected="true"] {
+      background: var(--brand) !important;
+      border-color: var(--brand) !important;
+      color: #fff !important;
     }
-    .keyboard-close svg { width: 20px; height: 20px; }
-    .keyboard-preview {
-      min-width: 0;
-      min-height: 42px;
-      padding: 8px 11px;
-      overflow: hidden;
-      border: 1px solid #dedbd5;
-      border-radius: 9px;
-      background: #fff;
-      color: #292b28;
-      font-size: 17px;
-      line-height: 1.35;
+
+    .primary-pay {
+      background: var(--accent);
+      box-shadow: 0 10px 22px rgba(24, 121, 78, 0.22);
+    }
+
+    .product-name,
+    .cart-name {
+      color: var(--ink);
       font-weight: 800;
-      text-overflow: ellipsis;
-      white-space: nowrap;
+      letter-spacing: -0.01em;
     }
-    .keyboard-mode-row {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr)) 86px;
-      gap: 8px;
+
+    .product-card,
+    .cart-row {
+      box-shadow: 0 2px 7px rgba(36, 33, 30, 0.07);
     }
-    .keyboard-mode,
-    .keyboard-action,
-    .keyboard-key {
-      border: 1px solid #dedbd5;
-      border-radius: 8px;
+
+    .product-card:active,
+    .variant-choice:active,
+    .category-btn:active {
+      transform: scale(0.98);
+    }
+
+    /* Use the available viewport instead of shrinking an 800x1340 screenshot. */
+    html,
+    body {
+      width: 100%;
+      min-height: 100%;
+      overflow-x: hidden;
+    }
+
+    body {
+      min-height: 100dvh;
+      display: block;
+      background: #e9e6df;
+    }
+
+    .design-frame {
+      width: min(100%, 800px) !important;
+      height: auto !important;
+      min-height: 100dvh;
+      margin: 0 auto;
+    }
+
+    .design-frame .app-shell {
+      width: 100% !important;
+      height: auto !important;
+      min-height: 100dvh !important;
+      zoom: 1 !important;
+    }
+
+    @media (max-width: 720px) {
+      .design-frame {
+        width: 100% !important;
+      }
+
+      .design-frame .app-shell {
+        border: 0;
+      }
+
+      .design-frame .pos-topbar {
+        grid-template-columns: minmax(132px, 1fr) 52px;
+        gap: 8px;
+        padding: 8px 10px;
+      }
+
+      .design-frame .counter-brand,
+      .design-frame .top-actions {
+        grid-column: 1 / -1;
+      }
+
+      .design-frame .top-actions {
+        overflow-x: auto;
+        flex-wrap: nowrap;
+        scrollbar-width: none;
+      }
+
+      .design-frame .main-grid {
+        height: auto;
+        min-height: 0;
+        grid-template-rows: auto auto;
+        padding: 8px;
+        gap: 8px;
+      }
+
+      .design-frame .item-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        padding: 8px;
+        overflow-y: visible;
+      }
+
+      .design-frame .product-card,
+      .design-frame .item-tile {
+        min-height: 128px;
+        padding: 11px;
+      }
+
+      .design-frame .order-panel,
+      .design-frame .order-dock {
+        position: relative;
+        inset: auto;
+        max-height: none;
+      }
+
+      .design-frame .cart-list {
+        max-height: 42dvh;
+      }
+
+      .design-frame .search-row {
+        grid-template-columns: minmax(0, 1fr);
+      }
+
+      .design-frame .panel-head {
+        padding: 10px;
+      }
+    }
+
+    @media (min-width: 801px) {
+      body {
+        padding: 20px;
+      }
+
+      .design-frame {
+        min-height: calc(100dvh - 40px);
+      }
+
+      .design-frame .app-shell {
+        min-height: calc(100dvh - 40px) !important;
+        border-radius: 18px;
+        overflow: hidden;
+        box-shadow: 0 18px 50px rgba(36, 33, 30, 0.16);
+      }
+    }
+
+    @media (orientation: landscape) and (min-width: 900px) {
+      .design-frame {
+        width: min(1180px, calc(100vw - 40px)) !important;
+        max-width: none;
+      }
+
+      .design-frame .app-shell .main-grid {
+        grid-template-columns: minmax(0, 1.7fr) minmax(330px, 0.8fr);
+        grid-template-rows: minmax(0, 1fr);
+      }
+
+      .design-frame .order-panel,
+      .design-frame .order-dock {
+        min-height: 0;
+        max-height: calc(100dvh - 150px);
+      }
+
+      .design-frame .item-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+    }
+
+  
+    /* Visible design refinement v2: selectors match the production POS layout. */
+    .design-frame .pos-topbar {
+      background: #fffdf9;
+      border-bottom-color: #ddd6ce;
+    }
+
+    .design-frame .order-slot {
+      border: 2px solid #7f2638;
+      background: #fff1f3;
+      color: #641b2c;
+      box-shadow: 0 0 0 3px rgba(127, 38, 56, 0.08);
+    }
+
+    .design-frame .category-rail .category-btn {
+      min-height: 64px;
+      border: 1px solid transparent;
+      border-radius: 12px;
+      font-size: 14px;
+      transition: background 120ms ease, border-color 120ms ease, transform 120ms ease;
+    }
+
+    .design-frame .category-rail .category-btn:hover {
+      border-color: #d7c8c3;
       background: #fff;
-      color: #2d302c;
-      font-weight: 900;
     }
-    .keyboard-mode {
-      min-height: 40px;
-      color: #68434c;
-      font-size: 13px;
+
+    .design-frame .category-rail .category-btn.active {
+      background: #7f2638 !important;
+      border-color: #7f2638 !important;
+      color: #fff !important;
+      box-shadow: 0 8px 18px rgba(127, 38, 56, 0.18);
     }
-    .keyboard-mode.active {
-      border-color: #8c2739;
-      background: #fae7de;
-      color: #8c2739;
-      box-shadow: inset 0 0 0 1px #8c2739;
+
+    .design-frame .menu-workspace .item-grid {
+      gap: 12px;
+      padding: 14px;
+      background: #f7f5f1;
     }
-    .keyboard-action {
-      min-height: 40px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-      color: #8c2739;
-      font-size: 13px;
+
+    .design-frame .product-card {
+      border-color: #ddd7d0;
+      border-radius: 13px;
+      box-shadow: 0 3px 10px rgba(36, 33, 30, 0.07);
+      transition: border-color 120ms ease, box-shadow 120ms ease, transform 120ms ease;
     }
-    .keyboard-action svg { width: 17px; height: 17px; }
-    .keyboard-keys {
-      min-width: 0;
-      display: grid;
-      gap: 7px;
+
+    .design-frame .product-card:hover {
+      border-color: #ae8790;
+      box-shadow: 0 7px 18px rgba(36, 33, 30, 0.1);
     }
-    .keyboard-row {
-      min-width: 0;
-      display: grid;
-      grid-template-columns: repeat(10, minmax(0, 1fr));
-      gap: 7px;
+
+    .design-frame .product-name {
+      font-size: 16px;
+      line-height: 1.16;
+      letter-spacing: -0.015em;
     }
-    .keyboard-row.numberpad { grid-template-columns: repeat(4, minmax(0, 1fr)); }
-    .keyboard-row.compact { grid-template-columns: 1.35fr repeat(8, minmax(0, 1fr)) 1.35fr; }
-    .keyboard-row.actions { grid-template-columns: 1.35fr 1fr 1fr minmax(0, 4fr) 1fr 1.35fr; }
-    .keyboard-key {
-      min-width: 0;
+
+    .design-frame .customize-hint,
+    .design-frame .variant-choice strong,
+    .design-frame .order-summary-total strong,
+    .design-frame .cart-line-price {
+      color: #7f2638;
+    }
+
+    .design-frame .variant-choice {
       min-height: 48px;
-      display: grid;
-      place-items: center;
-      padding: 0 5px;
-      font-size: 18px;
-      line-height: 1;
     }
-    .keyboard-key.wide {
-      font-size: 13px;
+
+    .design-frame .variant-choice.selected {
+      background: #fff0f2;
+      color: #641b2c;
     }
-    .keyboard-key.primary {
-      border-color: #8c2739;
-      background: #8c2739;
+
+    .design-frame .order-summary {
+      border-top: 1px solid #ddd6ce;
+      padding-block: 11px;
+    }
+
+    .design-frame .order-summary .primary-pay {
+      min-width: 160px;
+      min-height: 52px;
+      border-radius: 11px;
+      background: #18794e !important;
       color: #fff;
+      box-shadow: 0 8px 18px rgba(24, 121, 78, 0.22) !important;
     }
-    .keyboard-key.danger {
-      color: #a34040;
-      background: #fff8f8;
+
+    .design-frame .order-summary .primary-pay:hover {
+      background: #12633f !important;
     }
-    .keyboard-key svg { width: 19px; height: 19px; }
-    input.virtual-keyboard-field:focus {
-      border-color: #8c2739;
-      box-shadow: 0 0 0 3px rgba(140, 39, 57, 0.14);
+
+    .design-frame .clear-order:not(:disabled) {
+      color: #a23a32;
     }
+
+    .design-frame .order-dock .empty-cart {
+      min-height: 116px;
+      background: #fffdf9;
+    }
+
+    .design-frame .app-shell:has(.order-dock .empty-cart) {
+      grid-template-rows: 86px minmax(0, 1fr) 210px;
+    }
+
+    .design-frame .app-shell:has(.order-dock .empty-cart) .order-dock {
+      grid-template-rows: 78px 132px;
+    }
+
+    @media (max-width: 720px) {
+      .design-frame .app-shell,
+      .design-frame .app-shell:has(.order-dock .empty-cart) {
+        grid-template-rows: auto auto auto;
+      }
+
+      .design-frame .pos-topbar {
+        grid-template-columns: minmax(128px, 1fr) 52px;
+        position: sticky;
+        top: 0;
+        z-index: 30;
+      }
+
+      .design-frame .pos-layout {
+        grid-template-columns: minmax(0, 1fr);
+        overflow: visible;
+      }
+
+      .design-frame .category-rail {
+        grid-template-rows: auto auto;
+        border-right: 0;
+        border-bottom: 1px solid #ddd6ce;
+      }
+
+      .design-frame .category-rail-title {
+        padding: 10px 12px 7px;
+      }
+
+      .design-frame .category-rail .category-scroll {
+        display: flex;
+        gap: 8px;
+        overflow-x: auto;
+        overflow-y: hidden;
+        padding: 6px 10px 10px;
+        scrollbar-width: none;
+      }
+
+      .design-frame .category-rail .category-btn {
+        flex: 0 0 auto;
+        width: auto;
+        min-width: 118px;
+        min-height: 52px;
+        padding: 9px 12px;
+      }
+
+      .design-frame .menu-workspace .search-row {
+        padding: 10px;
+      }
+
+      .design-frame .menu-workspace .item-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        grid-auto-rows: 136px;
+        overflow-y: visible;
+      }
+
+      .design-frame .order-dock,
+      .design-frame .app-shell:has(.order-dock .empty-cart) .order-dock {
+        grid-template-rows: auto auto;
+      }
+
+      .design-frame .order-summary {
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 8px;
+        padding: 10px;
+      }
+
+      .design-frame .order-summary-total {
+        justify-self: end;
+      }
+
+      .design-frame .clear-order {
+        grid-column: 1;
+      }
+
+      .design-frame .order-summary .primary-pay {
+        grid-column: 2;
+        grid-row: 2;
+        min-width: 150px;
+      }
+
+      .design-frame .order-dock .cart-list {
+        grid-template-columns: minmax(0, 1fr);
+        grid-auto-rows: minmax(112px, auto);
+        max-height: none;
+        padding: 10px;
+      }
+
+      .design-frame .order-dock .empty-cart {
+        min-height: 110px;
+      }
+    }
+
+    @media (max-width: 430px) {
+      .design-frame .menu-workspace .item-grid {
+        grid-template-columns: minmax(0, 1fr);
+      }
+
+      .design-frame .order-summary .primary-pay {
+        min-width: 138px;
+      }
+    }
+
   </style>
 </head>
 <body>
@@ -2461,12 +2247,10 @@
         <div><strong>Beaten Bucks</strong><span>Counter POS</span></div>
       </div>
       <div class="header-actions">
-        <button class="header-action" id="menuBtn"><i data-lucide="notebook-tabs"></i><span>Menu</span></button>
-        <button class="header-action" id="inventoryBtn"><i data-lucide="boxes"></i><span>Stock</span></button>
-        <button class="header-action" id="layoutBtn"><i data-lucide="layout-dashboard"></i><span>Layout</span></button>
+        <button class="header-action" id="holdBtn"><i data-lucide="pause-circle"></i><span>Hold</span></button>
+        <button class="header-action" id="heldBtn"><i data-lucide="clipboard-list"></i><span>Held <b id="heldCount">0</b></span></button>
         <button class="header-action" id="ordersBtn"><i data-lucide="receipt-text"></i><span>Orders</span></button>
         <button class="header-action" id="salesBtn"><i data-lucide="chart-no-axes-column-increasing"></i><span>Sales</span></button>
-        <button class="header-action" id="fullscreenBtn"><i data-lucide="maximize-2"></i><span>Full</span></button>
       </div>
     </header>
 
@@ -2479,8 +2263,9 @@
       <section class="menu-workspace" aria-label="Menu items">
         <div class="search-row">
           <label class="search-box">
+            <span class="sr-only">Search menu</span>
             <i data-lucide="search"></i>
-            <input id="searchInput" type="search" placeholder="Search any item" aria-label="Search menu">
+            <input id="searchInput" type="search" placeholder="Search any item">
           </label>
           <button class="clear-search" id="clearSearchBtn" aria-label="Clear search"><i data-lucide="x"></i></button>
         </div>
@@ -2504,201 +2289,9 @@
       <div class="orders-tools">
         <div class="orders-stat"><span>Orders</span><strong id="previousOrderCount">0</strong></div>
         <div class="orders-stat accent"><span>Collected</span><strong id="previousOrderTotal">Rs 0</strong></div>
-        <div class="orders-stat warning"><span>Unpaid</span><strong id="previousUnpaidTotal">Rs 0</strong></div>
         <div class="orders-stat"><span>Items sold</span><strong id="previousItemsCount">0</strong></div>
       </div>
       <div class="previous-orders-list" id="previousOrdersList"></div>
-    </section>
-
-    <section class="menu-admin-screen" id="menuAdminScreen" aria-label="Menu management">
-      <div class="orders-page-head">
-        <button class="orders-back-btn" id="closeMenuBtn" aria-label="Back to point of sale"><i data-lucide="arrow-left"></i></button>
-        <div>
-          <span class="orders-page-kicker">Catalog setup</span>
-          <h2 class="orders-page-title">Menu</h2>
-          <p class="orders-page-subtitle">Add items, edit category, set price and track profit per item.</p>
-        </div>
-      </div>
-      <div class="menu-admin-tools">
-        <div class="orders-stat"><span>Total items</span><strong id="menuAdminItemCount">0</strong></div>
-        <div class="orders-stat accent"><span>Avg profit</span><strong id="menuAdminAvgProfit">Rs 0</strong></div>
-        <div class="orders-stat"><span>Categories</span><strong id="menuAdminCategoryCount">0</strong></div>
-        <button class="menu-admin-add" id="addMenuItemBtn"><i data-lucide="plus-circle"></i>Add new item</button>
-      </div>
-      <div class="menu-admin-body">
-        <div class="menu-admin-list-panel">
-          <label class="menu-admin-search">
-            <i data-lucide="search"></i>
-            <input id="menuAdminSearch" type="search" placeholder="Search item, category or size" aria-label="Search menu items">
-          </label>
-          <div class="menu-admin-list" id="menuAdminList"></div>
-        </div>
-        <aside class="menu-admin-form-panel" aria-label="Menu item editor">
-          <div class="menu-form-head">
-            <span id="menuFormMode">Edit item</span>
-            <strong id="menuFormTitle">Select an item</strong>
-          </div>
-          <form class="menu-admin-form" id="menuAdminForm">
-            <div class="menu-field">
-              <label for="menuItemName">Item name</label>
-              <input id="menuItemName" name="name" autocomplete="off" required>
-            </div>
-            <div class="menu-field">
-              <label for="menuItemCategory">Category</label>
-              <input id="menuItemCategory" name="category" list="menuCategoryOptions" autocomplete="off" required>
-              <datalist id="menuCategoryOptions"></datalist>
-            </div>
-            <div class="menu-field-grid">
-              <div class="menu-field">
-                <label for="menuItemSize">Size</label>
-                <select id="menuItemSize" name="size">
-                  <option>M</option>
-                  <option>L</option>
-                  <option>Regular</option>
-                </select>
-              </div>
-              <div class="menu-field">
-                <label for="menuItemCode">Shortcut</label>
-                <input id="menuItemCode" name="code" autocomplete="off" maxlength="4">
-              </div>
-            </div>
-            <div class="menu-field-grid">
-              <div class="menu-field">
-                <label for="menuItemPrice">Price</label>
-                <input id="menuItemPrice" name="price" type="number" min="0" step="1" required>
-              </div>
-              <div class="menu-field">
-                <label for="menuItemProfit">Profit</label>
-                <input id="menuItemProfit" name="profit" type="number" min="0" step="1" required>
-              </div>
-            </div>
-            <div class="menu-field">
-              <label>Packaging used</label>
-              <div class="packaging-builder" id="menuPackagingRows"></div>
-              <button class="menu-inline-action" type="button" id="addMenuPackagingBtn"><i data-lucide="plus-circle"></i>Add packing material</button>
-              <div class="menu-helper-note">Add all packing materials used by one sale, like cup plus straw. Each material will reduce from inventory.</div>
-            </div>
-            <div class="menu-form-actions">
-              <button class="menu-save-btn" type="submit"><i data-lucide="save"></i>Save item</button>
-              <button class="menu-secondary-btn" type="button" id="resetMenuFormBtn"><i data-lucide="rotate-ccw"></i>Reset</button>
-            </div>
-          </form>
-        </aside>
-      </div>
-    </section>
-
-    <section class="layout-setup-screen" id="layoutSetupScreen" aria-label="Order screen tile setup">
-      <div class="orders-page-head">
-        <button class="orders-back-btn" id="closeLayoutBtn" aria-label="Back to point of sale"><i data-lucide="arrow-left"></i></button>
-        <div>
-          <span class="orders-page-kicker">Order screen</span>
-          <h2 class="orders-page-title">Tile Setup</h2>
-          <p class="orders-page-subtitle">Arrange categories and product tiles exactly as staff will see them while billing.</p>
-        </div>
-      </div>
-      <div class="menu-admin-tools">
-        <div class="orders-stat"><span>Categories</span><strong id="layoutCategoryCount">0</strong></div>
-        <div class="orders-stat accent"><span>Tiles shown</span><strong id="layoutTileCount">0</strong></div>
-        <div class="orders-stat"><span>Editing</span><strong id="layoutEditingLabel">None</strong></div>
-        <button class="menu-admin-add" id="resetLayoutBtn"><i data-lucide="rotate-ccw"></i>Default order</button>
-      </div>
-      <div class="layout-setup-body">
-        <section class="layout-panel" aria-label="Category arrangement">
-          <div class="layout-panel-head">
-            <span>Categories</span>
-            <strong>Order screen rail</strong>
-          </div>
-          <div class="layout-list" id="layoutCategoryList"></div>
-        </section>
-        <section class="layout-panel" aria-label="Tile arrangement">
-          <div class="layout-panel-head">
-            <span>Tiles in category</span>
-            <strong id="layoutActiveCategoryTitle">Select category</strong>
-          </div>
-          <div class="layout-list" id="layoutTileList"></div>
-        </section>
-      </div>
-    </section>
-
-    <section class="inventory-admin-screen" id="inventoryAdminScreen" aria-label="Inventory management">
-      <div class="orders-page-head">
-        <button class="orders-back-btn" id="closeInventoryBtn" aria-label="Back to point of sale"><i data-lucide="arrow-left"></i></button>
-        <div>
-          <span class="orders-page-kicker">Stock control</span>
-          <h2 class="orders-page-title">Inventory</h2>
-          <p class="orders-page-subtitle">Add stock, enter night closing count, and manage packaging used by menu items.</p>
-        </div>
-      </div>
-      <div class="menu-admin-tools">
-        <div class="orders-stat"><span>Inventory items</span><strong id="inventoryItemCount">0</strong></div>
-        <div class="orders-stat accent"><span>Packaging stock</span><strong id="inventoryPackagingTotal">0</strong></div>
-        <div class="orders-stat"><span>Low stock</span><strong id="inventoryLowStockCount">0</strong></div>
-        <button class="menu-admin-add" id="addInventoryItemBtn"><i data-lucide="plus-circle"></i>Add inventory</button>
-      </div>
-      <div class="menu-admin-body">
-        <div class="menu-admin-list-panel">
-          <label class="menu-admin-search">
-            <i data-lucide="search"></i>
-            <input id="inventorySearch" type="search" placeholder="Search inventory, packaging or unit" aria-label="Search inventory">
-          </label>
-          <div class="menu-admin-list" id="inventoryList"></div>
-        </div>
-        <aside class="menu-admin-form-panel" aria-label="Inventory editor">
-          <div class="menu-form-head">
-            <span id="inventoryFormMode">Edit stock</span>
-            <strong id="inventoryFormTitle">Select inventory</strong>
-          </div>
-          <form class="menu-admin-form" id="inventoryForm">
-            <div class="menu-field">
-              <label for="inventoryName">Inventory name</label>
-              <input id="inventoryName" name="name" autocomplete="off" required>
-            </div>
-            <div class="menu-field-grid">
-              <div class="menu-field">
-                <label for="inventoryType">Type</label>
-                <select id="inventoryType" name="type">
-                  <option>Packaging</option>
-                  <option>Ingredient</option>
-                  <option>Consumable</option>
-                </select>
-              </div>
-              <div class="menu-field">
-                <label for="inventoryUnit">Unit</label>
-                <input id="inventoryUnit" name="unit" autocomplete="off" placeholder="pcs, kg, ltr" required>
-              </div>
-            </div>
-            <div class="menu-field-grid">
-              <div class="menu-field">
-                <label for="inventoryStock">Current stock</label>
-                <input id="inventoryStock" name="stock" type="number" min="0" step="0.1" required>
-              </div>
-              <div class="menu-field">
-                <label for="inventoryMinStock">Low alert at</label>
-                <input id="inventoryMinStock" name="minStock" type="number" min="0" step="0.1" required>
-              </div>
-            </div>
-            <div class="menu-form-actions">
-              <button class="menu-save-btn" type="submit"><i data-lucide="save"></i>Save stock</button>
-              <button class="menu-secondary-btn" type="button" id="resetInventoryFormBtn"><i data-lucide="rotate-ccw"></i>Reset</button>
-            </div>
-            <div class="menu-field-grid">
-              <div class="menu-field">
-                <label for="inventoryAddQty">Add stock</label>
-                <input id="inventoryAddQty" type="number" min="0" step="0.1" placeholder="Qty received">
-              </div>
-              <div class="menu-field">
-                <label for="inventoryNightCount">Night left</label>
-                <input id="inventoryNightCount" type="number" min="0" step="0.1" placeholder="Closing count">
-              </div>
-            </div>
-            <div class="menu-form-actions">
-              <button class="menu-secondary-btn" type="button" id="addInventoryStockBtn"><i data-lucide="package-plus"></i>Add stock</button>
-              <button class="menu-save-btn" type="button" id="closeInventoryNightBtn"><i data-lucide="moon"></i>Update left</button>
-            </div>
-            <div class="menu-helper-note">At night, enter the actual items left. The system replaces current stock with that closing count.</div>
-          </form>
-        </aside>
-      </div>
     </section>
 
     <section class="order-dock" id="orderDock" aria-label="Current order">
@@ -2779,27 +2372,17 @@
         </div>
       </section>
     </div>
-
-    <section class="virtual-keyboard" id="virtualKeyboard" aria-label="POS on-screen keyboard">
-      <div class="keyboard-head">
-        <div class="keyboard-target">
-          <span id="keyboardFieldType">Text entry</span>
-          <strong id="keyboardFieldLabel">Select a field</strong>
-        </div>
-        <button class="keyboard-close" id="keyboardCloseBtn" type="button" aria-label="Close keyboard"><i data-lucide="x"></i></button>
-      </div>
-      <div class="keyboard-preview" id="keyboardPreview"></div>
-      <div class="keyboard-mode-row">
-        <button class="keyboard-mode" type="button" data-keyboard-mode="letters">ABC</button>
-        <button class="keyboard-mode" type="button" data-keyboard-mode="numbers">123</button>
-        <button class="keyboard-mode" type="button" data-keyboard-mode="symbols">#+=</button>
-        <button class="keyboard-action" id="keyboardDoneBtn" type="button"><i data-lucide="check"></i>Done</button>
-      </div>
-      <div class="keyboard-keys" id="keyboardKeys"></div>
-    </section>
   </div>
 
   <div class="drawer-backdrop" id="drawerBackdrop"></div>
+  <aside class="drawer-side-panel" id="heldDrawer" aria-label="Held orders">
+    <div class="drawer-head">
+      <h2 class="panel-title">Held Orders</h2>
+      <button class="icon-btn" id="closeHeldBtn" aria-label="Close held orders"><i data-lucide="x"></i></button>
+    </div>
+    <div class="held-list" id="heldList"></div>
+  </aside>
+
   <aside class="drawer-side-panel" id="salesDrawer" aria-label="Sales history">
     <div class="drawer-head">
       <h2 class="panel-title">Today's Sales</h2>
@@ -2812,7 +2395,7 @@
 
   <script>
     const rupee = new Intl.NumberFormat("en-IN", { maximumFractionDigits: 0 });
-    const seedMenuItems = [
+    const menuItems = [
       { id: "cold-1", name: "Handbeaten Cold Coffee", size: "M", price: 70, category: "Cold Coffee", code: "1" },
       { id: "cold-2", name: "Handbeaten Cold Coffee", size: "L", price: 90, category: "Cold Coffee", code: "2" },
       { id: "cold-3", name: "Davidoff Cold Coffee", size: "M", price: 120, category: "Cold Coffee", code: "3" },
@@ -2922,25 +2505,41 @@
       { id: "snack-11", name: "Aloo Patties", size: "Regular", price: 30, category: "Snacks", code: "43" },
       { id: "snack-12", name: "Paneer Patties", size: "Regular", price: 40, category: "Snacks", code: "44" },
       { id: "snack-13", name: "Masala Patties", size: "Regular", price: 40, category: "Snacks", code: "45" }
-    ];
-    const seedInventoryItems = [
-      { id: "inv-cold-cup-m", name: "Cold cup M", type: "Packaging", unit: "pcs", stock: 220, minStock: 50 },
-      { id: "inv-cold-cup-l", name: "Cold cup L", type: "Packaging", unit: "pcs", stock: 180, minStock: 45 },
-      { id: "inv-hot-cup-m", name: "Hot cup M", type: "Packaging", unit: "pcs", stock: 260, minStock: 60 },
-      { id: "inv-hot-cup-l", name: "Hot cup L", type: "Packaging", unit: "pcs", stock: 180, minStock: 45 },
-      { id: "inv-snack-plate", name: "Snack plate", type: "Packaging", unit: "pcs", stock: 150, minStock: 35 },
-      { id: "inv-straw", name: "Straw", type: "Consumable", unit: "pcs", stock: 320, minStock: 80 },
-      { id: "inv-napkin", name: "Napkin", type: "Consumable", unit: "pcs", stock: 500, minStock: 100 }
-    ];
-    let menuItems = [];
-    let groupedMenuItems = [];
-    let categories = [];
-    let selectorFamilies = [];
-    let selectorFamilyByGroupId = new Map();
-    let inventoryItems = [];
-    let tileLayout = { categoryOrder: [], groupOrderByCategory: {} };
-    let activeCategory = "";
+    ].flatMap(item => {
+      if (item.category !== "Thick Milkshake" || item.size !== "Regular") return [item];
+      return [
+        { ...item, id: `${item.id}-m`, size: "M" },
+        { ...item, id: `${item.id}-l`, size: "L", price: item.price + 20, code: `${item.code}-l` }
+      ];
+    });
+    const groupedMenuItems = Object.values(menuItems.reduce((groups, item) => {
+      const key = `${item.category}::${item.name}`;
+      if (!groups[key]) {
+        groups[key] = {
+          id: key,
+          name: item.name,
+          category: item.category,
+          variants: []
+        };
+      }
+      groups[key].variants.push({
+        id: item.id,
+        size: item.size,
+        price: item.price,
+        code: item.code
+      });
+      return groups;
+    }, {})).map(group => ({
+      ...group,
+      variants: group.variants.sort((a, b) => {
+        const order = { M: 1, L: 2, Regular: 3 };
+        return (order[a.size] || 9) - (order[b.size] || 9);
+      })
+    }));
+    const categories = Array.from(new Set(groupedMenuItems.map(item => item.category)));
+    let activeCategory = categories[0] || "";
     let cart = [];
+    let heldOrders = [];
     let sales = [];
     let orderNo = 1001;
     let pendingCustomizedGroup = null;
@@ -2951,55 +2550,13 @@
     let previousOrdersQuery = "";
     let expandedPreviousOrderNo = null;
     let editingOrder = null;
-    let layoutSetupCategory = "";
-    let menuAdminQuery = "";
-    let editingMenuItemId = "";
-    let inventoryQuery = "";
-    let editingInventoryItemId = "";
-    let activeKeyboardInput = null;
-    let keyboardMode = "letters";
-    let keyboardShift = false;
 
     const $ = (id) => document.getElementById(id);
     const money = (value) => `Rs ${rupee.format(value || 0)}`;
-    const escapeHtml = (value) => String(value ?? "")
-      .replace(/&/g, "&amp;")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;")
-      .replace(/"/g, "&quot;")
-      .replace(/'/g, "&#039;");
     const coldCoffeeDefaults = { strength: "Light", sugar: "Sugar", ice: "Ice" };
     const milkshakeDefaults = { strength: "Light", sugar: "Sugar", ice: "Ice" };
-    const menuStorageKey = "beaten-bucks-menu-items-v1";
-    const inventoryStorageKey = "beaten-bucks-inventory-items-v1";
-    const layoutStorageKey = "beaten-bucks-tile-layout-v1";
     const isCustomizableDrink = (item) => ["Cold Coffee", "Thick Milkshake"].includes(item.category);
     const customizationDefaultsFor = (item) => item.category === "Thick Milkshake" ? milkshakeDefaults : coldCoffeeDefaults;
-    const keyboardInputSelector = [
-      "input[type='text']",
-      "input[type='search']",
-      "input[type='number']",
-      "input:not([type])"
-    ].join(",");
-    const keyboardLayouts = {
-      letters: [
-        ["q", "w", "e", "r", "t", "y", "u", "i", "o", "p"],
-        ["a", "s", "d", "f", "g", "h", "j", "k", "l"],
-        ["shift", "z", "x", "c", "v", "b", "n", "m", "backspace"],
-        ["clear", "-", ".", "space", "'", "done"]
-      ],
-      numbers: [
-        ["1", "2", "3", "backspace"],
-        ["4", "5", "6", "clear"],
-        ["7", "8", "9", "done"],
-        [".", "0", "-", "space"]
-      ],
-      symbols: [
-        ["@", "#", "$", "&", "*", "(", ")", "/", "+", "="],
-        ["%", "!", "?", ":", ";", ",", ".", "-", "_", "backspace"],
-        ["clear", "\"", "'", "space", "done"]
-      ]
-    };
     const selectorFamilyConfigs = [
       {
         id: "family-mojito",
@@ -3010,190 +2567,15 @@
         matcher: (group) => group.name.toLowerCase().includes("mojito")
       }
     ];
-
-    function defaultPackagingFor(item) {
-      if (item.category === "Cold Coffee" || item.category === "Thick Milkshake" || item.category === "Mojito / Soda / Ice Tea") {
-        return item.size === "L" ? "inv-cold-cup-l" : "inv-cold-cup-m";
-      }
-      if (item.category === "Hot Coffee" || item.category === "Tea") {
-        return item.size === "L" ? "inv-hot-cup-l" : "inv-hot-cup-m";
-      }
-      if (item.category === "Snacks") return "inv-snack-plate";
-      return "";
-    }
-
-    function defaultPackagingItemsFor(item) {
-      const primary = defaultPackagingFor(item);
-      const materials = primary ? [{ inventoryItemId: primary, qty: 1 }] : [];
-      if (item.category === "Cold Coffee" || item.category === "Thick Milkshake" || item.category === "Mojito / Soda / Ice Tea") {
-        materials.push({ inventoryItemId: "inv-straw", qty: 1 });
-      }
-      return materials;
-    }
-
-    function normalizePackagingItems(item) {
-      const rawItems = Array.isArray(item.packagingItems)
-        ? item.packagingItems
-        : (item.packagingItemId ? [{ inventoryItemId: item.packagingItemId, qty: item.packagingQty ?? 1 }] : null);
-      const materials = rawItems ?? defaultPackagingItemsFor(item);
-      return materials
-        .map(material => ({
-          inventoryItemId: material.inventoryItemId || material.id || "",
-          qty: Number(material.qty ?? material.packagingQty ?? 1) || 0
-        }))
-        .filter(material => material.inventoryItemId && material.qty > 0);
-    }
-
-    function normalizeInventoryItem(item) {
-      return {
-        ...item,
-        id: item.id || `inventory-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
-        name: (item.name || "New inventory").trim(),
-        type: item.type || "Packaging",
-        unit: (item.unit || "pcs").trim(),
-        stock: Number(item.stock) || 0,
-        minStock: Number(item.minStock) || 0,
-        lastCount: Number(item.lastCount ?? item.stock) || 0,
-        updatedAt: item.updatedAt || "Ready"
-      };
-    }
-
-    function normalizeMenuItem(item) {
-      const price = Number(item.price) || 0;
-      return {
-        ...item,
-        id: item.id || `custom-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
-        name: (item.name || "New item").trim(),
-        category: (item.category || activeCategory || "Snacks").trim(),
-        size: item.size || "Regular",
-        price,
-        profit: Number(item.profit ?? Math.round(price * 0.35)) || 0,
-        packagingItems: normalizePackagingItems(item),
-        code: (item.code || "").trim()
-      };
-    }
-
-    function expandSeedMenuItem(item) {
-      if (item.category !== "Thick Milkshake" || item.size !== "Regular") return [normalizeMenuItem(item)];
-      return [
-        normalizeMenuItem({ ...item, id: `${item.id}-m`, size: "M" }),
-        normalizeMenuItem({ ...item, id: `${item.id}-l`, size: "L", price: item.price + 20, code: `${item.code}-l` })
-      ];
-    }
-
-    function loadMenuItems() {
-      try {
-        const saved = JSON.parse(localStorage.getItem(menuStorageKey) || "null");
-        if (Array.isArray(saved) && saved.length) return saved.map(normalizeMenuItem);
-      } catch (error) {
-        console.warn("Could not load saved menu", error);
-      }
-      return seedMenuItems.flatMap(expandSeedMenuItem);
-    }
-
-    function persistMenuItems() {
-      try {
-        localStorage.setItem(menuStorageKey, JSON.stringify(menuItems));
-      } catch (error) {
-        console.warn("Could not save menu", error);
-      }
-    }
-
-    function loadInventoryItems() {
-      try {
-        const saved = JSON.parse(localStorage.getItem(inventoryStorageKey) || "null");
-        if (Array.isArray(saved) && saved.length) return saved.map(normalizeInventoryItem);
-      } catch (error) {
-        console.warn("Could not load saved inventory", error);
-      }
-      return seedInventoryItems.map(normalizeInventoryItem);
-    }
-
-    function persistInventoryItems() {
-      try {
-        localStorage.setItem(inventoryStorageKey, JSON.stringify(inventoryItems));
-      } catch (error) {
-        console.warn("Could not save inventory", error);
-      }
-    }
-
-    function loadTileLayout() {
-      try {
-        const saved = JSON.parse(localStorage.getItem(layoutStorageKey) || "null");
-        if (saved && Array.isArray(saved.categoryOrder) && saved.groupOrderByCategory) {
-          return {
-            categoryOrder: saved.categoryOrder,
-            groupOrderByCategory: saved.groupOrderByCategory
-          };
-        }
-      } catch (error) {
-        console.warn("Could not load tile layout", error);
-      }
-      return { categoryOrder: [], groupOrderByCategory: {} };
-    }
-
-    function persistTileLayout() {
-      try {
-        localStorage.setItem(layoutStorageKey, JSON.stringify(tileLayout));
-      } catch (error) {
-        console.warn("Could not save tile layout", error);
-      }
-    }
-
-    function orderBySavedKeys(values, savedOrder) {
-      const available = new Set(values);
-      const ordered = (savedOrder || []).filter(value => available.has(value));
-      return [...ordered, ...values.filter(value => !ordered.includes(value))];
-    }
-
-    function rebuildMenuModel() {
-      menuItems = menuItems.map(normalizeMenuItem);
-      groupedMenuItems = Object.values(menuItems.reduce((groups, item) => {
-        const key = `${item.category}::${item.name}`;
-        if (!groups[key]) {
-          groups[key] = {
-            id: key,
-            name: item.name,
-            category: item.category,
-            variants: []
-          };
-        }
-        groups[key].variants.push({
-          id: item.id,
-          size: item.size,
-          price: item.price,
-          profit: item.profit,
-          packagingItems: item.packagingItems,
-          code: item.code
-        });
-        return groups;
-      }, {})).map(group => ({
-        ...group,
-        variants: group.variants.sort((a, b) => {
-          const order = { M: 1, L: 2, Regular: 3 };
-          return (order[a.size] || 9) - (order[b.size] || 9);
-        })
-      }));
-      const defaultCategories = Array.from(new Set(groupedMenuItems.map(item => item.category)));
-      categories = orderBySavedKeys(defaultCategories, tileLayout.categoryOrder);
-      tileLayout.categoryOrder = categories.slice();
-      if (!categories.includes(activeCategory)) activeCategory = categories[0] || "";
-      if (!categories.includes(layoutSetupCategory)) layoutSetupCategory = activeCategory || categories[0] || "";
-      selectorFamilies = selectorFamilyConfigs
-        .map(config => ({
-          ...config,
-          groups: groupedMenuItems.filter(group => group.category === config.category && config.matcher(group))
-        }))
-        .filter(config => config.groups.length);
-      selectorFamilyByGroupId = new Map(
-        selectorFamilies.flatMap(family => family.groups.map(group => [group.id, family]))
-      );
-    }
-
-    inventoryItems = loadInventoryItems();
-    menuItems = loadMenuItems();
-    tileLayout = loadTileLayout();
-    rebuildMenuModel();
+    const selectorFamilies = selectorFamilyConfigs
+      .map(config => ({
+        ...config,
+        groups: groupedMenuItems.filter(group => group.category === config.category && config.matcher(group))
+      }))
+      .filter(config => config.groups.length);
+    const selectorFamilyByGroupId = new Map(
+      selectorFamilies.flatMap(family => family.groups.map(group => [group.id, family]))
+    );
 
     function cartKey(item, customization) {
       if (!customization) return item.id;
@@ -3289,41 +2671,23 @@
       return `${labels.join(" · ")}${remainder > 0 ? ` +${remainder} more` : ""}`;
     }
 
-    function baseDisplayEntriesForCategory(category) {
+    function buildDisplayItems(category, query) {
       const items = groupedMenuItems.filter(item => item.category === category);
       const insertedFamilies = new Set();
-      const entries = [];
+      const display = [];
       items.forEach(item => {
         const family = selectorFamilyByGroupId.get(item.id);
         if (family) {
           if (insertedFamilies.has(family.id)) return;
           insertedFamilies.add(family.id);
-          entries.push({ key: `family::${family.id}`, type: "family", family });
+          if (!query || family.name.toLowerCase().includes(query) || family.groups.some(group => itemMatchesQuery(group, query))) {
+            display.push({ type: "family", family });
+          }
           return;
         }
-        entries.push({ key: `group::${item.id}`, type: "item", item });
+        if (itemMatchesQuery(item, query)) display.push({ type: "item", item });
       });
-      return entries;
-    }
-
-    function orderedDisplayEntriesForCategory(category) {
-      const entries = baseDisplayEntriesForCategory(category);
-      const savedOrder = tileLayout.groupOrderByCategory?.[category] || [];
-      const orderedKeys = orderBySavedKeys(entries.map(entry => entry.key), savedOrder);
-      const byKey = new Map(entries.map(entry => [entry.key, entry]));
-      tileLayout.groupOrderByCategory[category] = orderedKeys;
-      return orderedKeys.map(key => byKey.get(key)).filter(Boolean);
-    }
-
-    function buildDisplayItems(category, query) {
-      return orderedDisplayEntriesForCategory(category).filter(entry => {
-        if (entry.type === "family") {
-          return !query
-            || entry.family.name.toLowerCase().includes(query)
-            || entry.family.groups.some(group => itemMatchesQuery(group, query));
-        }
-        return itemMatchesQuery(entry.item, query);
-      });
+      return display;
     }
 
     function renderCustomizationSheet() {
@@ -3452,164 +2816,6 @@
       pendingSelectorSelections = {};
       $("selectorBackdrop").classList.remove("open");
       $("selectorBackdrop").setAttribute("aria-hidden", "true");
-    }
-
-    function isVirtualKeyboardInput(element) {
-      return element?.matches?.(keyboardInputSelector) && !element.disabled;
-    }
-
-    function prepareVirtualKeyboardInput(input) {
-      if (!isVirtualKeyboardInput(input)) return;
-      input.setAttribute("inputmode", "none");
-      input.setAttribute("autocomplete", "off");
-      input.readOnly = true;
-      input.classList.add("virtual-keyboard-field");
-    }
-
-    function prepareVirtualKeyboardInputs(root = document) {
-      root.querySelectorAll(keyboardInputSelector).forEach(prepareVirtualKeyboardInput);
-    }
-
-    function keyboardFieldLabel(input) {
-      const explicit = input.id ? document.querySelector(`label[for="${CSS.escape(input.id)}"]`) : null;
-      return input.getAttribute("aria-label")
-        || explicit?.textContent?.trim()
-        || input.placeholder
-        || input.name
-        || "Text field";
-    }
-
-    function keyboardFieldType(input) {
-      return input.type === "number" ? "Number entry" : "Text entry";
-    }
-
-    function setKeyboardMode(mode) {
-      keyboardMode = mode;
-      keyboardShift = false;
-      renderVirtualKeyboard();
-    }
-
-    function openVirtualKeyboard(input) {
-      if (!isVirtualKeyboardInput(input)) return;
-      prepareVirtualKeyboardInput(input);
-      activeKeyboardInput = input;
-      keyboardMode = input.type === "number" ? "numbers" : "letters";
-      $("keyboardFieldType").textContent = keyboardFieldType(input);
-      $("keyboardFieldLabel").textContent = keyboardFieldLabel(input);
-      $("virtualKeyboard").classList.add("open");
-      updateKeyboardPreview();
-      renderVirtualKeyboard();
-      setTimeout(() => input.scrollIntoView({ block: "center", inline: "nearest" }), 0);
-    }
-
-    function closeVirtualKeyboard() {
-      $("virtualKeyboard").classList.remove("open");
-      activeKeyboardInput?.blur();
-      activeKeyboardInput = null;
-    }
-
-    function updateKeyboardPreview() {
-      if (!activeKeyboardInput || !document.contains(activeKeyboardInput)) {
-        $("keyboardPreview").textContent = "";
-        return;
-      }
-      $("keyboardPreview").textContent = activeKeyboardInput.value || activeKeyboardInput.placeholder || "";
-    }
-
-    function keyLabel(key) {
-      const labels = {
-        backspace: "Del",
-        clear: "Clear",
-        done: "Done",
-        shift: keyboardShift ? "CAP" : "Cap",
-        space: "Space"
-      };
-      if (labels[key]) return labels[key];
-      return keyboardMode === "letters" ? key.toUpperCase() : key;
-    }
-
-    function keyClass(key) {
-      if (["space", "clear", "done", "shift", "backspace"].includes(key)) return "keyboard-key wide";
-      return "keyboard-key";
-    }
-
-    function renderVirtualKeyboard() {
-      document.querySelectorAll("[data-keyboard-mode]").forEach(button => {
-        button.classList.toggle("active", button.dataset.keyboardMode === keyboardMode);
-      });
-      $("keyboardKeys").innerHTML = keyboardLayouts[keyboardMode].map(row => {
-        const rowClass = keyboardMode === "numbers"
-          ? "keyboard-row numberpad"
-          : row.length < 6 ? "keyboard-row actions" : row.length < 10 ? "keyboard-row compact" : "keyboard-row";
-        return `
-          <div class="${rowClass}">
-            ${row.map(key => `
-              <button class="${keyClass(key)} ${key === "done" ? "primary" : ""} ${key === "clear" ? "danger" : ""}" type="button" data-virtual-key="${escapeHtml(key)}" aria-label="${escapeHtml(keyLabel(key))}">
-                ${key === "backspace" ? `<i data-lucide="delete"></i>` : escapeHtml(keyLabel(key))}
-              </button>
-            `).join("")}
-          </div>
-        `;
-      }).join("");
-      $("keyboardKeys").querySelectorAll("[data-virtual-key]").forEach(button => {
-        button.addEventListener("click", () => applyVirtualKey(button.dataset.virtualKey));
-      });
-      lucide.createIcons();
-    }
-
-    function sanitizeKeyboardValue(input, value) {
-      const maxLength = Number(input.getAttribute("maxlength")) || 0;
-      const nextValue = input.type === "number" ? value.replace(/[^0-9.-]/g, "") : value;
-      return maxLength ? nextValue.slice(0, maxLength) : nextValue;
-    }
-
-    function writeKeyboardValue(input, value, cursorPosition = value.length) {
-      const nextValue = sanitizeKeyboardValue(input, value);
-      input.value = nextValue;
-      if (input.type !== "number") {
-        const cursor = Math.min(cursorPosition, nextValue.length);
-        input.setSelectionRange(cursor, cursor);
-      }
-      input.dispatchEvent(new Event("input", { bubbles: true }));
-      input.dispatchEvent(new Event("change", { bubbles: true }));
-      setTimeout(updateKeyboardPreview, 0);
-    }
-
-    function insertKeyboardText(text) {
-      if (!activeKeyboardInput || !document.contains(activeKeyboardInput)) return;
-      const input = activeKeyboardInput;
-      const value = input.value || "";
-      const start = input.type === "number" ? value.length : input.selectionStart ?? value.length;
-      const end = input.type === "number" ? value.length : input.selectionEnd ?? value.length;
-      writeKeyboardValue(input, `${value.slice(0, start)}${text}${value.slice(end)}`, start + text.length);
-    }
-
-    function backspaceKeyboardText() {
-      if (!activeKeyboardInput || !document.contains(activeKeyboardInput)) return;
-      const input = activeKeyboardInput;
-      const value = input.value || "";
-      const start = input.type === "number" ? value.length : input.selectionStart ?? value.length;
-      const end = input.type === "number" ? value.length : input.selectionEnd ?? value.length;
-      if (start !== end) return writeKeyboardValue(input, `${value.slice(0, start)}${value.slice(end)}`, start);
-      if (start <= 0) return;
-      writeKeyboardValue(input, `${value.slice(0, start - 1)}${value.slice(end)}`, start - 1);
-    }
-
-    function applyVirtualKey(key) {
-      if (!activeKeyboardInput || !document.contains(activeKeyboardInput)) return closeVirtualKeyboard();
-      if (key === "done") return closeVirtualKeyboard();
-      if (key === "clear") return writeKeyboardValue(activeKeyboardInput, "", 0);
-      if (key === "backspace") return backspaceKeyboardText();
-      if (key === "shift") {
-        keyboardShift = !keyboardShift;
-        return renderVirtualKeyboard();
-      }
-      const text = key === "space" ? " " : (keyboardMode === "letters" && !keyboardShift ? key : key.toUpperCase());
-      insertKeyboardText(text);
-      if (keyboardShift) {
-        keyboardShift = false;
-        renderVirtualKeyboard();
-      }
     }
 
     function renderCategories() {
@@ -3818,10 +3024,31 @@
       if (!silent) toast("Current bill cleared");
     }
 
+    function holdOrder() {
+      if (editingOrder) return toast("Save or cancel this order edit first");
+      if (!cart.length) return toast("Add items before holding an order");
+      heldOrders.unshift({ orderNo, cart: structuredClone(cart), time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }), total: totals().total });
+      orderNo += 1;
+      clearCart(true);
+      renderHeld();
+      toast("Order held");
+    }
+
+    function restoreHeld(index) {
+      if (cart.length) holdOrder();
+      const restored = heldOrders.splice(index, 1)[0];
+      cart = structuredClone(restored.cart);
+      orderNo = restored.orderNo;
+      renderCart();
+      renderHeld();
+      closeDrawers();
+      toast(`Order #${orderNo} restored`);
+    }
+
     function startOrderEdit(orderNumber) {
       const sale = sales.find(entry => entry.orderNo === orderNumber);
       if (!sale) return toast("That order is no longer available");
-      if (cart.length && !editingOrder) return toast("Complete or clear current order before editing");
+      if (cart.length && !editingOrder) holdOrder();
       editingOrder = {
         orderNo: sale.orderNo,
         total: sale.total,
@@ -3854,7 +3081,6 @@
       const sale = sales.find(entry => entry.orderNo === editingOrder.orderNo);
       if (!sale) return toast("That order is no longer available");
       const orderNumber = sale.orderNo;
-      applyInventoryUsageDelta(editingOrder.items, cart);
       sale.total = total.total;
       sale.count = total.count;
       sale.items = structuredClone(cart);
@@ -3871,17 +3097,32 @@
       toast(`Order #${orderNumber} updated`);
     }
 
+    function renderHeld() {
+      $("heldCount").textContent = heldOrders.length;
+      $("heldList").innerHTML = heldOrders.length ? heldOrders.map((order, index) => `
+        <div class="held-card">
+          <div class="flex justify-between gap-3">
+            <strong>Order #${order.orderNo}</strong>
+            <span>${money(order.total)}</span>
+          </div>
+          <div class="text-sm text-slate-500">${order.time} · ${order.cart.reduce((sum, item) => sum + item.qty, 0)} items</div>
+          <button class="btn btn-sm btn-primary" data-restore="${index}">Restore</button>
+        </div>
+      `).join("") : `<div class="empty-cart">No held orders.</div>`;
+      document.querySelectorAll("[data-restore]").forEach(button => {
+        button.addEventListener("click", () => restoreHeld(Number(button.dataset.restore)));
+      });
+    }
+
     function completeSale() {
       if (editingOrder) return saveOrderEdit();
       const total = totals();
       if (!cart.length) return toast("Add items before completing sale");
-      applyInventoryUsageDelta([], cart);
       sales.unshift({
         orderNo,
         total: total.total,
         count: total.count,
         method: "Complete",
-        paid: false,
         time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
         items: structuredClone(cart)
       });
@@ -3892,37 +3133,8 @@
       toast("Sale completed");
     }
 
-    function packagingUsageForItems(items) {
-      const usage = new Map();
-      items.forEach(item => {
-        packagingMaterialsFor(item).forEach(material => {
-          const used = material.qty * item.qty;
-          usage.set(material.inventoryItemId, (usage.get(material.inventoryItemId) || 0) + used);
-        });
-      });
-      return usage;
-    }
-
-    function applyInventoryUsageDelta(previousItems, nextItems) {
-      const before = packagingUsageForItems(previousItems);
-      const after = packagingUsageForItems(nextItems);
-      const materialIds = new Set([...before.keys(), ...after.keys()]);
-      materialIds.forEach(id => {
-        const stockItem = inventoryItems.find(entry => entry.id === id);
-        if (!stockItem) return;
-        const delta = (after.get(id) || 0) - (before.get(id) || 0);
-        if (!delta) return;
-        stockItem.stock = Math.max(0, Number((stockItem.stock - delta).toFixed(2)));
-        stockItem.updatedAt = delta > 0
-          ? `Sold ${delta} ${stockItem.unit}`
-          : `Restored ${Math.abs(delta)} ${stockItem.unit}`;
-      });
-      persistInventoryItems();
-      renderInventoryAdmin();
-    }
-
     function renderSales() {
-      const salesTotal = sales.filter(orderIsPaid).reduce((sum, sale) => sum + sale.total, 0);
+      const salesTotal = sales.reduce((sum, sale) => sum + sale.total, 0);
       const counts = new Map();
       sales.forEach(sale => sale.items.forEach(item => {
         const label = `${item.name}${item.size ? ` (${item.size})` : ""}`;
@@ -3945,7 +3157,7 @@
             <strong>Order #${sale.orderNo}</strong>
             <span class="font-black">${money(sale.total)}</span>
           </div>
-          <div class="text-sm text-slate-500">${sale.time} · ${sale.method} · ${paymentLabel(sale)} · ${sale.count} items</div>
+          <div class="text-sm text-slate-500">${sale.time} · ${sale.method} · ${sale.count} items</div>
           <div class="text-sm">${sale.items.map(item => `${item.qty}x ${item.name}${item.size ? ` (${item.size})` : ""}`).join(", ")}</div>
         </div>
       `).join("") : `<div class="empty-cart">No sales completed yet.</div>`;
@@ -3956,44 +3168,25 @@
       return `${item.name}${size}`;
     }
 
-    function orderIsPaid(sale) {
-      return sale.paid === true;
-    }
-
-    function paymentLabel(sale) {
-      return orderIsPaid(sale) ? "Paid" : "Not paid";
-    }
-
-    function setOrderPaid(orderNumber, paid) {
-      const sale = sales.find(entry => entry.orderNo === orderNumber);
-      if (!sale) return toast("That order is no longer available");
-      sale.paid = paid;
-      renderSales();
-      renderPreviousOrders();
-      toast(`Order #${orderNumber} marked ${paid ? "paid" : "not paid"}`);
-    }
-
     function renderPreviousOrders() {
-      const totalSales = sales.filter(orderIsPaid).reduce((sum, sale) => sum + sale.total, 0);
-      const unpaidTotal = sales.filter(sale => !orderIsPaid(sale)).reduce((sum, sale) => sum + sale.total, 0);
+      const totalSales = sales.reduce((sum, sale) => sum + sale.total, 0);
       const itemCount = sales.reduce((sum, sale) => sum + sale.count, 0);
       $("previousOrderCount").textContent = sales.length;
       $("previousOrderTotal").textContent = money(totalSales);
-      $("previousUnpaidTotal").textContent = money(unpaidTotal);
       $("previousItemsCount").textContent = itemCount;
 
       const query = previousOrdersQuery.trim().toLowerCase();
       const visibleSales = sales.filter(sale => !query || [
         `order ${sale.orderNo}`,
         `${sale.orderNo}`,
-        paymentLabel(sale),
         ...sale.items.map(item => `${item.name} ${item.size || ""}`)
       ].some(value => value.toLowerCase().includes(query)));
 
       const search = `
         <label class="orders-search">
           <i data-lucide="search"></i>
-          <input id="previousOrdersSearch" type="search" placeholder="Search order number or item" aria-label="Search previous orders" value="${previousOrdersQuery.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/\"/g, "&quot;")}">
+          <span class="sr-only">Search previous orders</span>
+          <input id="previousOrdersSearch" type="search" placeholder="Search order number or item" value="${previousOrdersQuery.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/\"/g, "&quot;")}">
         </label>
       `;
       const empty = sales.length
@@ -4001,30 +3194,26 @@
         : `<div class="previous-orders-empty"><i data-lucide="receipt-text"></i><strong>No completed orders yet</strong><span>Completed sales will appear here with their full bill details.</span><button id="emptyOrdersBackBtn">Back to POS</button></div>`;
       const cards = visibleSales.map(sale => {
         const expanded = expandedPreviousOrderNo === sale.orderNo;
-        const paid = orderIsPaid(sale);
         const preview = sale.items.slice(0, 2).map(previousOrderItemLabel).join(" · ");
         const remainder = sale.items.length - 2;
         return `
-          <article class="previous-order-card ${expanded ? "open" : ""} ${paid ? "" : "unpaid"}">
+          <article class="previous-order-card ${expanded ? "open" : ""}">
             <button class="previous-order-summary" data-previous-order="${sale.orderNo}" aria-expanded="${expanded}">
               <div>
-                <div class="previous-order-number"><strong>Order #${sale.orderNo}</strong><span class="payment-tag ${paid ? "paid" : "unpaid"}">${paymentLabel(sale)}</span></div>
-                <div class="previous-order-meta">${sale.time} · ${sale.count} item${sale.count === 1 ? "" : "s"} · ${paymentLabel(sale)} · ${preview}${remainder > 0 ? ` +${remainder}` : ""}</div>
+                <div class="previous-order-number"><strong>Order #${sale.orderNo}</strong><span class="order-complete-tag">Completed</span></div>
+                <div class="previous-order-meta">${sale.time} · ${sale.count} item${sale.count === 1 ? "" : "s"} · ${preview}${remainder > 0 ? ` +${remainder}` : ""}</div>
               </div>
               <div class="previous-order-total"><strong>${money(sale.total)}</strong><span><i data-lucide="${expanded ? "chevron-up" : "chevron-down"}"></i>${expanded ? "Hide details" : "View details"}</span></div>
             </button>
             <div class="previous-order-details">
-              <div class="previous-order-detail-head"><span>Order items</span><span>${sale.method} · ${paymentLabel(sale)}</span></div>
+              <div class="previous-order-detail-head"><span>Order items</span><span>${sale.method}</span></div>
               ${sale.items.map(item => `
                 <div class="previous-order-line">
                   <div><strong>${previousOrderItemLabel(item)}</strong><span>${item.customization ? customizationLabel(item.customization) : `${money(item.price)} each`} · Qty ${item.qty}</span></div>
                   <b>${money(item.price * item.qty)}</b>
                 </div>
               `).join("")}
-              <div class="previous-order-edit-action">
-                <button data-toggle-paid-order="${sale.orderNo}" data-paid-next="${paid ? "false" : "true"}"><i data-lucide="${paid ? "circle-dollar-sign" : "badge-check"}"></i>${paid ? "Mark not paid" : "Mark paid"}</button>
-                <button data-edit-previous-order="${sale.orderNo}"><i data-lucide="pencil"></i>Edit order</button>
-              </div>
+              <div class="previous-order-edit-action"><button data-edit-previous-order="${sale.orderNo}"><i data-lucide="pencil"></i>Edit order</button></div>
             </div>
           </article>
         `;
@@ -4045,18 +3234,12 @@
       $("previousOrdersList").querySelectorAll("[data-edit-previous-order]").forEach(button => {
         button.addEventListener("click", () => startOrderEdit(Number(button.dataset.editPreviousOrder)));
       });
-      $("previousOrdersList").querySelectorAll("[data-toggle-paid-order]").forEach(button => {
-        button.addEventListener("click", () => setOrderPaid(Number(button.dataset.togglePaidOrder), button.dataset.paidNext === "true"));
-      });
       $("emptyOrdersBackBtn")?.addEventListener("click", closePreviousOrders);
       lucide.createIcons();
     }
 
     function openPreviousOrders() {
       closeDrawers();
-      closeMenuAdmin();
-      closeInventoryAdmin();
-      closeLayoutSetup();
       previousOrdersQuery = "";
       expandedPreviousOrderNo = null;
       document.querySelector(".app-shell").classList.add("orders-view");
@@ -4065,442 +3248,6 @@
 
     function closePreviousOrders() {
       document.querySelector(".app-shell").classList.remove("orders-view");
-    }
-
-    function moveValue(list, value, direction) {
-      const index = list.indexOf(value);
-      const nextIndex = index + direction;
-      if (index < 0 || nextIndex < 0 || nextIndex >= list.length) return list;
-      const next = list.slice();
-      [next[index], next[nextIndex]] = [next[nextIndex], next[index]];
-      return next;
-    }
-
-    function layoutEntryName(entry) {
-      return entry.type === "family" ? entry.family.name : entry.item.name;
-    }
-
-    function layoutEntryDetail(entry) {
-      if (entry.type === "family") {
-        const variantCount = entry.family.groups.reduce((sum, group) => sum + group.variants.length, 0);
-        return `${entry.family.groups.length} flavours · ${variantCount} sizes`;
-      }
-      return `${entry.item.variants.length} size${entry.item.variants.length === 1 ? "" : "s"} · ${entry.item.variants.map(variant => `${variant.size} ${money(variant.price)}`).join(" · ")}`;
-    }
-
-    function renderLayoutSetup() {
-      if (!categories.includes(layoutSetupCategory)) layoutSetupCategory = activeCategory || categories[0] || "";
-      const entries = layoutSetupCategory ? orderedDisplayEntriesForCategory(layoutSetupCategory) : [];
-      const totalTiles = categories.reduce((sum, category) => sum + orderedDisplayEntriesForCategory(category).length, 0);
-      $("layoutCategoryCount").textContent = categories.length;
-      $("layoutTileCount").textContent = totalTiles;
-      $("layoutEditingLabel").textContent = layoutSetupCategory || "None";
-      $("layoutActiveCategoryTitle").textContent = layoutSetupCategory || "Select category";
-
-      $("layoutCategoryList").innerHTML = categories.length ? categories.map((category, index) => `
-        <div class="layout-row ${category === layoutSetupCategory ? "active" : ""}">
-          <button class="layout-main" data-layout-category="${escapeHtml(category)}">
-            <strong>${escapeHtml(category)}</strong>
-            <span>${menuItems.filter(item => item.category === category).length} menu items</span>
-          </button>
-          <div class="layout-controls">
-            <button class="layout-icon-btn" data-move-category="${escapeHtml(category)}" data-direction="-1" ${index === 0 ? "disabled" : ""} aria-label="Move ${escapeHtml(category)} up"><i data-lucide="chevron-up"></i></button>
-            <button class="layout-icon-btn" data-move-category="${escapeHtml(category)}" data-direction="1" ${index === categories.length - 1 ? "disabled" : ""} aria-label="Move ${escapeHtml(category)} down"><i data-lucide="chevron-down"></i></button>
-          </div>
-        </div>
-      `).join("") : `<div class="layout-empty"><i data-lucide="layout-list"></i><strong>No categories</strong><span>Add menu items before arranging tiles.</span></div>`;
-
-      $("layoutTileList").innerHTML = entries.length ? entries.map((entry, index) => `
-        <div class="layout-row">
-          <button class="layout-main" data-preview-category="${escapeHtml(layoutSetupCategory)}">
-            <strong>${escapeHtml(layoutEntryName(entry))}</strong>
-            <span>${escapeHtml(layoutEntryDetail(entry))}</span>
-          </button>
-          <div class="layout-controls">
-            <button class="layout-icon-btn" data-move-tile="${escapeHtml(entry.key)}" data-direction="-1" ${index === 0 ? "disabled" : ""} aria-label="Move ${escapeHtml(layoutEntryName(entry))} up"><i data-lucide="chevron-up"></i></button>
-            <button class="layout-icon-btn" data-move-tile="${escapeHtml(entry.key)}" data-direction="1" ${index === entries.length - 1 ? "disabled" : ""} aria-label="Move ${escapeHtml(layoutEntryName(entry))} down"><i data-lucide="chevron-down"></i></button>
-          </div>
-        </div>
-      `).join("") : `<div class="layout-empty"><i data-lucide="layout-grid"></i><strong>No tiles</strong><span>This category has no visible order-screen tiles.</span></div>`;
-
-      $("layoutCategoryList").querySelectorAll("[data-layout-category]").forEach(button => {
-        button.addEventListener("click", () => {
-          layoutSetupCategory = button.dataset.layoutCategory;
-          activeCategory = layoutSetupCategory;
-          renderCategories();
-          renderItems();
-          renderLayoutSetup();
-        });
-      });
-      $("layoutCategoryList").querySelectorAll("[data-move-category]").forEach(button => {
-        button.addEventListener("click", event => {
-          event.stopPropagation();
-          layoutSetupCategory = button.dataset.moveCategory;
-          activeCategory = layoutSetupCategory;
-          tileLayout.categoryOrder = moveValue(categories, button.dataset.moveCategory, Number(button.dataset.direction));
-          persistTileLayout();
-          rebuildMenuModel();
-          renderCategories();
-          renderItems();
-          renderLayoutSetup();
-        });
-      });
-      $("layoutTileList").querySelectorAll("[data-preview-category]").forEach(button => {
-        button.addEventListener("click", () => {
-          activeCategory = button.dataset.previewCategory;
-          closeLayoutSetup();
-          renderCategories();
-          renderItems();
-        });
-      });
-      $("layoutTileList").querySelectorAll("[data-move-tile]").forEach(button => {
-        button.addEventListener("click", event => {
-          event.stopPropagation();
-          const keys = orderedDisplayEntriesForCategory(layoutSetupCategory).map(entry => entry.key);
-          tileLayout.groupOrderByCategory[layoutSetupCategory] = moveValue(keys, button.dataset.moveTile, Number(button.dataset.direction));
-          persistTileLayout();
-          renderItems();
-          renderLayoutSetup();
-        });
-      });
-      lucide.createIcons();
-    }
-
-    function resetTileLayout() {
-      tileLayout = { categoryOrder: [], groupOrderByCategory: {} };
-      rebuildMenuModel();
-      categories.forEach(category => orderedDisplayEntriesForCategory(category));
-      persistTileLayout();
-      renderCategories();
-      renderItems();
-      renderLayoutSetup();
-      toast("Tile layout reset");
-    }
-
-    function openLayoutSetup() {
-      closeDrawers();
-      closePreviousOrders();
-      closeMenuAdmin();
-      closeInventoryAdmin();
-      document.querySelector(".app-shell").classList.add("layout-view");
-      layoutSetupCategory = activeCategory || categories[0] || "";
-      renderLayoutSetup();
-    }
-
-    function closeLayoutSetup() {
-      document.querySelector(".app-shell").classList.remove("layout-view");
-    }
-
-    function inventoryLabel(id) {
-      const item = inventoryItems.find(entry => entry.id === id);
-      return item ? `${item.name} (${item.unit})` : "No packaging";
-    }
-
-    function packagingMaterialsFor(item) {
-      if (Array.isArray(item.packagingItems)) return item.packagingItems;
-      if (item.packagingItemId) return [{ inventoryItemId: item.packagingItemId, qty: item.packagingQty || 1 }];
-      return [];
-    }
-
-    function packagingSummary(item) {
-      const materials = packagingMaterialsFor(item);
-      return materials.length
-        ? materials.map(material => `${inventoryLabel(material.inventoryItemId)} x ${material.qty}`).join(" · ")
-        : "No packaging";
-    }
-
-    function menuAdminMatches(item, query) {
-      return !query || [
-        item.name,
-        item.category,
-        item.size,
-        item.code,
-        packagingSummary(item),
-        money(item.price),
-        money(item.profit)
-      ].some(value => String(value || "").toLowerCase().includes(query));
-    }
-
-    function packagingOptions(selectedId = "") {
-      return `<option value="">Select material</option>${inventoryItems
-        .filter(entry => entry.type === "Packaging" || entry.type === "Consumable")
-        .map(entry => `<option value="${escapeHtml(entry.id)}" ${entry.id === selectedId ? "selected" : ""}>${escapeHtml(entry.name)} · ${escapeHtml(entry.unit)} left ${entry.stock}</option>`)
-        .join("")}`;
-    }
-
-    function readPackagingRows() {
-      return Array.from($("menuPackagingRows").querySelectorAll(".packaging-row"))
-        .map(row => ({
-          inventoryItemId: row.querySelector("[data-packaging-material]").value,
-          qty: Number(row.querySelector("[data-packaging-qty]").value)
-        }))
-        .filter(material => material.inventoryItemId && material.qty > 0);
-    }
-
-    function renderMenuPackagingRows(materials = []) {
-      $("menuPackagingRows").innerHTML = materials.length ? materials.map((material, index) => `
-        <div class="packaging-row" data-packaging-row="${index}">
-          <select data-packaging-material aria-label="Packing material">${packagingOptions(material.inventoryItemId)}</select>
-          <input data-packaging-qty type="number" min="0" step="0.1" value="${material.qty}" aria-label="Qty used">
-          <button class="packaging-remove" type="button" data-remove-packaging="${index}" aria-label="Remove packing material"><i data-lucide="x"></i></button>
-        </div>
-      `).join("") : `<div class="menu-helper-note">No packing materials set yet.</div>`;
-      $("menuPackagingRows").querySelectorAll("[data-remove-packaging]").forEach(button => {
-        button.addEventListener("click", () => {
-          const materials = readPackagingRows();
-          materials.splice(Number(button.dataset.removePackaging), 1);
-          renderMenuPackagingRows(materials);
-        });
-      });
-      lucide.createIcons();
-    }
-
-    function renderMenuForm() {
-      const item = menuItems.find(entry => entry.id === editingMenuItemId);
-      const isNew = !item;
-      $("menuFormMode").textContent = isNew ? "Add item" : "Edit item";
-      $("menuFormTitle").textContent = isNew ? "New menu item" : `${item.name} (${item.size})`;
-      $("menuItemName").value = item?.name || "";
-      $("menuItemCategory").value = item?.category || activeCategory || categories[0] || "Snacks";
-      $("menuItemSize").value = item?.size || "Regular";
-      $("menuItemCode").value = item?.code || "";
-      $("menuItemPrice").value = item?.price ?? "";
-      $("menuItemProfit").value = item?.profit ?? "";
-      renderMenuPackagingRows(item?.packagingItems || defaultPackagingItemsFor({
-        category: $("menuItemCategory").value,
-        size: $("menuItemSize").value
-      }));
-    }
-
-    function renderMenuAdmin() {
-      const totalProfit = menuItems.reduce((sum, item) => sum + item.profit, 0);
-      $("menuAdminItemCount").textContent = menuItems.length;
-      $("menuAdminAvgProfit").textContent = money(menuItems.length ? Math.round(totalProfit / menuItems.length) : 0);
-      $("menuAdminCategoryCount").textContent = categories.length;
-      $("menuCategoryOptions").innerHTML = categories.map(category => `<option value="${escapeHtml(category)}"></option>`).join("");
-
-      const query = menuAdminQuery.trim().toLowerCase();
-      const visibleItems = menuItems.filter(item => menuAdminMatches(item, query));
-      $("menuAdminList").innerHTML = visibleItems.length ? visibleItems.map(item => `
-        <button class="menu-admin-item ${item.id === editingMenuItemId ? "active" : ""}" data-menu-edit="${item.id}">
-          <div>
-            <strong>${escapeHtml(item.name)}${item.size !== "Regular" ? ` (${escapeHtml(item.size)})` : ""}</strong>
-            <span>${escapeHtml(item.category)} · ${escapeHtml(item.size)}${item.code ? ` · Key ${escapeHtml(item.code)}` : ""}</span>
-            <small class="profit-pill">Profit ${money(item.profit)}</small>
-            ${packagingMaterialsFor(item).map(material => `<small class="profit-pill warn">${escapeHtml(inventoryLabel(material.inventoryItemId))} x ${material.qty}</small>`).join("")}
-          </div>
-          <b>${money(item.price)}</b>
-        </button>
-      `).join("") : `<div class="menu-admin-empty"><i data-lucide="search-x"></i><strong>No menu items found</strong><span>Try another search or add a new item.</span></div>`;
-
-      $("menuAdminList").querySelectorAll("[data-menu-edit]").forEach(button => {
-        button.addEventListener("click", () => {
-          editingMenuItemId = button.dataset.menuEdit;
-          renderMenuAdmin();
-        });
-      });
-      renderMenuForm();
-      lucide.createIcons();
-    }
-
-    function syncOpenCartItem(updatedItem) {
-      cart = cart.map(entry => entry.id === updatedItem.id
-        ? {
-            ...entry,
-            name: updatedItem.name,
-            category: updatedItem.category,
-            size: updatedItem.size,
-            price: updatedItem.price,
-            profit: updatedItem.profit,
-            packagingItems: structuredClone(updatedItem.packagingItems),
-            code: updatedItem.code
-          }
-        : entry);
-    }
-
-    function saveMenuAdminItem(event) {
-      event.preventDefault();
-      const existing = menuItems.find(item => item.id === editingMenuItemId);
-      const formItem = normalizeMenuItem({
-        id: existing?.id || `custom-${Date.now()}`,
-        name: $("menuItemName").value,
-        category: $("menuItemCategory").value,
-        size: $("menuItemSize").value,
-        code: $("menuItemCode").value,
-        price: Number($("menuItemPrice").value),
-        profit: Number($("menuItemProfit").value),
-        packagingItems: readPackagingRows()
-      });
-      if (!formItem.name || !formItem.category) return toast("Item name and category are required");
-      if ($("menuItemPrice").value === "" || $("menuItemProfit").value === "") return toast("Price and profit are required");
-      if (existing) {
-        Object.assign(existing, formItem);
-        syncOpenCartItem(formItem);
-        toast(`${formItem.name} updated`);
-      } else {
-        menuItems.push(formItem);
-        editingMenuItemId = formItem.id;
-        activeCategory = formItem.category;
-        toast(`${formItem.name} added to menu`);
-      }
-      rebuildMenuModel();
-      persistMenuItems();
-      renderCategories();
-      renderItems();
-      renderCart();
-      renderMenuAdmin();
-    }
-
-    function inventoryMatches(item, query) {
-      return !query || [
-        item.name,
-        item.type,
-        item.unit,
-        item.stock,
-        item.minStock
-      ].some(value => String(value || "").toLowerCase().includes(query));
-    }
-
-    function renderInventoryForm() {
-      const item = inventoryItems.find(entry => entry.id === editingInventoryItemId);
-      const isNew = !item;
-      $("inventoryFormMode").textContent = isNew ? "Add inventory" : "Edit stock";
-      $("inventoryFormTitle").textContent = isNew ? "New stock item" : item.name;
-      $("inventoryName").value = item?.name || "";
-      $("inventoryType").value = item?.type || "Packaging";
-      $("inventoryUnit").value = item?.unit || "pcs";
-      $("inventoryStock").value = item?.stock ?? "";
-      $("inventoryMinStock").value = item?.minStock ?? "";
-      $("inventoryAddQty").value = "";
-      $("inventoryNightCount").value = "";
-    }
-
-    function renderInventoryAdmin() {
-      const lowStock = inventoryItems.filter(item => item.stock <= item.minStock);
-      const packagingTotal = inventoryItems
-        .filter(item => item.type === "Packaging")
-        .reduce((sum, item) => sum + item.stock, 0);
-      $("inventoryItemCount").textContent = inventoryItems.length;
-      $("inventoryPackagingTotal").textContent = rupee.format(packagingTotal);
-      $("inventoryLowStockCount").textContent = lowStock.length;
-
-      const query = inventoryQuery.trim().toLowerCase();
-      const visibleItems = inventoryItems.filter(item => inventoryMatches(item, query));
-      $("inventoryList").innerHTML = visibleItems.length ? visibleItems.map(item => {
-        const low = item.stock <= item.minStock;
-        return `
-          <button class="menu-admin-item ${item.id === editingInventoryItemId ? "active" : ""}" data-inventory-edit="${item.id}">
-            <div>
-              <strong>${escapeHtml(item.name)}</strong>
-              <span>${escapeHtml(item.type)} · ${escapeHtml(item.unit)} · Min ${item.minStock}</span>
-              <small class="profit-pill ${low ? "danger" : ""}">${low ? "Low stock" : "In stock"}</small>
-              <small class="profit-pill warn">Last: ${escapeHtml(item.updatedAt)}</small>
-            </div>
-            <b>${rupee.format(item.stock)}</b>
-          </button>
-        `;
-      }).join("") : `<div class="menu-admin-empty"><i data-lucide="package-search"></i><strong>No inventory found</strong><span>Try another search or add a new stock item.</span></div>`;
-
-      $("inventoryList").querySelectorAll("[data-inventory-edit]").forEach(button => {
-        button.addEventListener("click", () => {
-          editingInventoryItemId = button.dataset.inventoryEdit;
-          renderInventoryAdmin();
-        });
-      });
-      renderInventoryForm();
-      renderMenuAdmin();
-      lucide.createIcons();
-    }
-
-    function saveInventoryItem(event) {
-      event.preventDefault();
-      const existing = inventoryItems.find(item => item.id === editingInventoryItemId);
-      const formItem = normalizeInventoryItem({
-        id: existing?.id || `inventory-${Date.now()}`,
-        name: $("inventoryName").value,
-        type: $("inventoryType").value,
-        unit: $("inventoryUnit").value,
-        stock: Number($("inventoryStock").value),
-        minStock: Number($("inventoryMinStock").value),
-        lastCount: Number($("inventoryStock").value),
-        updatedAt: existing?.updatedAt || "Saved"
-      });
-      if (!formItem.name) return toast("Inventory name is required");
-      if ($("inventoryStock").value === "" || $("inventoryMinStock").value === "") return toast("Stock and low alert are required");
-      if (existing) {
-        Object.assign(existing, formItem);
-        toast(`${formItem.name} stock saved`);
-      } else {
-        inventoryItems.push(formItem);
-        editingInventoryItemId = formItem.id;
-        toast(`${formItem.name} added to inventory`);
-      }
-      persistInventoryItems();
-      renderInventoryAdmin();
-      renderMenuAdmin();
-    }
-
-    function updateInventoryStock(mode) {
-      const item = inventoryItems.find(entry => entry.id === editingInventoryItemId);
-      if (!item) return toast("Select inventory first");
-      if (mode === "add") {
-        const qty = Number($("inventoryAddQty").value);
-        if (!qty) return toast("Enter quantity to add");
-        item.stock += qty;
-        item.updatedAt = `Added ${qty} ${item.unit}`;
-        toast(`${item.name} stock increased`);
-      } else {
-        const left = Number($("inventoryNightCount").value);
-        if ($("inventoryNightCount").value === "") return toast("Enter night left count");
-        item.stock = left;
-        item.lastCount = left;
-        item.updatedAt = `Night left ${left} ${item.unit}`;
-        toast(`${item.name} closing count updated`);
-      }
-      persistInventoryItems();
-      renderInventoryAdmin();
-      renderMenuAdmin();
-    }
-
-    function startNewInventoryItem() {
-      editingInventoryItemId = "";
-      renderInventoryAdmin();
-      $("inventoryName").focus();
-    }
-
-    function openInventoryAdmin() {
-      closeDrawers();
-      closePreviousOrders();
-      closeMenuAdmin();
-      closeLayoutSetup();
-      document.querySelector(".app-shell").classList.add("inventory-view");
-      if (!editingInventoryItemId && inventoryItems.length) editingInventoryItemId = inventoryItems[0].id;
-      renderInventoryAdmin();
-    }
-
-    function closeInventoryAdmin() {
-      document.querySelector(".app-shell").classList.remove("inventory-view");
-    }
-
-    function startNewMenuItem() {
-      editingMenuItemId = "";
-      renderMenuAdmin();
-      $("menuItemName").focus();
-    }
-
-    function openMenuAdmin() {
-      closeDrawers();
-      closePreviousOrders();
-      closeInventoryAdmin();
-      closeLayoutSetup();
-      document.querySelector(".app-shell").classList.add("menu-view");
-      if (editingOrder) toast("Menu can be edited while this order remains open");
-      if (!editingMenuItemId && menuItems.length) editingMenuItemId = menuItems[0].id;
-      renderMenuAdmin();
-    }
-
-    function closeMenuAdmin() {
-      document.querySelector(".app-shell").classList.remove("menu-view");
     }
 
     function toast(message) {
@@ -4518,33 +3265,9 @@
     }
 
     function closeDrawers(hideBackdrop = true) {
+      $("heldDrawer").classList.remove("open");
       $("salesDrawer").classList.remove("open");
       if (hideBackdrop) $("drawerBackdrop").classList.remove("open");
-    }
-
-    function renderFullscreenButton() {
-      const active = Boolean(document.fullscreenElement);
-      $("fullscreenBtn").innerHTML = active
-        ? `<i data-lucide="minimize-2"></i><span>Exit</span>`
-        : `<i data-lucide="maximize-2"></i><span>Full</span>`;
-      lucide.createIcons();
-    }
-
-    async function toggleFullscreen() {
-      try {
-        if (document.fullscreenElement) {
-          await document.exitFullscreen();
-        } else {
-          await document.documentElement.requestFullscreen();
-        }
-      } catch (error) {
-        toast("Fullscreen is not available in this browser");
-      } finally {
-        setTimeout(() => {
-          fitDesignFrame();
-          renderFullscreenButton();
-        }, 120);
-      }
     }
 
     document.addEventListener("keydown", (event) => {
@@ -4556,32 +3279,7 @@
         closeCustomization();
         closeDrawers();
         closePreviousOrders();
-        closeMenuAdmin();
-        closeInventoryAdmin();
-        closeLayoutSetup();
       }
-    });
-
-    document.addEventListener("pointerdown", event => {
-      if (event.target.closest("#virtualKeyboard")) return;
-      const input = event.target.closest?.(keyboardInputSelector);
-      if (input && isVirtualKeyboardInput(input)) {
-        prepareVirtualKeyboardInput(input);
-        return;
-      }
-      if ($("virtualKeyboard").classList.contains("open")) closeVirtualKeyboard();
-    });
-    document.addEventListener("focusin", event => {
-      if (isVirtualKeyboardInput(event.target)) openVirtualKeyboard(event.target);
-    });
-    document.addEventListener("beforeinput", event => {
-      if (isVirtualKeyboardInput(event.target)) event.preventDefault();
-    });
-    $("virtualKeyboard").addEventListener("pointerdown", event => event.preventDefault());
-    $("keyboardCloseBtn").addEventListener("click", closeVirtualKeyboard);
-    $("keyboardDoneBtn").addEventListener("click", closeVirtualKeyboard);
-    document.querySelectorAll("[data-keyboard-mode]").forEach(button => {
-      button.addEventListener("click", () => setKeyboardMode(button.dataset.keyboardMode));
     });
 
     $("searchInput").addEventListener("input", renderItems);
@@ -4592,44 +3290,15 @@
       orderNo += cart.length ? 1 : 0;
       clearCart();
     });
-    $("menuBtn").addEventListener("click", openMenuAdmin);
-    $("inventoryBtn").addEventListener("click", openInventoryAdmin);
-    $("layoutBtn").addEventListener("click", openLayoutSetup);
+    $("holdBtn").addEventListener("click", holdOrder);
+    $("heldBtn").addEventListener("click", () => openDrawer("heldDrawer"));
     $("ordersBtn").addEventListener("click", openPreviousOrders);
     $("salesBtn").addEventListener("click", () => openDrawer("salesDrawer"));
-    $("fullscreenBtn").addEventListener("click", toggleFullscreen);
-    $("closeMenuBtn").addEventListener("click", closeMenuAdmin);
-    $("closeInventoryBtn").addEventListener("click", closeInventoryAdmin);
-    $("closeLayoutBtn").addEventListener("click", closeLayoutSetup);
     $("closeOrdersBtn").addEventListener("click", closePreviousOrders);
+    $("closeHeldBtn").addEventListener("click", closeDrawers);
     $("closeSalesBtn").addEventListener("click", closeDrawers);
     $("drawerBackdrop").addEventListener("click", closeDrawers);
     $("payBtn").addEventListener("click", completeSale);
-    $("resetLayoutBtn").addEventListener("click", resetTileLayout);
-    $("addMenuItemBtn").addEventListener("click", startNewMenuItem);
-    $("resetMenuFormBtn").addEventListener("click", renderMenuForm);
-    $("addMenuPackagingBtn").addEventListener("click", () => {
-      const materials = readPackagingRows();
-      const firstMaterial = inventoryItems.find(entry => entry.type === "Packaging" || entry.type === "Consumable");
-      materials.push({ inventoryItemId: firstMaterial?.id || "", qty: 1 });
-      renderMenuPackagingRows(materials);
-    });
-    $("menuAdminSearch").addEventListener("input", event => {
-      menuAdminQuery = event.target.value;
-      renderMenuAdmin();
-      $("menuAdminSearch").focus();
-    });
-    $("menuAdminForm").addEventListener("submit", saveMenuAdminItem);
-    $("addInventoryItemBtn").addEventListener("click", startNewInventoryItem);
-    $("resetInventoryFormBtn").addEventListener("click", renderInventoryForm);
-    $("inventorySearch").addEventListener("input", event => {
-      inventoryQuery = event.target.value;
-      renderInventoryAdmin();
-      $("inventorySearch").focus();
-    });
-    $("inventoryForm").addEventListener("submit", saveInventoryItem);
-    $("addInventoryStockBtn").addEventListener("click", () => updateInventoryStock("add"));
-    $("closeInventoryNightBtn").addEventListener("click", () => updateInventoryStock("night"));
     $("closeCustomizeBtn").addEventListener("click", closeCustomization);
     $("customizeBackdrop").addEventListener("click", event => {
       if (event.target === $("customizeBackdrop")) closeCustomization();
@@ -4675,23 +3344,14 @@
 
     window.addEventListener("resize", fitDesignFrame);
     window.visualViewport?.addEventListener("resize", fitDesignFrame);
-    document.addEventListener("fullscreenchange", () => {
-      fitDesignFrame();
-      renderFullscreenButton();
-    });
 
     renderCategories();
     renderItems();
     renderCart();
+    renderHeld();
     renderSales();
     renderPreviousOrders();
-    renderMenuAdmin();
-    renderInventoryAdmin();
-    renderLayoutSetup();
-    prepareVirtualKeyboardInputs();
-    renderVirtualKeyboard();
     lucide.createIcons();
-    renderFullscreenButton();
     fitDesignFrame();
   </script>
 </body>
